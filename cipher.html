@@ -949,7 +949,9 @@ function buildScoreText(won) {
   grid = grid.trim();
 
   const result = won ? 'SECTOR CLEARED' : 'SIGNAL LOST';
-  return `CIPHER — Wasteland Word Game\n${result}\n🔐 ${state.score}/${total} ciphers cracked\n⚡ Survival: ${state.survival}%\n\n${grid}\n\nmaximumreality.xyz/game/cipher`;
+  return `CIPHER — Wasteland Word Game\n${result}\n🔐 ${state.score}/${total} ciphers cracked\n⚡ Survival: ${state.survival}%\n\n${grid}\n\nCan you beat this?\n\nhttps://maximumreality.github.io/game/cipher.html`;
+
+
 }
 
 function shareToX() {
