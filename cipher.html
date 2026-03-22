@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CIPHER — Wasteland Word Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050508;
+    --surface: #0a0a12;
+    --panel: #0d0d18;
+    --neon-cyan: #00ffe7;
+    --neon-mag: #ff00aa;
+    --neon-amber: #ffaa00;
+    --neon-red: #ff2244;
+    --neon-green: #00ff88;
+    --text: #c8d8e8;
+    --dim: #445566;
+    --glow-c: 0 0 8px #00ffe7, 0 0 20px #00ffe780;
+    --glow-m: 0 0 8px #ff00aa, 0 0 20px #ff00aa80;
+    --glow-a: 0 0 8px #ffaa00, 0 0 20px #ffaa0080;
+    --glow-g: 0 0 8px #00ff88, 0 0 20px #00ff8880;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Scanlines */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.15) 2px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* Noise overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  .game-wrapper {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px 12px 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #00ffe720;
+    padding-bottom: 10px;
+  }
+
+  .game-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-c);
+    letter-spacing: 0.15em;
+  }
+
+  .game-title span { color: var(--neon-mag); text-shadow: var(--glow-m); }
+
+  .survival-bar-wrap { text-align: right; }
+  .survival-label {
+    font-size: 0.55rem;
+    color: var(--dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .survival-bar {
+    width: 110px;
+    height: 8px;
+    background: #111;
+    border: 1px solid var(--dim);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .survival-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
+    box-shadow: var(--glow-g);
+    transition: width 0.6s ease;
+    border-radius: 2px;
+  }
+
+  .survival-pct {
+    font-size: 0.65rem;
+    color: var(--neon-green);
+    text-shadow: var(--glow-g);
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  /* ── PROTAGONIST PANEL ── */
+  .protagonist-panel {
+    background: var(--panel);
+    border: 1px solid #00ffe715;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .protagonist-panel::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--neon-cyan), var(--neon-mag));
+    box-shadow: var(--glow-c);
+  }
+
+  .figure-wrap {
+    position: relative;
+    flex-shrink: 0;
+    width: 72px;
+    height: 88px;
+  }
+
+  .figure-svg {
+    width: 72px;
+    height: 88px;
+  }
+
+  /* Cloak glow pulse */
+  @keyframes cloakPulse {
+    0%, 100% { filter: drop-shadow(0 0 4px #00ffe7) drop-shadow(0 0 10px #ff00aa80); }
+    50% { filter: drop-shadow(0 0 8px #ff00aa) drop-shadow(0 0 16px #00ffe780); }
+  }
+
+  .figure-svg { animation: cloakPulse 3s ease-in-out infinite; }
+
+  /* Drone glitch */
+  @keyframes droneFloat {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-5px) rotate(2deg); }
+  }
+
+  @keyframes droneGlitch {
+    0%, 90%, 100% { opacity: 1; transform: translateX(0) translateY(0) rotate(-2deg); }
+    92% { opacity: 0.6; transform: translateX(-3px) translateY(-5px) rotate(2deg); filter: hue-rotate(90deg); }
+    94% { opacity: 1; transform: translateX(2px) translateY(-3px) rotate(-2deg); }
+    96% { opacity: 0.7; transform: translateX(-1px) translateY(-4px) rotate(1deg); filter: hue-rotate(-45deg); }
+  }
+
+  .drone-svg {
+    position: absolute;
+    top: -18px;
+    right: -14px;
+    width: 36px;
+    height: 36px;
+    animation: droneGlitch 4s ease-in-out infinite;
+  }
+
+  .drone-line {
+    position: absolute;
+    top: -2px;
+    right: 8px;
+    width: 1px;
+    height: 22px;
+    background: linear-gradient(180deg, var(--neon-cyan) 0%, transparent 100%);
+    opacity: 0.5;
+    animation: droneFloat 2s ease-in-out infinite;
+  }
+
+  .protagonist-info { flex: 1; }
+
+  .protagonist-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-c);
+    letter-spacing: 0.15em;
+    margin-bottom: 2px;
+  }
+
+  .protagonist-status {
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    color: var(--neon-amber);
+    text-shadow: var(--glow-a);
+    min-height: 1.2em;
+    line-height: 1.2;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .cursor { animation: blink 1s step-end infinite; }
+
+  /* Stat bars */
+  .stats-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .stat {
+    flex: 1;
+  }
+
+  .stat-label {
+    font-size: 0.5rem;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .stat-bar {
+    height: 4px;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .stat-fill {
+    height: 100%;
+    border-radius: 1px;
+    transition: width 0.6s ease;
+  }
+
+  .stat-fill.food { background: var(--neon-amber); box-shadow: var(--glow-a); }
+  .stat-fill.water { background: var(--neon-cyan); box-shadow: var(--glow-c); }
+  .stat-fill.tech { background: var(--neon-mag); box-shadow: var(--glow-m); }
+
+  /* ── PUZZLE AREA ── */
+  .puzzle-panel {
+    background: var(--panel);
+    border: 1px solid #00ffe718;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .puzzle-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .puzzle-tag {
+    font-size: 0.5rem;
+    letter-spacing: 0.25em;
+    color: var(--dim);
+    text-transform: uppercase;
+    border: 1px solid #333;
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+
+  .category-badge {
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    padding: 2px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+
+  .cat-food { color: var(--neon-amber); border: 1px solid var(--neon-amber); text-shadow: var(--glow-a); }
+  .cat-water { color: var(--neon-cyan); border: 1px solid var(--neon-cyan); text-shadow: var(--glow-c); }
+  .cat-tech { color: var(--neon-mag); border: 1px solid var(--neon-mag); text-shadow: var(--glow-m); }
+
+  .clue-text {
+    font-family: 'VT323', monospace;
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.3;
+    min-height: 2.6em;
+  }
+
+  .clue-text em {
+    font-style: normal;
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-c);
+  }
+
+  /* Scrambled letters */
+  .scrambled-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 14px;
+    min-height: 46px;
+  }
+
+  .letter-tile {
+    width: 38px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a0f18;
+    border: 1px solid var(--neon-cyan);
+    border-radius: 4px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-c);
+    box-shadow: inset 0 0 8px #00ffe710;
+    cursor: pointer;
+    transition: all 0.12s;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .letter-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,255,231,0.15), transparent);
+    transition: left 0.3s;
+  }
+
+  .letter-tile:active::before { left: 100%; }
+
+  .letter-tile:active {
+    transform: scale(0.9);
+    background: #001a15;
+    box-shadow: var(--glow-c), inset 0 0 12px #00ffe720;
+  }
+
+  .letter-tile.used {
+    opacity: 0.2;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  @keyframes tileGlitch {
+    0%,100%{transform:none;filter:none}
+    25%{transform:translateX(-2px);filter:hue-rotate(60deg)}
+    75%{transform:translateX(2px);filter:hue-rotate(-60deg)}
+  }
+
+  .letter-tile.glitch { animation: tileGlitch 0.15s ease; }
+
+  /* Answer slots */
+  .answer-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 14px;
+    min-height: 46px;
+  }
+
+  .answer-slot {
+    width: 38px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #050810;
+    border: 1px solid #334;
+    border-radius: 4px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--neon-mag);
+    text-shadow: var(--glow-m);
+    cursor: pointer;
+    transition: all 0.12s;
+    user-select: none;
+  }
+
+  .answer-slot.filled {
+    border-color: #ff00aa60;
+    box-shadow: inset 0 0 8px #ff00aa15;
+  }
+
+  .answer-slot.filled:active {
+    transform: scale(0.9);
+    background: #150010;
+  }
+
+  @keyframes slotCorrect {
+    0%{transform:scale(1)} 30%{transform:scale(1.2)} 60%{transform:scale(0.95)} 100%{transform:scale(1)}
+  }
+
+  .answer-slot.correct {
+    border-color: var(--neon-green) !important;
+    color: var(--neon-green) !important;
+    text-shadow: var(--glow-g) !important;
+    box-shadow: var(--glow-g), inset 0 0 10px #00ff8820 !important;
+    animation: slotCorrect 0.4s ease;
+  }
+
+  @keyframes slotWrong {
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-5px)}
+    40%{transform:translateX(5px)}
+    60%{transform:translateX(-4px)}
+    80%{transform:translateX(4px)}
+  }
+
+  .answer-slot.wrong {
+    border-color: var(--neon-red) !important;
+    color: var(--neon-red) !important;
+    animation: slotWrong 0.4s ease;
+  }
+
+  /* Controls */
+  .puzzle-controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-check {
+    background: #001a10;
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    text-shadow: var(--glow-g);
+    box-shadow: 0 0 6px #00ff8830;
+  }
+
+  .btn-check:active {
+    background: #002a18;
+    box-shadow: var(--glow-g);
+    transform: scale(0.97);
+  }
+
+  .btn-clear {
+    background: #15080a;
+    border: 1px solid #ff224440;
+    color: var(--neon-red);
+    flex: 0.6;
+  }
+
+  .btn-clear:active { transform: scale(0.97); }
+
+  .btn-hint {
+    background: #12100a;
+    border: 1px solid #ffaa0040;
+    color: var(--neon-amber);
+    flex: 0.6;
+    font-size: 0.65rem;
+  }
+
+  .btn-hint:active { transform: scale(0.97); }
+
+  /* ── LOOT POPUP ── */
+  @keyframes lootIn {
+    0%{transform:scale(0.5) translateY(20px);opacity:0}
+    70%{transform:scale(1.05) translateY(-4px);opacity:1}
+    100%{transform:scale(1) translateY(0);opacity:1}
+  }
+
+  .loot-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 500;
+    background: #05060f;
+    border: 1px solid var(--neon-cyan);
+    box-shadow: var(--glow-c), 0 0 60px #00ffe720, inset 0 0 20px #00ffe705;
+    border-radius: 10px;
+    padding: 28px 32px 22px;
+    text-align: center;
+    min-width: 260px;
+    opacity: 0;
+    pointer-events: none;
+    transition: none;
+  }
+
+  .loot-popup.show {
+    pointer-events: all;
+    animation: lootIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  .loot-icon { font-size: 3rem; margin-bottom: 8px; display: block; }
+
+  .loot-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .loot-name {
+    font-family: 'VT323', monospace;
+    font-size: 2rem;
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-c);
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+
+  .loot-desc {
+    font-size: 0.7rem;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+
+  .loot-boost {
+    font-family: 'VT323', monospace;
+    font-size: 1.1rem;
+    color: var(--neon-green);
+    text-shadow: var(--glow-g);
+    margin-bottom: 14px;
+  }
+
+  .btn-continue {
+    background: #001a15;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-c);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    padding: 10px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .btn-continue:active { transform: scale(0.97); }
+
+  /* Overlay */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 499;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .overlay.show { opacity: 1; pointer-events: all; }
+
+  /* ── INVENTORY ── */
+  .inventory-panel {
+    background: var(--panel);
+    border: 1px solid #ffffff08;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+
+  .inv-header {
+    font-size: 0.5rem;
+    letter-spacing: 0.25em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .inv-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #222;
+  }
+
+  .inventory-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 36px;
+  }
+
+  @keyframes itemDrop {
+    0%{transform:scale(0) rotate(-20deg);opacity:0}
+    70%{transform:scale(1.2) rotate(5deg);opacity:1}
+    100%{transform:scale(1) rotate(0);opacity:1}
+  }
+
+  .inv-item {
+    font-size: 1.4rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a0c15;
+    border: 1px solid #222;
+    border-radius: 4px;
+    animation: itemDrop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    position: relative;
+    cursor: default;
+  }
+
+  .inv-item:hover .inv-tooltip, .inv-item:focus .inv-tooltip { opacity: 1; pointer-events: none; }
+
+  .inv-tooltip {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0a0c18;
+    border: 1px solid #333;
+    padding: 3px 7px;
+    border-radius: 3px;
+    font-size: 0.55rem;
+    white-space: nowrap;
+    color: var(--text);
+    opacity: 0;
+    transition: opacity 0.2s;
+    letter-spacing: 0.1em;
+    z-index: 10;
+  }
+
+  .inv-empty {
+    font-size: 0.65rem;
+    color: var(--dim);
+    letter-spacing: 0.15em;
+    font-style: italic;
+    padding: 8px 0;
+  }
+
+  /* ── GAME OVER / WIN ── */
+  .end-screen {
+    position: fixed;
+    inset: 0;
+    background: rgba(5,5,8,0.95);
+    z-index: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+
+  .end-screen.show { opacity: 1; pointer-events: all; }
+
+  .end-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    margin-bottom: 12px;
+  }
+
+  .end-title.dead { color: var(--neon-red); text-shadow: 0 0 20px #ff2244, 0 0 40px #ff224480; }
+  .end-title.win { color: var(--neon-cyan); text-shadow: var(--glow-c); }
+
+  .end-msg {
+    font-family: 'VT323', monospace;
+    font-size: 1.3rem;
+    color: var(--text);
+    margin-bottom: 24px;
+    max-width: 320px;
+    line-height: 1.4;
+  }
+
+  /* Score bar */
+  .score-display {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--dim);
+    letter-spacing: 0.15em;
+    margin-bottom: 4px;
+  }
+
+  .score-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-c);
+    margin-bottom: 20px;
+  }
+
+  .btn-restart {
+    background: #001a15;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-c);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    padding: 12px 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  /* Round counter */
+  .round-info {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-align: center;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .round-info span { color: var(--neon-cyan); text-shadow: var(--glow-c); }
+
+  /* Hint text */
+  .hint-line {
+    font-size: 0.65rem;
+    color: var(--neon-amber);
+    text-shadow: var(--glow-a);
+    text-align: center;
+    min-height: 1.2em;
+    margin-top: -6px;
+    margin-bottom: 8px;
+    letter-spacing: 0.1em;
+    font-style: italic;
+    transition: opacity 0.3s;
+  }
+
+  /* Wrong flash */
+  @keyframes wrongFlash {
+    0%,100%{background:var(--panel)}
+    50%{background:#200008}
+  }
+
+  .puzzle-panel.wrong-flash { animation: wrongFlash 0.4s ease; }
+
+  @keyframes correctFlash {
+    0%,100%{background:var(--panel)}
+    50%{background:#001510}
+  }
+
+  .puzzle-panel.correct-flash { animation: correctFlash 0.4s ease; }
+
+  /* Drone dialogue */
+  .drone-chat {
+    position: absolute;
+    top: -10px;
+    right: 0;
+    background: #050810;
+    border: 1px solid var(--neon-cyan);
+    border-radius: 4px 4px 4px 0;
+    padding: 3px 8px;
+    font-family: 'VT323', monospace;
+    font-size: 0.85rem;
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-c);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .drone-chat.show { opacity: 1; }
+
+  /* Attempts */
+  .attempts-dots {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .attempt-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #222;
+    border: 1px solid #333;
+    transition: all 0.3s;
+  }
+
+  .attempt-dot.used { background: var(--neon-red); border-color: var(--neon-red); box-shadow: 0 0 6px #ff2244; }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="loot-popup" id="lootPopup">
+  <span class="loot-icon" id="lootIcon">🔧</span>
+  <div class="loot-title">CIPHER CRACKED — LOOT ACQUIRED</div>
+  <div class="loot-name" id="lootName">SCRAP KNIFE</div>
+  <div class="loot-desc" id="lootDesc">A crude blade fashioned from a turbine fin.</div>
+  <div class="loot-boost" id="lootBoost">▲ SURVIVAL +8%</div>
+  <button class="btn-continue" id="btnContinue">[ NEXT CIPHER ]</button>
+</div>
+
+<div class="end-screen" id="endScreen">
+  <div class="end-title" id="endTitle">SIGNAL LOST</div>
+  <div class="end-msg" id="endMsg">The wasteland claims another wanderer.</div>
+  <div class="score-display">ITEMS SALVAGED</div>
+  <div class="score-num" id="endScore">0</div>
+  <button class="btn-restart" onclick="initGame()">[ REINITIALIZE ]</button>
+</div>
+
+<div class="game-wrapper">
+  <div class="header">
+    <div>
+      <div class="game-title">CI<span>PH</span>ER</div>
+    </div>
+    <div class="survival-bar-wrap">
+      <div class="survival-label">Survival %</div>
+      <div class="survival-bar">
+        <div class="survival-fill" id="survivalFill" style="width:60%"></div>
+      </div>
+      <div class="survival-pct" id="survivalPct">60%</div>
+    </div>
+  </div>
+
+  <div class="protagonist-panel">
+    <!-- Figure SVG: hooded figure with neon cloak -->
+    <div class="figure-wrap">
+      <svg class="figure-svg" viewBox="0 0 72 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Cloak body -->
+        <path d="M12 40 Q8 60 6 88 L66 88 Q64 60 60 40 Q50 28 36 26 Q22 28 12 40Z" fill="#0a0810"/>
+        <!-- Cloak neon edge left -->
+        <path d="M12 40 Q8 60 6 88" stroke="#00ffe7" stroke-width="1.5" stroke-opacity="0.8"/>
+        <!-- Cloak neon edge right -->
+        <path d="M60 40 Q64 60 66 88" stroke="#ff00aa" stroke-width="1.5" stroke-opacity="0.8"/>
+        <!-- Neon circuit on cloak -->
+        <path d="M28 55 L28 62 L36 62 L36 70 M44 55 L44 62 L36 62" stroke="#00ffe7" stroke-width="0.8" stroke-opacity="0.5"/>
+        <circle cx="36" cy="62" r="2" fill="#00ffe7" fill-opacity="0.6"/>
+        <circle cx="28" cy="55" r="1.5" fill="#ff00aa" fill-opacity="0.8"/>
+        <circle cx="44" cy="55" r="1.5" fill="#ff00aa" fill-opacity="0.8"/>
+        <!-- Hood -->
+        <path d="M18 36 Q16 20 36 14 Q56 20 54 36 Q50 28 36 26 Q22 28 18 36Z" fill="#0d0a14"/>
+        <!-- Hood neon rim -->
+        <path d="M18 36 Q16 20 36 14 Q56 20 54 36" stroke="#ff00aa" stroke-width="1" stroke-opacity="0.7"/>
+        <!-- Hood shadow/face area -->
+        <ellipse cx="36" cy="30" rx="12" ry="10" fill="#060408"/>
+        <!-- Eyes glowing -->
+        <ellipse cx="31" cy="30" rx="2.5" ry="1.5" fill="#00ffe7" opacity="0.9"/>
+        <ellipse cx="41" cy="30" rx="2.5" ry="1.5" fill="#00ffe7" opacity="0.9"/>
+        <!-- Neon stripe on hood -->
+        <path d="M22 22 Q36 16 50 22" stroke="#00ffe7" stroke-width="0.8" stroke-opacity="0.4"/>
+        <!-- Arm/hand left holding device -->
+        <path d="M18 45 Q10 52 14 62" stroke="#0d0a14" stroke-width="6" stroke-linecap="round"/>
+        <rect x="10" y="60" width="10" height="7" rx="2" fill="#111" stroke="#00ffe7" stroke-width="0.8"/>
+        <rect x="11" y="61" width="8" height="5" rx="1" fill="#00ffe720"/>
+      </svg>
+      <!-- Drone -->
+      <div class="drone-line"></div>
+      <svg class="drone-svg" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="12" y="12" width="12" height="12" rx="3" fill="#080b14" stroke="#00ffe7" stroke-width="1"/>
+        <!-- Propeller arms -->
+        <line x1="12" y1="18" x2="4" y2="14" stroke="#334" stroke-width="1.5"/>
+        <line x1="24" y1="18" x2="32" y2="14" stroke="#334" stroke-width="1.5"/>
+        <line x1="12" y1="18" x2="4" y2="22" stroke="#334" stroke-width="1.5"/>
+        <line x1="24" y1="18" x2="32" y2="22" stroke="#334" stroke-width="1.5"/>
+        <!-- Rotors -->
+        <ellipse cx="4" cy="18" rx="4" ry="1.5" fill="none" stroke="#00ffe7" stroke-width="0.8" opacity="0.7"/>
+        <ellipse cx="32" cy="18" rx="4" ry="1.5" fill="none" stroke="#00ffe7" stroke-width="0.8" opacity="0.7"/>
+        <!-- Eye/sensor -->
+        <circle cx="18" cy="18" r="3" fill="#ff00aa" opacity="0.8"/>
+        <circle cx="18" cy="18" r="1.5" fill="#fff" opacity="0.9"/>
+        <!-- Glitch line -->
+        <line x1="12" y1="16" x2="24" y2="16" stroke="#00ffe7" stroke-width="0.5" opacity="0.4"/>
+      </svg>
+      <!-- Drone chat bubble -->
+      <div class="drone-chat" id="droneChat">BZZt—</div>
+    </div>
+
+    <div class="protagonist-info">
+      <div class="protagonist-name">// V0ID-WALKER</div>
+      <div class="protagonist-status" id="statusText">scanning sector...</div>
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">🍖 Food</div>
+          <div class="stat-bar"><div class="stat-fill food" id="foodBar" style="width:50%"></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">💧 Water</div>
+          <div class="stat-bar"><div class="stat-fill water" id="waterBar" style="width:50%"></div></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">⚡ Tech</div>
+          <div class="stat-bar"><div class="stat-fill tech" id="techBar" style="width:50%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="round-info" id="roundInfo">CIPHER <span id="roundNum">1</span> / <span id="roundTotal">10</span></div>
+
+  <div class="puzzle-panel" id="puzzlePanel">
+    <div class="puzzle-header">
+      <div class="puzzle-tag">DECRYPT</div>
+      <div class="category-badge" id="catBadge">FOOD</div>
+    </div>
+    <div class="clue-text" id="clueText">Loading...</div>
+
+    <div class="scrambled-area" id="scrambledArea"></div>
+    <div class="answer-slots" id="answerSlots"></div>
+
+    <div class="attempts-dots" id="attemptDots"></div>
+    <div class="hint-line" id="hintLine"></div>
+
+    <div class="puzzle-controls">
+      <button class="btn btn-check" onclick="checkAnswer()">[ CRACK ]</button>
+      <button class="btn btn-hint" onclick="useHint()">HINT</button>
+      <button class="btn btn-clear" onclick="clearAnswer()">CLR</button>
+    </div>
+  </div>
+
+  <div class="inventory-panel">
+    <div class="inv-header">Salvage pack</div>
+    <div class="inventory-grid" id="inventoryGrid">
+      <div class="inv-empty">— empty —</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────
+// PUZZLE DATA
+// ──────────────────────────────────────────
+const PUZZLES = [
+  // FOOD
+  { word: 'RATION', clue: 'Compressed survival block. The <em>nomad</em> found one sealed in a crashed supply drone.', category: 'food', icon: '🍖', boost: 'food', boostAmt: 18, desc: 'A vacuum-sealed brick of nutrients. Keeps you moving for 48 hours.' },
+  { word: 'FUNGUS', clue: 'It grows in the dark tunnels of the <em>deadzone</em>. Glows faintly. Edible — mostly.', category: 'food', icon: '🍄', boost: 'food', boostAmt: 12, desc: 'Bioluminescent wasteland mushroom. Nutritious if you ignore the color.' },
+  { word: 'INSECT', clue: 'Six legs, high protein. The <em>wasteland</em> runs on them.', category: 'food', icon: '🪲', boost: 'food', boostAmt: 10, desc: 'Crunchy. Surprisingly good roasted on a hot exhaust pipe.' },
+  { word: 'ROOTS', clue: 'They push through cracked asphalt, searching for water. So does the <em>wanderer</em>.', category: 'food', icon: '🌿', boost: 'food', boostAmt: 8, desc: 'Bitter but caloric. Dig deep enough and the wasteland feeds you.' },
+  // WATER
+  { word: 'FILTER', clue: 'Without this, the puddle becomes a <em>death sentence</em>. Crack it to survive.', category: 'water', icon: '🧪', boost: 'water', boostAmt: 20, desc: 'Carbon mesh water filter. Turns toxic runoff into drinkable grit-water.' },
+  { word: 'CANTEEN', clue: 'Seven letters. Carries the most precious <em>resource</em> in the wasteland.', category: 'water', icon: '🫙', boost: 'water', boostAmt: 16, desc: 'Dented alloy canteen with a radiation-resistant seal.' },
+  { word: 'DEWCAP', clue: 'Stretched between ruins at dusk, it catches <em>sky tears</em> before dawn.', category: 'water', icon: '💧', boost: 'water', boostAmt: 12, desc: 'Polymer moisture-capture sheet. Harvests condensation overnight.' },
+  { word: 'PURIFY', clue: 'The drone buzzes: <em>contamination detected.</em> You need to do this first.', category: 'water', icon: '⚗️', boost: 'water', boostAmt: 15, desc: 'Chemical purification tabs. Each one clears a litre of grey water.' },
+  // TECH
+  { word: 'CIRCUIT', clue: 'The drone\'s <em>core processor</em> runs on this. Seven traces on a board.', category: 'tech', icon: '⚡', boost: 'tech', boostAmt: 18, desc: 'Salvaged logic board. Powers the drone\'s navigation routines.' },
+  { word: 'BATTERY', clue: 'Seven cells. The <em>heartbeat</em> of every scavenged machine.', category: 'tech', icon: '🔋', boost: 'tech', boostAmt: 15, desc: 'Lithium-polymer cell block. Keeps the cloak\'s neon lit and the drone airborne.' },
+  { word: 'PATCH', clue: 'A small square of code that fixes the <em>glitch</em> in your drone\'s optics.', category: 'tech', icon: '🔧', boost: 'tech', boostAmt: 10, desc: 'Firmware patch burned to a chip. The drone stops seeing ghosts.' },
+  { word: 'SIGNAL', clue: 'You\'ve been searching for weeks. Finally — a <em>beacon</em> in the static.', category: 'tech', icon: '📡', boost: 'tech', boostAmt: 14, desc: 'Long-range signal booster. The wasteland gets a little less lonely.' },
+  { word: 'CIPHER', clue: 'The language of the <em>dead net</em>. Crack it and the ruins speak.', category: 'tech', icon: '🔐', boost: 'tech', boostAmt: 20, desc: 'Quantum cipher key. Unlocks encrypted supply caches across the sector.' },
+];
+
+const DRONE_LINES = [
+  'BZZt— proximity ping.',
+  'signal fragments: 3',
+  'glitch in sector 7',
+  'thermal spike detected',
+  'recalibrating...',
+  'low battery warning',
+  'uploading waypoint',
+  'entity scan: unclear',
+  'memory corruption: 2%',
+  '404: hope not found',
+];
+
+const STATUS_LINES = [
+  'decrypting cache data...',
+  'scanning for hostiles...',
+  'cloak charge: nominal',
+  'reading the ruins...',
+  'navigating deadzone...',
+  'tracing signal source...',
+  'drone: semi-functional',
+];
+
+// ──────────────────────────────────────────
+// GAME STATE
+// ──────────────────────────────────────────
+let state = {};
+
+function initGame() {
+  const shuffled = [...PUZZLES].sort(() => Math.random() - 0.5).slice(0, 10);
+  state = {
+    puzzles: shuffled,
+    round: 0,
+    survival: 40,
+    food: 50,
+    water: 50,
+    tech: 50,
+    inventory: [],
+    attempts: 0,
+    maxAttempts: 4,
+    hintUsed: false,
+    selectedLetters: [], // { tileIndex, letter }
+    scrambled: [],
+    gameOver: false,
+    score: 0,
+  };
+  document.getElementById('endScreen').classList.remove('show');
+  document.getElementById('roundTotal').textContent = state.puzzles.length;
+  updateBars();
+  loadPuzzle();
+  startStatusLoop();
+  startDroneLoop();
+}
+
+function loadPuzzle() {
+  if (state.round >= state.puzzles.length) {
+    endGame(true);
+    return;
+  }
+  const p = state.puzzles[state.round];
+  state.attempts = 0;
+  state.hintUsed = false;
+  state.selectedLetters = [];
+
+  // scramble
+  const letters = p.word.split('');
+  let scrambled = [...letters].sort(() => Math.random() - 0.5);
+  // ensure not same as answer
+  let tries = 0;
+  while (scrambled.join('') === p.word && tries < 20) {
+    scrambled = [...letters].sort(() => Math.random() - 0.5);
+    tries++;
+  }
+  state.scrambled = scrambled;
+
+  document.getElementById('roundNum').textContent = state.round + 1;
+  document.getElementById('clueText').innerHTML = p.clue;
+
+  const catEl = document.getElementById('catBadge');
+  catEl.textContent = p.category.toUpperCase();
+  catEl.className = 'category-badge cat-' + p.category;
+
+  document.getElementById('hintLine').textContent = '';
+  renderTiles();
+  renderSlots();
+  renderAttempts();
+}
+
+function renderTiles() {
+  const area = document.getElementById('scrambledArea');
+  area.innerHTML = '';
+  state.scrambled.forEach((letter, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'letter-tile';
+    tile.textContent = letter;
+    tile.dataset.index = i;
+    const isUsed = state.selectedLetters.some(s => s.tileIndex === i);
+    if (isUsed) tile.classList.add('used');
+    tile.addEventListener('click', () => selectLetter(i, letter, tile));
+    area.appendChild(tile);
+  });
+}
+
+function renderSlots() {
+  const area = document.getElementById('answerSlots');
+  area.innerHTML = '';
+  const word = state.puzzles[state.round].word;
+  for (let i = 0; i < word.length; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'answer-slot';
+    const filled = state.selectedLetters[i];
+    if (filled) {
+      slot.textContent = filled.letter;
+      slot.classList.add('filled');
+      slot.addEventListener('click', () => removeFromSlot(i));
+    }
+    area.appendChild(slot);
+  }
+}
+
+function renderAttempts() {
+  const dots = document.getElementById('attemptDots');
+  dots.innerHTML = '';
+  for (let i = 0; i < state.maxAttempts; i++) {
+    const d = document.createElement('div');
+    d.className = 'attempt-dot' + (i < state.attempts ? ' used' : '');
+    dots.appendChild(d);
+  }
+}
+
+function selectLetter(index, letter, tile) {
+  const word = state.puzzles[state.round].word;
+  if (state.selectedLetters.length >= word.length) return;
+  if (state.selectedLetters.some(s => s.tileIndex === index)) return;
+
+  tile.classList.add('used');
+  // glitch anim
+  tile.classList.add('glitch');
+  setTimeout(() => tile.classList.remove('glitch'), 200);
+
+  state.selectedLetters.push({ tileIndex: index, letter });
+  renderSlots();
+}
+
+function removeFromSlot(slotIndex) {
+  if (slotIndex >= state.selectedLetters.length) return;
+  state.selectedLetters.splice(slotIndex, 1);
+  renderTiles();
+  renderSlots();
+}
+
+function clearAnswer() {
+  state.selectedLetters = [];
+  renderTiles();
+  renderSlots();
+  document.getElementById('hintLine').textContent = '';
+}
+
+function checkAnswer() {
+  const word = state.puzzles[state.round].word;
+  if (state.selectedLetters.length < word.length) {
+    flashDrone('not enough letters!');
+    return;
+  }
+  const guess = state.selectedLetters.map(s => s.letter).join('');
+  const slots = document.querySelectorAll('.answer-slot');
+
+  if (guess === word) {
+    // CORRECT
+    slots.forEach(s => s.classList.add('correct'));
+    document.getElementById('puzzlePanel').classList.add('correct-flash');
+    setTimeout(() => document.getElementById('puzzlePanel').classList.remove('correct-flash'), 500);
+
+    const p = state.puzzles[state.round];
+    state.score++;
+    applySurvivalBoost(p);
+    showLoot(p);
+    flashDrone('✓ cipher cracked!');
+  } else {
+    // WRONG
+    state.attempts++;
+    slots.forEach(s => s.classList.add('wrong'));
+    setTimeout(() => slots.forEach(s => s.classList.remove('wrong')), 450);
+    document.getElementById('puzzlePanel').classList.add('wrong-flash');
+    setTimeout(() => document.getElementById('puzzlePanel').classList.remove('wrong-flash'), 450);
+    renderAttempts();
+
+    // drain survival slightly on wrong
+    state.survival = Math.max(0, state.survival - 5);
+    updateBars();
+
+    if (state.attempts >= state.maxAttempts) {
+      flashDrone('cipher FAILED—');
+      setTimeout(() => {
+        if (state.survival <= 0) {
+          endGame(false);
+        } else {
+          // skip puzzle, penalize
+          state.round++;
+          loadPuzzle();
+        }
+      }, 600);
+    } else {
+      flashDrone(`${state.maxAttempts - state.attempts} attempts left`);
+    }
+    clearAnswer();
+  }
+}
+
+function useHint() {
+  if (state.hintUsed) {
+    document.getElementById('hintLine').textContent = 'hint already used';
+    return;
+  }
+  state.hintUsed = true;
+  const word = state.puzzles[state.round].word;
+  const firstTwo = word.slice(0, 2);
+  document.getElementById('hintLine').textContent = `drone scan: starts with "${firstTwo}..."`;
+  flashDrone(`first letters: ${firstTwo}`);
+  state.survival = Math.max(0, state.survival - 3);
+  updateBars();
+}
+
+function applySurvivalBoost(p) {
+  const amt = p.boostAmt;
+  state[p.boost] = Math.min(100, state[p.boost] + amt);
+  // overall survival = avg of three stats
+  state.survival = Math.min(100, Math.round((state.food + state.water + state.tech) / 3));
+  updateBars();
+}
+
+function updateBars() {
+  document.getElementById('survivalFill').style.width = state.survival + '%';
+  document.getElementById('survivalPct').textContent = state.survival + '%';
+  document.getElementById('foodBar').style.width = state.food + '%';
+  document.getElementById('waterBar').style.width = state.water + '%';
+  document.getElementById('techBar').style.width = state.tech + '%';
+
+  if (state.survival <= 0 && !state.gameOver) {
+    endGame(false);
+  }
+}
+
+function showLoot(p) {
+  document.getElementById('lootIcon').textContent = p.icon;
+  document.getElementById('lootName').textContent = p.word;
+  document.getElementById('lootDesc').textContent = p.desc;
+  document.getElementById('lootBoost').textContent = `▲ ${p.boost.toUpperCase()} +${p.boostAmt}%  |  SURVIVAL ${state.survival}%`;
+  document.getElementById('lootPopup').classList.add('show');
+  document.getElementById('overlay').classList.add('show');
+}
+
+document.getElementById('btnContinue').addEventListener('click', () => {
+  document.getElementById('lootPopup').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+
+  // add to inventory
+  const p = state.puzzles[state.round];
+  addToInventory(p);
+
+  state.round++;
+  if (state.round >= state.puzzles.length) {
+    endGame(true);
+  } else {
+    loadPuzzle();
+  }
+});
+
+function addToInventory(p) {
+  const grid = document.getElementById('inventoryGrid');
+  const empty = grid.querySelector('.inv-empty');
+  if (empty) empty.remove();
+
+  const item = document.createElement('div');
+  item.className = 'inv-item';
+  item.textContent = p.icon;
+  const tip = document.createElement('div');
+  tip.className = 'inv-tooltip';
+  tip.textContent = p.word;
+  item.appendChild(tip);
+  item.addEventListener('touchstart', () => { tip.style.opacity = '1'; setTimeout(() => tip.style.opacity = '0', 1500); });
+  grid.appendChild(item);
+  state.inventory.push(p.word);
+}
+
+function endGame(won) {
+  state.gameOver = true;
+  const screen = document.getElementById('endScreen');
+  const title = document.getElementById('endTitle');
+  const msg = document.getElementById('endMsg');
+  document.getElementById('endScore').textContent = state.score;
+
+  if (won) {
+    title.textContent = 'SECTOR CLEARED';
+    title.className = 'end-title win';
+    msg.textContent = `V0ID-WALKER and the drone vanish into the static. ${state.score} ciphers cracked. The wasteland blinks.`;
+  } else {
+    title.textContent = 'SIGNAL LOST';
+    title.className = 'end-title dead';
+    msg.textContent = `The neon fades from the cloak. The drone crashes softly in the dust. ${state.score} items salvaged before the dark took you.`;
+  }
+  screen.classList.add('show');
+}
+
+function flashDrone(msg) {
+  const el = document.getElementById('droneChat');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function startStatusLoop() {
+  const el = document.getElementById('statusText');
+  let idx = 0;
+
+  function setStatus(text) {
+    el.innerHTML = '';
+    let i = 0;
+    const iv = setInterval(() => {
+      el.textContent = text.slice(0, i) + (i < text.length ? '_' : '');
+      i++;
+      if (i > text.length) {
+        el.innerHTML = text + '<span class="cursor">_</span>';
+        clearInterval(iv);
+      }
+    }, 40);
+  }
+
+  setStatus(STATUS_LINES[0]);
+  setInterval(() => {
+    idx = (idx + 1) % STATUS_LINES.length;
+    setStatus(STATUS_LINES[idx]);
+  }, 5000);
+}
+
+function startDroneLoop() {
+  setInterval(() => {
+    if (Math.random() < 0.3) {
+      const line = DRONE_LINES[Math.floor(Math.random() * DRONE_LINES.length)];
+      flashDrone(line);
+    }
+  }, 6000);
+}
+
+// Init
+initGame();
+</script>
+</body>
+</html>
