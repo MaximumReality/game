@@ -311,7 +311,8 @@ function loadPatient() {
   state._chartReady = false;
 
   // 3. Update the 0/14 Counter
-  document.getElementById('stat-patients').textContent = `${state.patientIndex}/14`;
+  document.getElementById('start-stat-count').textContent = `${state.patientIndex}/14`;
+
 
   // 4. Update Progress Dots (original dynamic map style is better!)
   const dots = document.getElementById('progress-dots');
