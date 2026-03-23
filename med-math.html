@@ -3,175 +3,484 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DIAGNOSTIC: MED-MATH LAB | Maximum Reality</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+<title>DIAGNOSTIC: IV PUMP / MED-MATH | Maximum Reality</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --pump-bg: #121826; --screen-bg: #002b36; --led-green: #00ff9d;
-  --primary: #00d4ff; --danger: #ff2d55; --text: #c8d8e8;
+  --bg: #060810;
+  --pump-body: #101822;
+  --pump-trim: #1e2e40;
+  --screen-bg: #001a20;
+  --screen-border: #003344;
+  --led: #00ff9d;
+  --led-dim: #004428;
+  --primary: #00d4ff;
+  --danger: #ff2d55;
+  --warn: #ff9500;
+  --success: #00e5a0;
+  --text: #c8d8e8;
+  --text-dim: #4a6a7a;
+  --border: #1a2a3a;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-title: 'Orbitron', sans-serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { 
-  background: #060810; color: var(--text); 
-  font-family: 'Share Tech Mono', monospace; display: flex; flex-direction: column; height: 100vh;
+html, body { width: 100%; height: 100%; overflow: hidden; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--font-mono);
+  display: flex; flex-direction: column;
 }
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);
+  pointer-events: none; z-index: 999;
+}
+
+/* ORDER PANEL */
 .order-panel {
-  padding: 15px; background: rgba(0,212,255,0.05); border-bottom: 2px solid var(--primary);
+  padding: 12px 14px;
+  background: rgba(0,212,255,0.04);
+  border-bottom: 2px solid var(--primary);
 }
-.order-header { font-family: 'Orbitron'; font-size: 0.8rem; color: var(--primary); margin-bottom: 8px; }
-.order-text { background: #000; padding: 12px; border-left: 3px solid var(--primary); font-size: 0.9rem; line-height: 1.4; }
+.order-header {
+  font-family: var(--font-title); font-size: 0.65rem;
+  color: var(--primary); letter-spacing: 0.2em; margin-bottom: 8px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.order-badge {
+  font-size: 0.55rem; padding: 2px 8px;
+  border: 1px solid var(--warn); color: var(--warn); letter-spacing: 0.1em;
+}
+.order-text {
+  background: rgba(0,0,0,0.5); padding: 10px 12px;
+  border-left: 3px solid var(--primary);
+  font-size: 0.82rem; line-height: 1.6; color: var(--text);
+}
+.order-text .highlight { color: var(--primary); font-weight: bold; }
+.order-formula {
+  margin-top: 8px; padding: 6px 10px;
+  background: rgba(0,212,255,0.06); border: 1px solid var(--border);
+  font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.05em;
+}
+
+/* PUMP INTERFACE */
 .pump-interface {
-  flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 16px; overflow: hidden;
 }
 .pump-body {
-  background: var(--pump-bg); border: 4px solid #2a3a4a; border-radius: 15px; width: 100%; max-width: 340px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  background: var(--pump-body);
+  border: 3px solid var(--pump-trim);
+  border-radius: 12px;
+  width: 100%; max-width: 320px;
+  padding: 18px;
+  box-shadow:
+    0 0 40px rgba(0,0,0,0.8),
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 0 20px rgba(0,212,255,0.05);
 }
+
+/* PUMP BRANDING */
+.pump-brand {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px;
+}
+.pump-brand-name {
+  font-family: var(--font-title); font-size: 0.6rem;
+  color: var(--text-dim); letter-spacing: 0.2em;
+}
+.pump-indicator {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.55rem; color: var(--led);
+}
+.pump-led {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--led); box-shadow: 0 0 8px var(--led);
+  animation: ledpulse 1.5s ease-in-out infinite;
+}
+@keyframes ledpulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* PUMP SCREEN */
 .pump-screen {
-  background: var(--screen-bg); height: 100px; border-radius: 5px; margin-bottom: 20px;
-  border: 2px solid #004d5d; padding: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+  background: var(--screen-bg);
+  border: 2px solid var(--screen-border);
+  border-radius: 6px; padding: 12px;
+  margin-bottom: 16px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 10px rgba(0,212,255,0.1);
+  position: relative; overflow: hidden;
 }
-.screen-label { font-size: 0.6rem; color: var(--primary); letter-spacing: 0.1em; margin-bottom: 5px; }
-.screen-value { font-family: 'Orbitron'; font-size: 2rem; color: var(--led-green); text-shadow: 0 0 10px var(--led-green); }
-.keypad {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+.pump-screen::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,157,0.015) 3px,rgba(0,255,157,0.015) 4px);
+  pointer-events: none;
 }
-.key {
-  background: #1e2a3a; border: 1px solid #3a4a5a; color: #fff; padding: 15px;
-  font-family: 'Orbitron'; font-size: 1.2rem; cursor: pointer; border-radius: 5px;
+.screen-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 4px;
 }
-.key:active { background: var(--primary); color: #000; }
-.key.clear { color: var(--danger); font-size: 0.8rem; }
-.key.enter { grid-column: span 3; background: var(--primary); color: #000; font-size: 0.9rem; }
-#result-msg { margin-top: 15px; text-align: center; font-size: 0.8rem; min-height: 1em; }
+.screen-label {
+  font-size: 0.55rem; color: var(--primary); letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.screen-unit {
+  font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.08em;
+}
+.screen-value {
+  font-family: var(--font-title); font-size: 2.6rem; font-weight: 700;
+  color: var(--led); text-align: center;
+  text-shadow: 0 0 15px var(--led), 0 0 30px rgba(0,255,157,0.3);
+  letter-spacing: 0.05em; line-height: 1;
+  min-height: 3.2rem; display: flex; align-items: center; justify-content: center;
+  transition: color 0.2s;
+}
+.screen-cursor {
+  display: inline-block; width: 3px; height: 2.2rem;
+  background: var(--led); margin-left: 4px;
+  animation: cursor-blink 1s step-start infinite;
+  vertical-align: middle;
+}
+@keyframes cursor-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* STATUS LINE */
+.screen-status {
+  font-size: 0.6rem; text-align: center; min-height: 1em;
+  color: var(--text-dim); margin-top: 4px;
+  letter-spacing: 0.08em; transition: all 0.2s;
+}
+.screen-status.correct { color: var(--led); }
+.screen-status.wrong   { color: var(--danger); animation: shake 0.3s ease; }
 @keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-  100% { transform: translateX(0); }
+  0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)}
 }
+
+/* KEYPAD */
+.keypad { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.key {
+  background: var(--pump-trim);
+  border: 1px solid #2a3e50; color: #fff;
+  padding: 14px 8px;
+  font-family: var(--font-title); font-size: 1.1rem;
+  cursor: pointer; border-radius: 6px;
+  transition: all 0.1s;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.5);
+  user-select: none;
+}
+.key:active, .key.pressed {
+  background: var(--primary); color: #000;
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.5);
+}
+.key.clr  { color: var(--danger); font-size: 0.75rem; }
+.key.dec  { font-size: 0.9rem; color: var(--text-dim); }
+.key.enter {
+  grid-column: span 3;
+  background: var(--primary); color: #000;
+  font-size: 0.8rem; letter-spacing: 0.15em;
+  font-family: var(--font-title);
+  border-color: var(--primary);
+  box-shadow: 0 3px 0 rgba(0,100,128,0.8), 0 0 15px rgba(0,212,255,0.2);
+}
+.key.enter:active { background: #00a8cc; box-shadow: none; }
+.key.enter.success-key {
+  background: var(--success); color: #000;
+  border-color: var(--success);
+  box-shadow: 0 3px 0 rgba(0,100,60,0.8), 0 0 15px rgba(0,229,160,0.3);
+}
+.key.enter:disabled { opacity: 0.6; cursor: default; }
+
+/* ATTEMPT TRACKER */
+.attempt-row {
+  display: flex; justify-content: center; gap: 6px;
+  margin-top: 10px;
+}
+.attempt-pip {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); transition: all 0.3s;
+}
+.attempt-pip.used { background: var(--danger); }
+.attempt-pip.correct { background: var(--success); box-shadow: 0 0 8px var(--success); }
 </style>
 </head>
 <body>
 
-<!-- Audio -->
-<audio id="ping-sound" src="https://freesound.org/data/previews/256/256113_3263906-lq.mp3"></audio>
-<audio id="ding-sound" src="https://freesound.org/data/previews/66/66717_931655-lq.mp3"></audio>
-<audio id="buzz-sound" src="https://freesound.org/data/previews/151/151022_2193265-lq.mp3"></audio>
-
+<!-- ORDER PANEL -->
 <div class="order-panel">
-  <div class="order-header">◈ PHYSICIAN'S ORDER</div>
-  <div class="order-text" id="order-text">
-    <!-- Dynamic order will appear here -->
+  <div class="order-header">
+    <span>◈ PHYSICIAN'S ORDER</span>
+    <span class="order-badge" id="order-badge">ACTIVE ORDER</span>
   </div>
+  <div class="order-text" id="order-text">Loading order...</div>
+  <div class="order-formula">FORMULA: Volume (mL) ÷ Time (hr) = Rate (mL/hr) · Round to nearest whole number</div>
 </div>
 
+<!-- PUMP -->
 <div class="pump-interface">
-  <div class="pump-body">
+  <div class="pump-body" id="pump-body">
+
+    <div class="pump-brand">
+      <div class="pump-brand-name">MR INFUSION SYS-IV</div>
+      <div class="pump-indicator"><div class="pump-led"></div>READY</div>
+    </div>
+
     <div class="pump-screen">
-      <div class="screen-label">RATE (mL/hr)</div>
-      <div class="screen-value" id="display">0</div>
+      <div class="screen-row">
+        <span class="screen-label">FLOW RATE</span>
+        <span class="screen-unit">mL / hr</span>
+      </div>
+      <div class="screen-value" id="display">
+        <span id="display-num">_</span><span class="screen-cursor" id="cursor"></span>
+      </div>
+      <div class="screen-status" id="status-msg"></div>
     </div>
-    
+
     <div class="keypad">
-      <button class="key" onclick="press(7)">7</button>
-      <button class="key" onclick="press(8)">8</button>
-      <button class="key" onclick="press(9)">9</button>
-      <button class="key" onclick="press(4)">4</button>
-      <button class="key" onclick="press(5)">5</button>
-      <button class="key" onclick="press(6)">6</button>
-      <button class="key" onclick="press(1)">1</button>
-      <button class="key" onclick="press(2)">2</button>
-      <button class="key" onclick="press(3)">3</button>
-      <button class="key clear" onclick="clearDisplay()">CLR</button>
-      <button class="key" onclick="press(0)">0</button>
-      <button class="key" onclick="press('.')">.</button>
-      <button class="key enter" onclick="checkMath()">START INFUSION</button>
+      <button class="key" onclick="pressKey(7)">7</button>
+      <button class="key" onclick="pressKey(8)">8</button>
+      <button class="key" onclick="pressKey(9)">9</button>
+      <button class="key" onclick="pressKey(4)">4</button>
+      <button class="key" onclick="pressKey(5)">5</button>
+      <button class="key" onclick="pressKey(6)">6</button>
+      <button class="key" onclick="pressKey(1)">1</button>
+      <button class="key" onclick="pressKey(2)">2</button>
+      <button class="key" onclick="pressKey(3)">3</button>
+      <button class="key clr" onclick="clearKey()">CLR</button>
+      <button class="key" onclick="pressKey(0)">0</button>
+      <button class="key dec" onclick="pressKey('.')">·</button>
+      <button class="key enter" id="enter-btn" onclick="checkMath()">▶ START INFUSION</button>
     </div>
-    <div id="result-msg"></div>
+
+    <div class="attempt-row" id="attempt-row"></div>
   </div>
 </div>
 
 <script>
-// Audio references
-const pingSound = document.getElementById('ping-sound');
-const dingSound = document.getElementById('ding-sound');
-const buzzSound = document.getElementById('buzz-sound');
-
-let currentInput = "";
-let correctValue = 0;
-
-// Example patients and orders
-const patients = [
-  { name: "Derek Phan", volume: 1000, time: 8 },
-  { name: "Lila Tran", volume: 500, time: 4 },
-  { name: "Marcus Lee", volume: 750, time: 6 },
-  { name: "Sofia Kim", volume: 1200, time: 12 }
-];
-
-function newOrder() {
-  const order = patients[Math.floor(Math.random() * patients.length)];
-  correctValue = order.volume / order.time;
-  document.getElementById('order-text').innerHTML =
-    `<strong>PATIENT:</strong> ${order.name}<br>
-     <strong>ORDER:</strong> ${order.volume} mL Normal Saline IV<br>
-     <strong>INFUSE OVER:</strong> ${order.time} hours<br>
-     <span style="color:var(--primary)">TASK: Calculate the Flow Rate (mL/hr)</span>`;
-  currentInput = "";
-  document.getElementById('display').innerText = "0";
-  document.getElementById('result-msg').innerText = "";
+// ── AUDIO ──
+// Files needed in /game/audio/ folder:
+// keypress.mp3  — subtle click for each keypad press
+// ding.mp3      — success chime
+// buzz.mp3      — error buzz
+// whoosh.mp3    — order loading / transition
+function playSound(name) {
+  try {
+    const a = new Audio(`audio/${name}.mp3`);
+    a.volume = name === 'keypress' ? 0.3 : 0.5;
+    a.play().catch(() => {});
+  } catch(e) {}
 }
 
-// Keypad functions
-function press(num) {
-  pingSound.play();
-  if (currentInput === "" && num === 0) return;
-  if (currentInput.length < 6) {
-    currentInput += num;
-    document.getElementById('display').innerText = currentInput;
+// ── URL PARAMS ──
+const params     = new URLSearchParams(window.location.search);
+const patientName = params.get('patient') || 'Current Patient';
+const patientRoom = params.get('room')    || '7X';
+const toolName    = 'IV Pump';
+
+// ── ORDER BANK ──
+// Per-patient orders keyed to match main game patients
+// Each has multiple possible orders for replayability — one is randomly selected
+const ORDER_BANK = {
+  'John Harmon': [
+    { drug:'Heparin Drip', volume:500,  time:5,  unit:'mL NS', context:'Anticoagulation for STEMI management' },
+    { drug:'NTG Drip',     volume:250,  time:2,  unit:'mL D5W', context:'Nitroglycerin for chest pain / ischemia' },
+  ],
+  'Derek Phan': [
+    { drug:'D50W (Dextrose 50%)', volume:50,   time:0.5, unit:'mL IV push over 30 min', context:'Hypoglycemia correction' },
+    { drug:'D10W Maintenance',    volume:1000, time:8,   unit:'mL D10W', context:'Post-correction glucose maintenance' },
+  ],
+  'Eleanor Simms': [
+    { drug:'NS Bolus',      volume:500,  time:1,  unit:'mL Normal Saline', context:'Fluid resuscitation for hypovolemia' },
+    { drug:'LR Maintenance',volume:1000, time:8,  unit:'mL Lactated Ringer\'s', context:'Maintenance IV fluids' },
+  ],
+  'Tyrone Wallace': [
+    { drug:'NS Resuscitation', volume:1500, time:1,  unit:'mL Normal Saline', context:'30 mL/kg sepsis bolus (50kg patient)' },
+    { drug:'Pip-Tazo (Zosyn)', volume:100,  time:0.5, unit:'mL piggyback', context:'Broad-spectrum antibiotic for sepsis' },
+  ],
+  'Abby Torres': [
+    { drug:'NS Maintenance', volume:1000, time:8, unit:'mL Normal Saline', context:'Supportive IV hydration' },
+    { drug:'Thiamine 100mg', volume:100,  time:0.5, unit:'mL piggyback', context:'Nutritional support for substance use disorder' },
+  ],
+};
+const GENERIC_ORDERS = [
+  { drug:'NS Maintenance',    volume:1000, time:8,  unit:'mL Normal Saline', context:'Standard maintenance IV fluids' },
+  { drug:'LR Bolus',          volume:500,  time:1,  unit:'mL Lactated Ringer\'s', context:'Fluid resuscitation' },
+  { drug:'Antibiotic Piggyback', volume:100, time:0.5, unit:'mL IVPB', context:'IV antibiotic administration' },
+  { drug:'Blood Transfusion (pRBC)', volume:250, time:2, unit:'mL packed RBCs', context:'Anemia management (Hgb 8.4)' },
+];
+
+// ── STATE ──
+let currentInput = '';
+let correctValue = 0;
+let currentOrder = null;
+let attempts = 0;
+const MAX_ATTEMPTS = 3;
+
+function loadOrder() {
+  const bank = ORDER_BANK[patientName] || GENERIC_ORDERS;
+  currentOrder = bank[Math.floor(Math.random() * bank.length)];
+
+  // Compute correct answer
+  correctValue = currentOrder.volume / currentOrder.time;
+
+  // Build order text
+  document.getElementById('order-text').innerHTML = `
+    <span style="color:var(--text-dim);font-size:0.62rem">PATIENT: <strong style="color:#fff">${patientName}</strong> · ROOM ${patientRoom}</span><br><br>
+    <span class="highlight">${currentOrder.drug}</span><br>
+    ${currentOrder.volume} ${currentOrder.unit}<br>
+    Infuse over: <span class="highlight">${formatTime(currentOrder.time)}</span><br>
+    <span style="font-size:0.65rem;color:var(--text-dim)">${currentOrder.context}</span>
+  `;
+
+  // Reset UI
+  currentInput = '';
+  attempts = 0;
+  updateDisplay('_');
+  document.getElementById('status-msg').textContent = '';
+  document.getElementById('status-msg').className = 'screen-status';
+  document.getElementById('enter-btn').disabled = false;
+  document.getElementById('enter-btn').className = 'key enter';
+  document.getElementById('enter-btn').textContent = '▶ START INFUSION';
+  document.getElementById('cursor').style.display = 'inline-block';
+  renderAttempts();
+  playSound('whoosh');
+}
+
+function formatTime(hrs) {
+  if (hrs < 1) return (hrs * 60) + ' minutes';
+  if (hrs === 1) return '1 hour';
+  return hrs + ' hours';
+}
+
+function renderAttempts() {
+  const row = document.getElementById('attempt-row');
+  row.innerHTML = '';
+  for (let i = 0; i < MAX_ATTEMPTS; i++) {
+    const pip = document.createElement('div');
+    pip.className = 'attempt-pip';
+    pip.id = `pip-${i}`;
+    row.appendChild(pip);
   }
 }
 
-function clearDisplay() {
-  currentInput = "";
-  document.getElementById('display').innerText = "0";
-  document.getElementById('result-msg').innerText = "";
+function markAttempt(correct) {
+  const pip = document.getElementById(`pip-${attempts}`);
+  if (pip) pip.className = 'attempt-pip ' + (correct ? 'correct' : 'used');
+}
+
+function updateDisplay(val) {
+  document.getElementById('display-num').textContent = val === '_' ? '' : val;
+  if (val === '_') {
+    document.getElementById('cursor').style.display = 'inline-block';
+  }
+}
+
+function pressKey(num) {
+  playSound('keypress');
+
+  // Animate key press visual
+  const key = event?.target;
+  if (key) {
+    key.classList.add('pressed');
+    setTimeout(() => key.classList.remove('pressed'), 100);
+  }
+
+  if (currentInput === '' && num === 0) return;
+  if (num === '.' && currentInput.includes('.')) return;
+  if (currentInput.replace('.','').length >= 5) return;
+
+  currentInput += num;
+  updateDisplay(currentInput);
+}
+
+function clearKey() {
+  playSound('keypress');
+  currentInput = '';
+  updateDisplay('_');
+  document.getElementById('status-msg').textContent = '';
+  document.getElementById('status-msg').className = 'screen-status';
+  document.getElementById('display-num').style.color = 'var(--led)';
 }
 
 function checkMath() {
+  if (!currentInput) {
+    document.getElementById('status-msg').textContent = 'ENTER A VALUE FIRST';
+    document.getElementById('status-msg').className = 'screen-status wrong';
+    playSound('buzz');
+    return;
+  }
+
   const val = parseFloat(currentInput);
-  const msg = document.getElementById('result-msg');
-  const display = document.getElementById('display');
-  
-  if (val === correctValue) {
-    msg.style.color = "var(--led-green)";
-    msg.innerText = "✓ CORRECT: INFUSION STARTED";
-    display.style.color = "var(--led-green)";
-    dingSound.play();
-    
+  const statusEl = document.getElementById('status-msg');
+  const displayNum = document.getElementById('display-num');
+  const tolerance = 1; // ±1 mL/hr acceptable
+
+  if (Math.abs(val - correctValue) <= tolerance) {
+    // ── CORRECT ──
+    markAttempt(true);
+    statusEl.textContent = `✓ CORRECT — ${correctValue % 1 === 0 ? correctValue : correctValue.toFixed(1)} mL/hr CONFIRMED`;
+    statusEl.className = 'screen-status correct';
+    displayNum.style.color = 'var(--led)';
+    document.getElementById('cursor').style.display = 'none';
+
+    const btn = document.getElementById('enter-btn');
+    btn.className = 'key enter success-key';
+    btn.textContent = '✓ INFUSION RUNNING';
+    btn.disabled = true;
+
+    playSound('ding');
+
     if (window.opener && !window.opener.closed) {
-      window.opener.handleMiniGameResult('IV Pump', true, 50);
+      window.opener.handleMiniGameResult(toolName, true, 50);
     }
-    
-    setTimeout(() => { window.close(); }, 1500);
+    setTimeout(() => window.close(), 2800);
 
   } else {
-    msg.style.color = "var(--danger)";
-    msg.innerText = "✗ CALC ERROR: RE-CHECK DOSAGE";
-    display.style.color = "var(--danger)";
-    buzzSound.play();
-    
-    const body = document.querySelector('.pump-body');
-    body.style.animation = "shake 0.2s ease-in-out 0s 2";
+    // ── WRONG ──
+    attempts++;
+    markAttempt(false);
+
+    displayNum.style.color = 'var(--danger)';
+    playSound('buzz');
+
+    // Shake pump body
+    const body = document.getElementById('pump-body');
+    body.classList.add('shaking');
     setTimeout(() => {
-      display.style.color = "var(--led-green)";
-      body.style.animation = "";
-    }, 500);
+      body.classList.remove('shaking');
+      displayNum.style.color = 'var(--led)';
+    }, 400);
+
+    if (attempts >= MAX_ATTEMPTS) {
+      // Show answer after max attempts
+      statusEl.textContent = `✗ ANSWER: ${correctValue % 1 === 0 ? correctValue : correctValue.toFixed(1)} mL/hr  [${currentOrder.volume} ÷ ${currentOrder.time}]`;
+      statusEl.className = 'screen-status wrong';
+      document.getElementById('enter-btn').disabled = true;
+      document.getElementById('enter-btn').textContent = 'MAX ATTEMPTS';
+
+      if (window.opener && !window.opener.closed) {
+        window.opener.handleMiniGameResult(toolName, false, 0);
+      }
+      setTimeout(() => window.close(), 3500);
+
+    } else {
+      const remaining = MAX_ATTEMPTS - attempts;
+      statusEl.textContent = `✗ RECALCULATE — ${remaining} ATTEMPT${remaining > 1 ? 'S' : ''} LEFT`;
+      statusEl.className = 'screen-status wrong';
+      currentInput = '';
+      setTimeout(() => {
+        updateDisplay('_');
+        statusEl.className = 'screen-status';
+      }, 1200);
+    }
   }
 }
 
-// Initialize first order
-newOrder();
-</script>
+// Add shake class dynamically
+const style = document.createElement('style');
+style.textContent = `.shaking { animation: shake 0.15s ease-in-out 2; }`;
+document.head.appendChild(style);
 
+// ── INIT ──
+loadOrder();
+</script>
 </body>
 </html>
