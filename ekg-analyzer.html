@@ -3,212 +3,380 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>DIAGNOSTIC: 12‑Lead ECG ANALYZER | Maximum Reality</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+<title>DIAGNOSTIC: 12-Lead ECG ANALYZER | Maximum Reality</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #050a0f;
-  --grid-major: rgba(0,212,255,0.3);
-  --grid-minor: rgba(0,212,255,0.1);
-  --trace-green: #00ff9d;
+  --grid-major: rgba(0,212,255,0.25);
+  --grid-minor: rgba(0,212,255,0.08);
+  --trace: #00ff9d;
+  --trace-dim: #00a060;
   --primary: #00d4ff;
   --danger: #ff2d55;
+  --warn: #ff9500;
+  --success: #00e5a0;
   --text: #c8d8e8;
+  --text-dim: #4a6a7a;
+  --panel: #0a1018;
+  --border: #1a2a3a;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-title: 'Orbitron', sans-serif;
 }
-* { box-sizing: border-box; margin:0; padding:0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
 body {
   background: var(--bg); color: var(--text);
-  font-family:'Share Tech Mono',monospace; overflow:hidden; height:100vh;
-  display:flex;flex-direction:column;
-}
-#ekg-viewport {
-  flex:1; position:relative; background:#000; border-bottom:2px solid var(--primary);
-  background-image:
-    linear-gradient(var(--grid-minor) 1px,transparent 1px),
-    linear-gradient(90deg,var(--grid-minor) 1px,transparent 1px),
-    linear-gradient(var(--grid-major) 1px,transparent 1px),
-    linear-gradient(90deg,var(--grid-major) 1px,transparent 1px);
-  background-size:10px 10px,10px 10px,50px 50px,50px 50px;
-}
-svg { width:100%; height:200px; filter:drop-shadow(0 0 8px var(--trace-green)); }
-.ekg-path { fill:none; stroke:var(--trace-green); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
-.scanline {
-  position:absolute;top:0;bottom:0;width:50px;
-  background:linear-gradient(90deg,transparent,rgba(0,255,157,0.2));
-  border-right:2px solid var(--trace-green);
-  animation:scan 3s linear infinite;
-}
-@keyframes scan{from{left:-50px;}to{left:100%;}}
-#info-box {
-  position:absolute;top:10px;left:10px;right:10px;
-  background:rgba(0,0,0,0.85);padding:8px;border:1px solid var(--primary);
-  font-size:0.75rem;line-height:1.4;display:none;z-index:10;border-radius:4px;
+  font-family: var(--font-mono);
+  display: flex; flex-direction: column;
 }
 
-/* PANEL */
-.ui-panel{background:rgba(15,21,32,0.95);padding:10px;text-align:center;}
-.button-row{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:6px;}
-.btn{background:transparent;border:1px solid var(--primary);color:var(--primary);padding:8px 12px;cursor:pointer;text-transform:uppercase;font-family:'Orbitron';font-size:0.7rem;transition:0.2s;}
-.btn.active{background:var(--primary);color:#000;}
-.btn.danger{border-color:var(--danger);color:var(--danger);}
-.header{font-family:'Orbitron',sans-serif;font-size:0.9rem;color:var(--primary);margin-bottom:4px;}
-.data-readout{font-size:0.8rem;color:var(--text);margin-bottom:6px;}
+/* ── HEADER ── */
+.top-bar {
+  background: rgba(0,0,0,0.8);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.top-title {
+  font-family: var(--font-title); font-size: 0.7rem;
+  color: var(--primary); letter-spacing: 0.2em;
+}
+.top-status {
+  font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.1em;
+}
+.vital-pip {
+  display: inline-block; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--trace);
+  animation: heartbeat 1.2s ease-in-out infinite; margin-right: 5px;
+}
+@keyframes heartbeat { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.6);opacity:0.5} }
+
+/* ── ECG VIEWPORT ── */
+#ekg-viewport {
+  position: relative; flex: 1;
+  background: #000;
+  background-image:
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px);
+  background-size: 10px 10px, 10px 10px, 50px 50px, 50px 50px;
+  border-bottom: 2px solid var(--border);
+  overflow: hidden;
+}
+.ekg-svg {
+  width: 100%; height: 100%;
+  filter: drop-shadow(0 0 6px var(--trace));
+}
+.ekg-path {
+  fill: none; stroke: var(--trace); stroke-width: 2.5;
+  stroke-linecap: round; stroke-linejoin: round;
+  transition: d 0.3s ease;
+}
+/* Scanline sweep */
+.scanline {
+  position: absolute; top: 0; bottom: 0; width: 60px;
+  background: linear-gradient(90deg, transparent, rgba(0,255,157,0.15));
+  border-right: 2px solid rgba(0,255,157,0.6);
+  animation: scan 3s linear infinite;
+  pointer-events: none;
+}
+@keyframes scan { from{left:-60px} to{left:100%} }
+
+/* Lead label overlay */
+.lead-overlay {
+  position: absolute; top: 10px; left: 10px;
+  font-family: var(--font-title); font-size: 1.4rem;
+  color: var(--primary); opacity: 0.4;
+  letter-spacing: 0.1em; pointer-events: none;
+}
+
+/* Info popup */
+#info-box {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  background: rgba(5,10,20,0.96); padding: 10px 14px;
+  border: 1px solid var(--primary); border-left: 3px solid var(--primary);
+  font-size: 0.72rem; line-height: 1.5; max-width: 90%;
+  display: none; z-index: 20; color: var(--text);
+  box-shadow: 0 0 20px rgba(0,212,255,0.2);
+}
+#info-box.show { display: block; animation: fadein 0.2s ease; }
+@keyframes fadein { from{opacity:0;transform:translateX(-50%) translateY(-5px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+#info-label {
+  font-size: 0.58rem; color: var(--primary); letter-spacing: 0.15em;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+
+/* Tap zone hint labels */
+.tap-hint {
+  position: absolute; bottom: 8px;
+  font-size: 0.55rem; color: var(--text-dim);
+  letter-spacing: 0.1em; pointer-events: none;
+}
+
+/* ── UI PANEL ── */
+.ui-panel {
+  background: var(--panel); border-top: 1px solid var(--border); padding: 10px 12px;
+}
+.lead-row {
+  display: flex; gap: 5px; margin-bottom: 8px; overflow-x: auto; padding-bottom: 2px;
+}
+.lead-row::-webkit-scrollbar { display: none; }
+.lead-btn {
+  flex-shrink: 0;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); font-family: var(--font-title); font-size: 0.6rem;
+  padding: 6px 10px; cursor: pointer; letter-spacing: 0.1em;
+  transition: all 0.15s;
+}
+.lead-btn:hover { border-color: var(--primary); color: var(--primary); }
+.lead-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+.lead-btn.abnormal { border-color: var(--danger); }
+.lead-btn.active.abnormal { background: var(--danger); border-color: var(--danger); }
+
+.status-line {
+  font-size: 0.7rem; color: var(--text-dim); margin-bottom: 8px;
+  min-height: 1.2em; transition: all 0.2s;
+}
+.status-line.correct { color: var(--success); }
+.status-line.wrong { color: var(--danger); }
+
+.answer-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.ans-btn {
+  flex: 1; background: transparent; border: 1px solid var(--border);
+  color: var(--text); font-family: var(--font-mono); font-size: 0.68rem;
+  padding: 10px 6px; cursor: pointer; transition: all 0.15s;
+  text-align: center; line-height: 1.3;
+}
+.ans-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(0,212,255,0.05); }
+.ans-btn.stemi { border-color: var(--danger); color: var(--danger); }
+.ans-btn.stemi:hover { background: rgba(255,45,85,0.08); }
+.ans-btn.correct-ans { background: rgba(0,229,160,0.15); border-color: var(--success); color: var(--success); }
+.ans-btn.wrong-ans { background: rgba(255,45,85,0.1); border-color: var(--danger); color: var(--danger); }
+.ans-btn:disabled { cursor: default; opacity: 0.7; }
+
+.scan-btn {
+  width: 100%; background: transparent; border: 1px solid var(--text-dim);
+  color: var(--text-dim); font-family: var(--font-mono); font-size: 0.65rem;
+  padding: 8px; cursor: pointer; transition: all 0.15s; letter-spacing: 0.1em;
+}
+.scan-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+.hint-text {
+  font-size: 0.58rem; color: var(--text-dim); text-align: center;
+  margin-top: 6px; letter-spacing: 0.05em;
+}
 </style>
 </head>
 <body>
 
-<!-- Sounds -->
-<audio id="ping-sound" src="https://freesound.org/data/previews/256/256113_3263906-lq.mp3"></audio>
-<audio id="ding-sound" src="https://freesound.org/data/previews/66/66717_931655-lq.mp3"></audio>
-<audio id="buzz-sound" src="https://freesound.org/data/previews/151/151022_2193265-lq.mp3"></audio>
-<audio id="whoosh-sound" src="https://freesound.org/data/previews/219/219849_4019020-lq.mp3"></audio>
+<div class="top-bar">
+  <div class="top-title">◈ 12-LEAD ECG ANALYZER</div>
+  <div class="top-status"><span class="vital-pip"></span>LIVE TRACE</div>
+</div>
 
 <div id="ekg-viewport">
-  <div id="info-box"></div>
+  <div class="lead-overlay" id="lead-overlay">I</div>
+  <div id="info-box"><div id="info-label">SEGMENT</div><div id="info-text"></div></div>
   <div class="scanline"></div>
-  <svg viewBox="0 0 500 200">
-    <path id="ekg-path" class="ekg-path"></path>
-
-    <!-- Tap zones for segments -->
-    <circle cx="60" cy="110" r="15" fill="transparent" onclick="tapSegment('P')"></circle>
-    <circle cx="130" cy="50" r="20" fill="transparent" onclick="tapSegment('QRS')"></circle>
-    <circle cx="200" cy="80" r="20" fill="transparent" onclick="tapSegment('ST')"></circle>
+  <svg class="ekg-svg" id="ekg-svg" viewBox="0 0 500 160" preserveAspectRatio="none">
+    <path id="ekg-path" class="ekg-path" d=""></path>
+    <!-- Invisible tap zones — repositioned per lead by JS -->
+    <rect id="tap-P"   x="0" y="0" width="80"  height="160" fill="transparent" style="cursor:pointer" onclick="tapSegment('P')"></rect>
+    <rect id="tap-QRS" x="80" y="0" width="100" height="160" fill="transparent" style="cursor:pointer" onclick="tapSegment('QRS')"></rect>
+    <rect id="tap-ST"  x="180" y="0" width="120" height="160" fill="transparent" style="cursor:pointer" onclick="tapSegment('ST')"></rect>
   </svg>
 </div>
 
 <div class="ui-panel">
-  <div class="button-row">
-    <button class="btn active" onclick="switchLead('I')">Lead I</button>
-    <button class="btn" onclick="switchLead('II')">Lead II</button>
-    <button class="btn" onclick="switchLead('III')">Lead III</button>
-    <button class="btn" onclick="switchLead('aVR')">aVR</button>
-    <button class="btn" onclick="switchLead('aVL')">aVL</button>
-    <button class="btn" onclick="switchLead('aVF')">aVF</button>
+  <!-- Lead selector -->
+  <div class="lead-row" id="lead-row"></div>
+
+  <!-- Status -->
+  <div class="status-line" id="status-line">TAP A WAVE SEGMENT — OR SELECT YOUR DIAGNOSIS BELOW</div>
+
+  <!-- Answer buttons -->
+  <div class="answer-row">
+    <button class="ans-btn" id="btn-normal" onclick="checkAnswer('normal')">◎ Normal Sinus</button>
+    <button class="ans-btn stemi" id="btn-stemi" onclick="checkAnswer('stemi')">⚠ ST Elevation</button>
+    <button class="ans-btn stemi" id="btn-afib" onclick="checkAnswer('afib')">⚡ A-Fib</button>
   </div>
 
-  <div class="header" id="lead-header">DIAGNOSTIC: Lead I</div>
-  <div class="data-readout" id="status">MODE: ANALYSIS — Identify Anomaly</div>
-
-  <div class="button-row">
-    <button class="btn" onclick="checkAnswer('normal')">Normal Sinus</button>
-    <button class="btn danger" onclick="checkAnswer('stemi')">ST Elevation</button>
-  </div>
-
-  <button class="btn" onclick="scanAnalysis()">Scan Analysis</button>
-  <p style="font-size:0.6rem;color:#4a6a7a;margin-top:5px;">Tap waves to learn why or run Scan Analysis.</p>
+  <button class="scan-btn" id="scan-btn" onclick="scanAnalysis()">▶ RUN SCAN ANALYSIS</button>
+  <div class="hint-text">Tap wave zones on trace for segment info · Select lead to switch views</div>
 </div>
 
 <script>
-// Preload sounds
-const ping = document.getElementById('ping-sound');
-const ding = document.getElementById('ding-sound');
-const buzz = document.getElementById('buzz-sound');
-const whoosh = document.getElementById('whoosh-sound');
+// ── AUDIO (local files) ──
+// Place these files in your /game/audio/ folder:
+// ping.mp3  — short blip (keypress / tap)
+// ding.mp3  — success chime
+// buzz.mp3  — error buzz
+// whoosh.mp3 — lead switch swoosh
+function playSound(name) {
+  try {
+    const a = new Audio(`audio/${name}.mp3`);
+    a.volume = 0.5;
+    a.play().catch(() => {});
+  } catch(e) {}
+}
 
-// Define real ECG paths + segment explanations per lead
-const leadData = {
-  'I': {
-    path: "M0,100 L40,100 Q50,90 60,100 L80,100 L90,110 L110,60 L140,100 L180,90 L220,100 L500,100",
-    rhythm: "Normal Sinus Rhythm",
-    explain: {
-      'P': "Lead I P‑wave is upright — indicates normal atrial depolarization.",
-      'QRS': "Lead I QRS is narrow — consistent with normal ventricular conduction.",
-      'ST': "Lead I ST segment is isoelectric — no ischemia in this lead."
-    }
-  },
-  'II': {
-    path: "M0,100 L40,100 Q50,80 60,100 L80,100 L85,120 L95,20 L105,120 L110,70 L150,70 Q170,50 190,70 L250,70 L290,100 L500,100",
-    rhythm: "ST‑Elevated MI (Inferior)",
-    explain: {
-      'P': "Lead II P‑wave may be normal or peaked — check atrial activity.",
-      'QRS': "Lead II QRS shows tall R’s — consistent with inferior lead pattern.",
-      'ST': "Lead II ST elevation is present — classic sign of inferior STEMI."
-    }
-  },
-  'III': {
-    path: "M0,100 L40,100 Q50,85 60,100 L80,100 L90,110 L100,60 L110,100 L150,100 L200,120 L500,100",
-    rhythm: "Inferior MI Pattern (Lead III)",
-    explain: {
-      'P': "Lead III P is present but small — atrial depolarization appears normal.",
-      'QRS': "Lead III QRS may show slight abnormality with inferior involvement.",
-      'ST': "Lead III ST elevation present — supports inferior MI diagnosis."
-    }
-  },
-  'aVR': {
-    path: "M0,100 L60,100 Q70,90 80,100 L120,100 L130,120 L140,80 L180,100 L220,100 L500,100",
-    rhythm: "aVR Reciprocal ST Change",
-    explain: {
-      'P': "Lead aVR P may be inverted — normal for aVR orientation.",
-      'QRS': "Lead aVR QRS often inverted due to vector orientation.",
-      'ST': "Lead aVR ST elevation can indicate global ischemia or left main CAD."
-    }
-  },
-  'aVL': {
-    path: "M0,100 L50,100 Q60,80 70,100 L90,100 L100,130 L120,70 L160,100 L200,100 L500,100",
-    rhythm: "Lateral Lead Pattern (aVL)",
-    explain: {
-      'P': "Lead aVL P is upright — normal atrial depolarization.",
-      'QRS': "Lead aVL QRS shows slight variance — check lateral wall conduction.",
-      'ST': "Lead aVL ST depression may indicate reciprocal change in lateral MI."
-    }
-  },
-  'aVF': {
-    path: "M0,100 L40,100 Q50,90 60,100 L80,100 L85,130 L95,50 L110,100 L150,100 L500,100",
-    rhythm: "Inferior Lead (aVF)",
-    explain: {
-      'P': "Lead aVF P identifiable — atrial activity visible.",
-      'QRS': "Lead aVF QRS has abnormal morphology — consistent with inferior involvement.",
-      'ST': "Lead aVF ST elevation supports inferior MI in multiple leads."
-    }
-  }
+// ── ECG DATA ──
+// isSTEMI: true = correct answer is ST Elevation
+// isAFib:  true = correct answer is A-Fib
+// markerPct: approximate % positions for P / QRS / ST tap zones (left edge of rect)
+const LEADS = {
+  'I':   { isSTEMI: false, isAFib: false, rhythm: 'Normal Sinus Rhythm',
+            path: 'M0,80 L30,80 C35,80 38,72 42,80 L60,80 L65,88 L80,30 L90,88 L95,75 L130,75 C140,68 148,68 160,75 L210,75 L500,80',
+            explain: { P:'Lead I: Upright P-wave — normal atrial depolarization from SA node.', QRS:'Lead I: Narrow QRS (<0.12s) — normal ventricular conduction pathway.', ST:'Lead I: Isoelectric ST segment — no ischemia detected in this lead.' } },
+  'II':  { isSTEMI: true, isAFib: false, rhythm: 'Inferior STEMI (Lead II)',
+            path: 'M0,80 L30,80 C35,80 38,60 44,80 L60,80 L64,100 L74,20 L84,100 L90,55 L130,55 C145,35 158,35 175,55 L220,55 L260,80 L500,80',
+            explain: { P:'Lead II: Upright P-wave present — normal SA node origin.', QRS:'Lead II: Q-wave visible — may indicate inferior wall involvement.', ST:'⚠ Lead II: ST ELEVATION above baseline — classic inferior STEMI sign. CRITICAL FINDING.' } },
+  'III': { isSTEMI: true, isAFib: false, rhythm: 'Inferior STEMI Pattern (Lead III)',
+            path: 'M0,80 L30,80 C35,80 38,65 44,80 L62,80 L66,95 L76,28 L86,95 L92,60 L135,60 C148,42 162,42 178,60 L225,60 L265,80 L500,80',
+            explain: { P:'Lead III: P may be small or biphasic — normal variant in inferior lead.', QRS:'Lead III: Q-wave present — check II and aVF for confirmation of inferior MI.', ST:'⚠ Lead III: ST elevation present — supports inferior MI with leads II and aVF.' } },
+  'aVR': { isSTEMI: false, isAFib: false, rhythm: 'aVR — Reciprocal ST Depression',
+            path: 'M0,80 L30,80 C35,80 38,92 44,80 L62,80 L66,68 L76,110 L86,68 L92,88 L160,88 L200,80 L500,80',
+            explain: { P:'Lead aVR: Inverted P-wave — normal due to reversed vector orientation.', QRS:'Lead aVR: Negative QRS deflection — expected in this lead.', ST:'Lead aVR: ST depression is reciprocal change. Elevation here suggests global ischemia / left main CAD.' } },
+  'aVL': { isSTEMI: false, isAFib: false, rhythm: 'aVL — Lateral Lead (Normal)',
+            path: 'M0,80 L30,80 C35,80 38,74 44,80 L62,80 L66,86 L76,45 L86,86 L92,78 L160,78 L200,80 L500,80',
+            explain: { P:'Lead aVL: Low-amplitude P-wave — normal for lateral lead.', QRS:'Lead aVL: QRS morphology within normal limits in lateral wall.', ST:'Lead aVL: ST isoelectric — may show reciprocal depression in inferior MI.' } },
+  'aVF': { isSTEMI: true, isAFib: false, rhythm: 'Inferior STEMI Pattern (aVF)',
+            path: 'M0,80 L30,80 C35,80 38,62 44,80 L62,80 L66,98 L76,22 L86,98 L92,56 L132,56 C146,38 160,38 176,56 L222,56 L262,80 L500,80',
+            explain: { P:'Lead aVF: Upright P identifiable — atrial activity normal.', QRS:'Lead aVF: QRS morphology abnormal — consistent with inferior wall involvement.', ST:'⚠ Lead aVF: ST elevation confirms inferior MI pattern across II, III, aVF.' } },
+  'V1':  { isSTEMI: false, isAFib: false, rhythm: 'V1 — Normal Precordial',
+            path: 'M0,80 L30,80 C35,80 36,86 40,80 L58,80 L62,96 L70,40 L80,100 L86,82 L160,82 L200,80 L500,80',
+            explain: { P:'Lead V1: P-wave often biphasic — normal in this precordial position.', QRS:'Lead V1: rS pattern expected — small R, deep S wave is normal for V1.', ST:'Lead V1: ST segment normal — no anterior ischemia noted in isolation.' } },
+  'V2':  { isSTEMI: false, isAFib: false, rhythm: 'V2 — Normal Precordial',
+            path: 'M0,80 L30,80 C35,80 37,74 42,80 L60,80 L64,90 L74,35 L84,90 L90,78 L160,78 L200,80 L500,80',
+            explain: { P:'Lead V2: P-wave present and upright.', QRS:'Lead V2: R-wave progression beginning — transitional zone.', ST:'Lead V2: ST normal. Compare with V1 and V3 for anterior pattern.' } },
+  'V5':  { isSTEMI: false, isAFib: true, rhythm: 'A-Fib (Lateral Lead V5)',
+            path: 'M0,80 L10,78 L14,83 L18,76 L22,84 L26,79 L30,82 L34,77 L40,80 L44,95 L54,20 L64,95 L68,78 L90,80 L94,77 L98,82 L102,76 L106,83 L112,80 L116,78 L120,82 L124,77 L130,80 L160,80 L500,80',
+            explain: { P:'Lead V5: NO distinct P-waves — replaced by chaotic fibrillatory baseline. CRITICAL: Atrial Fibrillation pattern.', QRS:'Lead V5: QRS complexes irregularly irregular — no fixed R-R interval. Confirms A-Fib.', ST:'Lead V5: ST assessment difficult in A-Fib — rate control and anticoagulation are priorities.' } },
 };
 
+// URL params: ?tool=12-Lead+ECG&patient=0
+const params = new URLSearchParams(window.location.search);
+const toolName = params.get('tool') || '12-Lead ECG';
+
 let currentLead = 'I';
+let answered = false;
 
-function switchLead(lead){
+// ── INIT ──
+function init() {
+  const row = document.getElementById('lead-row');
+  row.innerHTML = '';
+  Object.keys(LEADS).forEach(lead => {
+    const btn = document.createElement('button');
+    btn.className = 'lead-btn' + (LEADS[lead].isSTEMI || LEADS[lead].isAFib ? ' abnormal' : '');
+    btn.textContent = lead;
+    btn.id = 'lead-btn-' + lead;
+    btn.onclick = () => switchLead(lead, btn);
+    row.appendChild(btn);
+  });
+  switchLead('I', document.getElementById('lead-btn-I'));
+}
+
+function switchLead(lead, el) {
   currentLead = lead;
-  document.getElementById('ekg-path').setAttribute('d', leadData[lead].path);
-  document.getElementById('lead-header').innerText = "DIAGNOSTIC: " + lead;
-  document.getElementById('status').innerText = "MODE: ANALYSIS — Identify Anomaly";
-  document.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  whoosh.play();
+  answered = false;
+
+  // Update path
+  document.getElementById('ekg-path').setAttribute('d', LEADS[lead].path);
+  document.getElementById('lead-overlay').textContent = lead;
+
+  // Update buttons
+  document.querySelectorAll('.lead-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  // Reset answer buttons
+  ['btn-normal','btn-stemi','btn-afib'].forEach(id => {
+    const b = document.getElementById(id);
+    b.classList.remove('correct-ans','wrong-ans');
+    b.disabled = false;
+  });
+  document.getElementById('status-line').className = 'status-line';
+  document.getElementById('status-line').textContent = 'LEAD ' + lead + ' LOADED — IDENTIFY THE RHYTHM';
+  document.getElementById('info-box').classList.remove('show');
+  document.getElementById('scan-btn').disabled = false;
+  document.getElementById('scan-btn').textContent = '▶ RUN SCAN ANALYSIS';
+
+  playSound('whoosh');
 }
 
-function tapSegment(seg){
-  const msg = leadData[currentLead].explain[seg];
+function tapSegment(seg) {
+  const data = LEADS[currentLead];
+  if (!data) return;
   const box = document.getElementById('info-box');
-  box.innerText = msg;
-  box.style.display = 'block';
-  ping.play();
-  setTimeout(()=>{ box.style.display='none'; },4000);
+  document.getElementById('info-label').textContent = seg + ' WAVE — LEAD ' + currentLead;
+  document.getElementById('info-text').textContent = data.explain[seg] || 'No data for this segment.';
+  box.classList.add('show');
+  playSound('ping');
+  clearTimeout(window._infoTimer);
+  window._infoTimer = setTimeout(() => box.classList.remove('show'), 5000);
 }
 
-function checkAnswer(choice){
-  const status = document.getElementById('status');
-  const correct = (currentLead==='II' && choice==='stemi') || (currentLead!=='II' && choice==='normal');
-  if(correct){
-    status.innerHTML = "<span style='color:#00ffcc'>CORRECT: " + leadData[currentLead].rhythm + "</span>";
-    ding.play();
-    if(window.opener && !window.opener.closed){
-      window.opener.handleMiniGameResult('12-Lead ECG', true, 50);
+function checkAnswer(choice) {
+  if (answered) return;
+  answered = true;
+  const data = LEADS[currentLead];
+
+  const isCorrect =
+    (choice === 'stemi' && data.isSTEMI) ||
+    (choice === 'afib'  && data.isAFib)  ||
+    (choice === 'normal' && !data.isSTEMI && !data.isAFib);
+
+  const statusEl = document.getElementById('status-line');
+
+  // Disable all answer buttons
+  ['btn-normal','btn-stemi','btn-afib'].forEach(id => {
+    document.getElementById(id).disabled = true;
+  });
+
+  if (isCorrect) {
+    // Show correct button green
+    const btnId = choice === 'stemi' ? 'btn-stemi' : choice === 'afib' ? 'btn-afib' : 'btn-normal';
+    document.getElementById(btnId).classList.add('correct-ans');
+    statusEl.className = 'status-line correct';
+    statusEl.textContent = '✓ CORRECT — ' + data.rhythm;
+    playSound('ding');
+
+    // Only report back on the specific tool's target lead
+    // (Lead II for ECG in the base game — but we report on any correct answer)
+    if (window.opener && !window.opener.closed) {
+      window.opener.handleMiniGameResult(toolName, true, 50);
     }
-    setTimeout(()=>{ window.close(); },1000);
+    setTimeout(() => window.close(), 2500);
+
   } else {
-    status.innerHTML = "<span style='color:#ff2d55'>INCORRECT — analyze ST segment carefully.</span>";
-    buzz.play();
+    // Show selected wrong, highlight correct
+    const btnId = choice === 'stemi' ? 'btn-stemi' : choice === 'afib' ? 'btn-afib' : 'btn-normal';
+    document.getElementById(btnId).classList.add('wrong-ans');
+    // Reveal correct answer
+    if (data.isSTEMI) document.getElementById('btn-stemi').classList.add('correct-ans');
+    else if (data.isAFib) document.getElementById('btn-afib').classList.add('correct-ans');
+    else document.getElementById('btn-normal').classList.add('correct-ans');
+
+    statusEl.className = 'status-line wrong';
+    statusEl.textContent = '✗ INCORRECT — Correct: ' + data.rhythm;
+    playSound('buzz');
+
+    // Allow retry on a different lead
+    setTimeout(() => { answered = false; }, 2000);
   }
 }
 
-function scanAnalysis(){
-  const status = document.getElementById('status');
-  status.innerHTML = "<span style='color:#00d4ff'>SCAN ANALYSIS: " + leadData[currentLead].rhythm + "</span>";
-  whoosh.play();
+function scanAnalysis() {
+  const data = LEADS[currentLead];
+  const statusEl = document.getElementById('status-line');
+  statusEl.className = 'status-line';
+  statusEl.textContent = '◈ SCAN: ' + data.rhythm;
+  document.getElementById('scan-btn').textContent = '◈ SCAN COMPLETE — ' + data.rhythm;
+  playSound('whoosh');
 }
 
-// Initialize
-switchLead('I');
+init();
 </script>
-
 </body>
 </html>
