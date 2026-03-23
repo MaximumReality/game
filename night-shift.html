@@ -132,7 +132,16 @@ body::before { content:''; position:fixed; inset:0; background:repeating-linear-
 .chart-option.selected { border-color:var(--success); color:var(--success); background:rgba(0,229,160,0.08); }
 .chart-option.wrong { border-color:var(--danger); color:var(--danger); background:rgba(255,45,85,0.08); }
 
-.progress-dots { display:flex; gap:5px; justify-content:center; padding:4px 0; flex-wrap:wrap; }
+.progress-dots {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  padding: 8px 0;
+  flex-wrap: wrap; /* This allows dots to flow to the next line */
+  max-width: 90vw;
+  margin: 0 auto;
+}
+
 .dot { width:7px; height:7px; border-radius:50%; background:var(--border); transition:all 0.3s; }
 .dot.done { background:var(--success); }
 .dot.active { background:var(--primary); box-shadow:0 0 8px var(--primary); }
@@ -161,12 +170,13 @@ body::before { content:''; position:fixed; inset:0; background:repeating-linear-
     <div class="title-main"><div class="title-glitch">NIGHT SHIFT</div></div>
     <div class="title-sub">Nursing RPG</div>
   </div>
-  <div class="start-card">
-  <div class="start-desc">ICU Floor 7. 02:00 hrs.<br>14 patients. One shift. Every call counts.</div>
-  <div class="start-stats">
-    <div class="start-stat"><div class="start-stat-num">14</div><div class="start-stat-label">Patients</div></div>
+<div class="start-card">
+    <div class="start-desc">ICU Floor 7. 02:00 hrs.<br>14 patients. One shift. Every call counts.</div>
+    <div class="start-stats">
+      <div class="start-stat"><div class="start-stat-num">14</div><div class="start-stat-label">Patients</div></div>
+      <div class="start-stat"><div class="start-stat-num">12+</div><div class="start-stat-label">Diagnostics</div></div>
+      <div class="start-stat"><div class="start-stat-num">14</div><div class="start-stat-label">Ranks</div></div>
     </div>
-</div>
 
 <div class="stat-row">
   <span class="stat-key">PATIENTS TREATED</span>
@@ -226,12 +236,16 @@ body::before { content:''; position:fixed; inset:0; background:repeating-linear-
 <script>
 // ── RANKS ──
 const RANKS = [
-  { min:0,    label:'STUDENT NURSE',    color:'#4a6a7a' },
-  { min:300,  label:'REGISTERED NURSE', color:'#00d4ff' },
-  { min:700,  label:'CHARGE NURSE',     color:'#7c3aed' },
-  { min:1100, label:'HEAD NURSE',       color:'#ff9500' },
-  { min:1500, label:'NURSE SUPERVISOR', color:'#ff2d55' },
+  { min:0,    label:'NURSING STUDENT (Y1)', color:'#4a6a7a' },
+  { min:250,  label:'NURSING STUDENT (Y2)', color:'#64d1ff' },
+  { min:500,  label:'GRADUATE NURSE',       color:'#00d4ff' },
+  { min:800,  label:'REGISTERED NURSE',     color:'#7c3aed' },
+  { min:1100, label:'PRECEPTOR',            color:'#bb86fc' },
+  { min:1400, label:'CHARGE NURSE',         color:'#ff9500' },
+  { min:1800, label:'NURSE MANAGER',        color:'#ff2d55' },
+  { min:2100, label:'CHIEF NURSING OFFICER',color:'#ffffff' } // The "Perfect Score" Rank
 ];
+
 
 
 // ── MINI-GAME TOOL MAP ──
