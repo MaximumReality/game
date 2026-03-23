@@ -14,78 +14,102 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { 
   background: var(--bg); color: var(--text); 
-  font-family: 'Share Tech Mono', monospace; padding: 20px;
+  font-family: 'Share Tech Mono', monospace; padding: 15px;
+  height: 100vh; overflow-y: auto;
 }
 
-.lab-header { font-family: 'Orbitron'; color: var(--primary); font-size: 0.9rem; margin-bottom: 20px; border-bottom: 1px solid #1a2a3a; padding-bottom: 10px; }
+.lab-header { font-family: 'Orbitron'; color: var(--primary); font-size: 0.8rem; margin-bottom: 15px; border-bottom: 1px solid #1a2a3a; padding-bottom: 8px; letter-spacing: 0.1em; }
 
-.lab-module { background: var(--panel); border: 1px solid #1a2a3a; padding: 20px; margin-bottom: 20px; position: relative; }
+.lab-module { background: var(--panel); border: 1px solid #1a2a3a; padding: 15px; margin-bottom: 15px; position: relative; border-radius: 4px; }
 
-.lab-name { font-size: 1.2rem; color: #fff; margin-bottom: 5px; }
-.lab-unit { font-size: 0.7rem; color: var(--primary); margin-bottom: 15px; }
+.lab-name { font-size: 1.1rem; color: #fff; margin-bottom: 3px; font-weight: bold; }
+.lab-unit { font-size: 0.65rem; color: var(--primary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
 
 /* The Visual Scale */
-.scale-container { position: relative; height: 40px; background: #1a2a3a; margin: 30px 0; border-radius: 4px; overflow: hidden; display: flex; }
-.zone { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; color: rgba(0,0,0,0.5); }
+.scale-container { position: relative; height: 32px; background: #1a2a3a; margin: 25px 0 15px 0; border-radius: 3px; overflow: hidden; display: flex; }
+.zone { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: bold; color: rgba(0,0,0,0.6); letter-spacing: 0.05em; }
 .low { width: 30%; background: var(--danger); }
 .normal { width: 40%; background: var(--success); }
 .high { width: 30%; background: var(--danger); }
 
 /* The Patient Marker */
 .marker { 
-  position: absolute; top: -10px; height: 60px; width: 4px; background: #fff; 
-  box-shadow: 0 0 15px #fff; transition: left 1s ease-in-out; z-index: 10;
+  position: absolute; top: -5px; height: 42px; width: 3px; background: #fff; 
+  box-shadow: 0 0 10px #fff; z-index: 10;
 }
 .marker::after {
-  content: 'PATIENT'; position: absolute; top: -20px; left: 50%; 
-  transform: translateX(-50%); font-size: 0.6rem; color: #fff; white-space: nowrap;
+  content: 'RESULT'; position: absolute; top: -16px; left: 50%; 
+  transform: translateX(-50%); font-size: 0.55rem; color: #fff; font-weight: bold;
 }
 
-.analysis-box { background: rgba(0,0,0,0.3); padding: 15px; border-left: 3px solid var(--primary); font-size: 0.85rem; line-height: 1.5; }
+.analysis-box { background: rgba(0,0,0,0.4); padding: 12px; border-left: 3px solid var(--primary); font-size: 0.78rem; line-height: 1.4; color: #a0b0c0; }
+.analysis-box strong { color: #fff; display: block; margin-bottom: 4px; font-size: 0.85rem; }
 
-.btn { width: 100%; padding: 15px; background: transparent; border: 2px solid var(--primary); color: var(--primary); font-family: 'Orbitron'; cursor: pointer; margin-top: 20px; }
-.btn:hover { background: var(--primary); color: #000; }
+.btn { width: 100%; padding: 16px; background: transparent; border: 2px solid var(--primary); color: var(--primary); font-family: 'Orbitron'; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em; transition: 0.2s; margin-top: 10px; }
+.btn:active { background: var(--primary); color: #000; }
 </style>
 </head>
 <body>
 
-<div class="lab-header">◈ HEMATOLOGY / BIOCHEMISTRY</div>
+<div class="lab-header">◈ DIAGNOSTIC LAB: BIOCHEMISTRY</div>
 
 <div class="lab-module">
   <div class="lab-name">Potassium (K+)</div>
-  <div class="lab-unit">Normal Range: 3.5 — 5.0 mEq/L</div>
+  <div class="lab-unit">Ref Range: 3.5 — 5.0 mEq/L</div>
   
   <div class="scale-container">
     <div class="zone low">LOW</div>
     <div class="zone normal">NORMAL</div>
     <div class="zone high">HIGH</div>
-    <div id="k-marker" class="marker" style="left: 85%;"></div>
+    <div id="k-marker" class="marker" style="left: 88%;"></div>
   </div>
 
   <div class="analysis-box">
-    <strong>RESULT: 6.2 mEq/L (CRITICAL HIGH)</strong><br>
-    <p style="margin-top:8px;">Elevated potassium (Hyperkalemia) is life-threatening. It can lead to cardiac dysrhythmias and cardiac arrest.</p>
+    <strong>RESULT: 6.2 mEq/L (CRITICAL)</strong>
+    Hyperkalemia identified. High risk for cardiac dysrhythmias. Notify cardiology immediately.
   </div>
 </div>
 
 <div class="lab-module">
   <div class="lab-name">Hemoglobin (Hgb)</div>
-  <div class="lab-unit">Normal Range: 12.0 — 16.0 g/dL</div>
+  <div class="lab-unit">Ref Range: 12.0 — 16.0 g/dL</div>
   
   <div class="scale-container">
     <div class="zone low">LOW</div>
     <div class="zone normal">NORMAL</div>
     <div class="zone high">HIGH</div>
-    <div id="hgb-marker" class="marker" style="left: 20%;"></div>
+    <div id="hgb-marker" class="marker" style="left: 18%;"></div>
   </div>
 
   <div class="analysis-box">
-    <strong>RESULT: 8.4 g/dL (LOW)</strong><br>
-    <p style="margin-top:8px;">Low hemoglobin indicates anemia or active bleeding. Monitor for fatigue, pallor, and shortness of breath.</p>
+    <strong>RESULT: 8.4 g/dL (LOW)</strong>
+    Anemia pattern detected. Monitor for active bleeding and assess hemodynamic stability.
   </div>
 </div>
 
-<button class="btn" onclick="window.close()">CLOSE DATA LAB</button>
+<button class="btn" onclick="syncLabs()"><span>◎ SYNC LAB DATA</span></button>
+
+<script>
+function syncLabs() {
+    const btn = document.querySelector('.btn');
+    
+    // UI Feedback
+    btn.innerHTML = "<span>✓ DATA SYNCED</span>";
+    btn.style.borderColor = "var(--success)";
+    btn.style.color = "var(--success)";
+
+    // Handshake with main Night Shift app
+    if (window.opener && !window.opener.closed) {
+        // We'll call this a 'Lab Draw' in the main score logic
+        window.opener.handleMiniGameResult('Troponin Draw', true, 50);
+    }
+
+    // Auto-close after 1 second
+    setTimeout(() => {
+        window.close();
+    }, 1000);
+}
+</script>
 
 </body>
 </html>
