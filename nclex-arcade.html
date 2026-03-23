@@ -423,7 +423,35 @@ let hasStarted = false; // prevents repeat start sound
 { q: "Client with severe dehydration — first action?", a: "Start IV fluids & monitor vitals", wrong: ["Give oral fluids only", "Wait for labs", "Call family"], rationale: "Severe dehydration can quickly lead to shock." },
 { q: "Early signs of hypovolemic shock?", a: "Tachycardia, cool clammy skin", wrong: ["Bradycardia, warm skin", "Hypertension, flushed skin", "Fever"], rationale: "Early shock triggers sympathetic response." },
 { q: "Best way to confirm NG tube placement?", a: "Aspirate & check pH, then X-ray", wrong: ["Inject water and listen", "Check color only", "Document & start feeding"], rationale: "X-ray confirmation ensures safe enteral feeding." },
-{ q: "Client with angina — priority teaching?", a: "Sit/rest & take prescribed nitroglycerin", wrong: ["Exercise to distract", "Skip meds if mild", "Drink water only"], rationale: "Immediate relief & safety are key during angina episodes." }       
+{ q: "Client with angina — priority teaching?", a: "Sit/rest & take prescribed nitroglycerin", wrong: ["Exercise to distract", "Skip meds if mild", "Drink water only"], rationale: "Immediate relief & safety are key during angina episodes." },
+{ q: "Highest priority for a patient with chest pain?", a: "Assess vital signs & EKG", wrong: ["Call family", "Give water", "Document pain"], rationale: "Always assess and monitor first to rule out life-threatening cardiac issues." },
+{ q: "Best way to prevent aspiration in dysphagia?", a: "Sit upright 90° while eating", wrong: ["Lie flat", "Use straws", "Offer thin liquids only"], rationale: "Proper positioning reduces risk of aspiration." },
+{ q: "Normal hemoglobin range (female)?", a: "12-16 g/dL", wrong: ["10-12", "14-20", "8-10"], rationale: "Normal adult female hemoglobin is 12-16 g/dL." },
+{ q: "Antidote for benzodiazepine overdose?", a: "Flumazenil", wrong: ["Naloxone", "Vitamin K", "Atropine"], rationale: "Flumazenil reverses benzodiazepine effects." },
+{ q: "Best delegation for an LPN?", a: "Administer oral meds to stable patient", wrong: ["Initial assessment", "Plan care", "IV push meds"], rationale: "LPNs can give meds but cannot perform initial assessments or plan care independently." },
+{ q: "Most important teaching for warfarin?", a: "Avoid vitamin K rich foods", wrong: ["Take with dairy", "Avoid sunlight", "Increase potassium"], rationale: "Vitamin K affects warfarin effectiveness; diet consistency is key." },
+{ q: "Early sign of hypoxia?", a: "Restlessness & anxiety", wrong: ["Bradycardia", "Blue lips", "Low BP"], rationale: "Restlessness is an early compensatory sign of hypoxia." },
+{ q: "Priority action for anaphylaxis?", a: "Administer epinephrine IM", wrong: ["Give antihistamine", "Start IV fluids", "Call family"], rationale: "Epinephrine is life-saving in anaphylaxis and must be administered immediately." },
+{ q: "Normal INR for patient on warfarin?", a: "2.0 - 3.0", wrong: ["0.5 - 1.5", "4.0 - 5.0", "1.0 - 2.0"], rationale: "Therapeutic INR for most conditions is 2-3; monitor to prevent clot or bleed." },
+{ q: "Best position for patient with shock?", a: "Supine with legs elevated", wrong: ["High Fowler", "Prone", "Trendelenburg"], rationale: "Supine with legs elevated promotes perfusion to vital organs." },
+{ q: "Most important teaching for diabetic foot care?", a: "Inspect feet daily", wrong: ["Soak feet daily", "Use heating pad directly", "Walk barefoot"], rationale: "Daily inspection prevents unnoticed injuries and infections." },
+{ q: "Initial action for suspected stroke?", a: "Call stroke team / rapid assessment", wrong: ["Give aspirin", "Check blood sugar", "Wait 30 min"], rationale: "Time-sensitive intervention is critical for stroke outcomes." },
+{ q: "Best indicator of fluid status?", a: "Daily weights", wrong: ["Blood pressure only", "Urine color", "Peripheral pulses"], rationale: "Daily weights track fluid gain/loss accurately." },
+{ q: "Priority nursing action for sepsis?", a: "Obtain blood cultures & start antibiotics", wrong: ["Document vitals", "Administer antipyretic", "Call family"], rationale: "Early antibiotics and culture are critical to treat sepsis." },
+{ q: "Normal fasting glucose range?", a: "70-99 mg/dL", wrong: ["50-69", "100-125", "140-160"], rationale: "Fasting glucose 70-99 mg/dL is normal for adults." },
+{ q: "Best position post-lumbar puncture?", a: "Flat supine for several hours", wrong: ["Sitting upright", "Trendelenburg", "Prone"], rationale: "Flat supine prevents headache and CSF leak." },
+{ q: "Safe pain med for pregnant patient?", a: "Acetaminophen", wrong: ["Ibuprofen", "Aspirin", "Naproxen"], rationale: "Acetaminophen is considered safe in pregnancy; NSAIDs are not recommended." },
+{ q: "Early sign of lithium toxicity?", a: "Nausea, tremor, confusion", wrong: ["Seizure", "Blindness", "Rash"], rationale: "Mild toxicity manifests as GI and CNS symptoms; severe toxicity is life-threatening." },
+{ q: "Best way to reduce pressure ulcers?", a: "Reposition every 2 hours", wrong: ["Apply powder", "Limit fluids", "Massage reddened areas vigorously"], rationale: "Frequent repositioning reduces pressure and tissue damage." },
+{ q: "Normal pediatric heart rate (1-2 yrs)?", a: "80-130 bpm", wrong: ["60-80", "140-180", "50-70"], rationale: "Heart rate norms vary by age; toddlers are 80-130 bpm." },
+{ q: "Most important patient teaching for inhaler use?", a: "Exhale fully before inhaling medication", wrong: ["Shake and swallow", "Take with water", "Breathe rapidly"], rationale: "Proper technique ensures medication reaches lungs effectively." },
+{ q: "Priority for a patient with hypoglycemia?", a: "Give 15-20g fast-acting carb", wrong: ["Administer insulin", "Give water", "Check vitals only"], rationale: "Immediate glucose administration prevents severe hypoglycemia complications." },
+{ q: "Best nursing action for urinary retention?", a: "Assess bladder distention & try catheterization if needed", wrong: ["Restrict fluids", "Encourage caffeine", "Give diuretics"], rationale: "Assessment guides interventions; catheterization relieves retention." },
+{ q: "Most accurate temp measurement?", a: "Rectal in adults", wrong: ["Axillary", "Forehead scan", "Ear tip"], rationale: "Rectal temperature is the gold standard for core body temperature." },
+{ q: "Correct order of donning sterile gloves?", a: "Wash hands, don gown, glove dominant hand first", wrong: ["Glove non-dominant first", "Skip hand washing", "Gown after gloves"], rationale: "Following proper sterile technique prevents contamination." },
+{ q: "Priority action for opioid overdose?", a: "Administer naloxone", wrong: ["Give oxygen only", "Monitor blood sugar", "Apply cold compress"], rationale: "Naloxone rapidly reverses opioid respiratory depression." },
+{ q: "Best position for patient with COPD?", a: "High Fowler", wrong: ["Supine", "Prone", "Trendelenburg"], rationale: "High Fowler maximizes lung expansion and ease of breathing." }
+]        
     ];
 
     function initGame() {
