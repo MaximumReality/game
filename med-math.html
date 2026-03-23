@@ -47,6 +47,13 @@ body {
 .key.enter { grid-column: span 2; background: var(--primary); color: #000; font-size: 0.9rem; }
 
 #result-msg { margin-top: 15px; text-align: center; font-size: 0.8rem; min-height: 1em; }
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
 </style>
 </head>
 <body>
@@ -92,6 +99,8 @@ let currentInput = "";
 const correctValue = 125; // 1000 / 8 = 125
 
 function press(num) {
+  // Prevent leading zeros unless it's a decimal
+  if (currentInput === "" && num === 0) return;
   if (currentInput.length < 5) {
     currentInput += num;
     document.getElementById('display').innerText = currentInput;
@@ -107,16 +116,40 @@ function clearDisplay() {
 function checkMath() {
   const val = parseFloat(currentInput);
   const msg = document.getElementById('result-msg');
+  const display = document.getElementById('display');
   
   if (val === correctValue) {
     msg.style.color = "var(--led-green)";
-    msg.innerText = "✓ CORRECT: Infusion Started at 125 mL/hr.";
-    setTimeout(() => { window.close(); }, 2000);
+    msg.innerText = "✓ CORRECT: INFUSION STARTED";
+    display.style.color = "var(--led-green)";
+    
+    // Communicate with the main game page
+    if (window.opener && !window.opener.closed) {
+      // Arguments: Tool Name, Success, Points
+      window.opener.handleMiniGameResult('IV Pump', true, 50);
+    }
+    
+    // Pause briefly so the player sees the success before the window vanishes
+    setTimeout(() => { 
+      window.close(); 
+    }, 1500);
+
   } else {
     msg.style.color = "var(--danger)";
-    msg.innerText = "✗ CALC ERROR: Check your math and try again.";
+    msg.innerText = "✗ CALC ERROR: RE-CHECK DOSAGE";
+    display.style.color = "var(--danger)";
+    
+    // Optional: Shake the pump body for feedback
+    const body = document.querySelector('.pump-body');
+    body.style.animation = "shake 0.2s ease-in-out 0s 2";
+    
+    setTimeout(() => {
+      display.style.color = "var(--led-green)";
+      body.style.animation = "";
+    }, 500);
   }
 }
+
 </script>
 
 </body>
