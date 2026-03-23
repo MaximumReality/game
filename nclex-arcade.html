@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NCLEX ARCADE: MAXIMUM REALITY</title>
     <!-- BASIC SEO -->
-<title>NCLEX Arcade: Maximum Reality</title>
 <meta name="description" content="Play NCLEX Arcade: Maximum Reality — a retro neon nursing game where you answer real NCLEX-style questions under pressure. Train your brain like a pro.">
 <meta name="keywords" content="NCLEX, nursing, study game, medical quiz, pharmacology, nursing students, NCLEX prep, arcade game">
 <meta name="author" content="Maximum Reality">
@@ -165,7 +164,7 @@
 
         #footer-nav {
     position: fixed;
-    bottom: 10px;
+    bottom: env(safe-area-inset-bottom, 10px);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -198,6 +197,9 @@
 </head>
     
 <body>
+    <audio id="startSound" src="start.mp3" preload="auto"></audio>
+<audio id="exitSound" src="exit.mp3" preload="auto"></audio>
+<audio id="winSound" src="won.mp3" preload="auto"></audio>
 
 <div id="arcade-cabinet">
     <div id="screen-container">
@@ -224,7 +226,11 @@
     const optionsEl = document.getElementById('options');
     const scoreEl = document.getElementById('score-counter');
     const overlay = document.getElementById('rationale-overlay');
+    const startSound = document.getElementById('startSound');
+    const exitSound = document.getElementById('exitSound');
+    const winSound = document.getElementById('winSound');
 
+let hasStarted = false; // prevents repeat start sound
     canvas.width = 600;
     canvas.height = 300;
 
@@ -384,6 +390,8 @@
     }
 
     function victory() {
+         winSound.currentTime = 0;
+         winSound.play().catch(()=>{});
         clearInterval(timerInterval);
         questionEl.innerText = "";
         optionsEl.innerHTML = "<button class='arcade-btn continue-btn' onclick='initGame()'>INSERT COIN (RESTART)</button>";
@@ -394,12 +402,30 @@
         ctx.fillText("LEVEL", canvas.width/2, 130);
         ctx.fillText("COMPLETE", canvas.width/2, 190);
     }
-
     initGame();
+    document.addEventListener("click", () => {
+    if (!hasStarted) {
+    startSound.currentTime = 0;
+    startSound.play().catch(()=>{});
+    hasStarted = true;
+}
+},
+                              { once: true });
+    function playExit(e, url) {
+    e.preventDefault();
+
+    exitSound.currentTime = 0;
+    exitSound.play().catch(()=>{});
+
+    // small delay so sound plays before navigation
+    setTimeout(() => {
+        window.location.href = url;
+    }, 300);
+}
 </script>
     <div id="footer-nav">
-    <a href="https://maximumreality.github.io/games" class="nav-btn">⬅ EXIT ARCADE</a>
-    <a href="https://maximumreality.xyz" class="nav-btn">🏙️RETURN TO REALITY</a>
+    <a href="https://maximumreality.github.io/games" class="nav-btn" onclick="playExit(event, this.href)">⬅ EXIT ARCADE</a>
+    <a href="https://maximumreality.xyz" class="nav-btn" onclick="playExit(event, this.href)">🏙️RETURN TO REALITY</a>
 </div>
 </body>
 </html>
