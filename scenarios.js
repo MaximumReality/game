@@ -419,5 +419,74 @@ const SCENARIOS = [
     },
     education:"Wernicke's Encephalopathy: Triad of Confusion, Ataxia, and Ophthalmoplegia (eye changes). Caused by Thiamine (B1) deficiency, often in chronic alcohol use. CRITICAL: Always give Thiamine before Glucose to avoid precipitating Korsakoff Syndrome (permanent memory loss)."
   }
+  {
+    id:12, name:"Arthur Gable", age:84, room:"7N",
+    acuity:"MONITOR", acuityColor:"var(--warn)",
+    cc:"Chief Complaint: Admitted for UTI. Disoriented to place and time. Attempting to climb out of bed.",
+    dialogue:"I need to get to the train station... where are my pants? I'm going to be late for work. Let me out of this bed!",
+    critical:false,
+    tools:{
+      "Neuro Check":  {result:"Oriented to person only. Confused. GCS 14.",class:"warn",note:"Acute confusion — likely delirium",key:true},
+      "BP Cuff":      {result:"132/78 — Stable",class:"ok",note:"Hemodynamically stable"},
+      "Urine Output": {result:"Dark, cloudy, malodorous urine in bag.",class:"warn",note:"Confirms UTI source"},
+      "Bed Alarm":    {result:"Currently OFF.",class:"danger",note:"⚠ HIGH FALL RISK",key:true},
+      "Skin Check":   {result:"Bruising noted on left hip from previous fall at home.",class:"warn",note:"History of falls",key:true}
+    },
+    requiredTools:["Neuro Check","Bed Alarm","Skin Check"],
+    chartQuestion:{
+      prompt:"What is the PRIMARY nursing priority for Mr. Gable?",
+      options:[
+        {text:"Risk for Injury r/t acute confusion and history of falls",correct:true,points:50},
+        {text:"Deficient Knowledge r/t antibiotic use",correct:false,points:0},
+        {text:"Impaired Urinary Elimination r/t UTI",correct:false,points:0},
+        {text:"Disturbed Sleep Pattern r/t hospital noise",correct:false,points:0},
+      ]
+    },
+    interventionQuestion:{
+      prompt:"Mr. Gable is agitated and trying to get up. Correct safety intervention?",
+      options:[
+        {text:"Move patient closer to nurse's station → Activate bed alarm → Provide nonslip socks → Reorient frequently",correct:true,points:75},
+        {text:"Apply soft wrist restraints so he cannot get out of bed",correct:false,points:0},
+        {text:"Administer a sedative and dim the lights to help him sleep",correct:false,points:0},
+        {text:"Tell the patient he must stay in bed or he will get hurt",correct:false,points:0},
+      ]
+    },
+    education:"Fall Prevention: One of the 'Big Three' in nursing school. Restraints are ALWAYS a last resort. Use the 'Least Restrictive' environment first: bed alarms, low beds, and frequent rounding. Delirium in the elderly is often a primary symptom of a UTI."
+  },
+  {
+    id:13, name:"Elena Rossi", age:55, room:"7O",
+    acuity:"CRITICAL", acuityColor:"var(--danger)",
+    cc:"Chief Complaint: Severe muscle weakness and palpitations. History of heart failure; taking Furosemide (Lasix).",
+    dialogue:"My legs feel like lead... and my heart feels like it's flopping in my chest. I've been taking my 'water pill' every day like the doctor said.",
+    critical:true,
+    tools:{
+      "12-Lead ECG":  {result:"Frequent PVCs. Flattened T-waves and prominent U-waves.",class:"danger",note:"⚠ Arrhythmia detected",key:true},
+      "Potassium Draw":{result:"K+: 2.6 mEq/L — CRITICAL LOW",class:"danger",note:"⚠ Severe Hypokalemia",key:true},
+      "BP Cuff":      {result:"108/62 — Low Normal",class:"warn",note:"Monitor trends"},
+      "Stethoscope":  {result:"Irregular heart rhythm heard.",class:"danger",note:"⚠ Dysrhythmia"},
+      "Pulse Ox":     {result:"96% SpO₂ — Normal",class:"ok",note:"Oxygenation stable"}
+    },
+    requiredTools:["12-Lead ECG","Potassium Draw"],
+    chartQuestion:{
+      prompt:"Which finding is the MOST likely cause of Ms. Rossi's symptoms?",
+      options:[
+        {text:"Hypokalemia (Low Potassium) r/t loop diuretic (Lasix) use",correct:true,points:50},
+        {text:"Hypernatremia (High Sodium) r/t dehydration",correct:false,points:0},
+        {text:"Hypocalcemia (Low Calcium) r/t vitamin deficiency",correct:false,points:0},
+        {text:"Myocardial Infarction r/t coronary artery disease",correct:false,points:0},
+      ]
+    },
+    interventionQuestion:{
+      prompt:"The physician orders Potassium Chloride (KCl) 40 mEq. Correct administration?",
+      options:[
+        {text:"Verify K+ level and renal function → Infuse via IV pump (max 10mEq/hr) → Monitor ECG",correct:true,points:75},
+        {text:"Give KCl via IV Push (bolus) for rapid replacement",correct:false,points:0},
+        {text:"Hold the dose because the patient is already weak",correct:false,points:0},
+        {text:"Give the medication only if the patient's blood pressure increases",correct:false,points:0},
+      ]
+    },
+    education:"Hypokalemia: Normal K+ is 3.5–5.0. Loop diuretics (Lasix) 'waste' potassium. CRITICAL: Never, EVER give Potassium IV Push—it will stop the heart. It must be diluted and given via a slow infusion pump. Watch for U-waves on the ECG."
+  }
+
 
 ];
