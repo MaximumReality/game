@@ -162,12 +162,17 @@ body::before { content:''; position:fixed; inset:0; background:repeating-linear-
     <div class="title-sub">Nursing RPG</div>
   </div>
   <div class="start-card">
-    <div class="start-desc">ICU Floor 7. 02:00 hrs.<br>8 patients. One shift. Every call counts.</div>
-    <div class="start-stats">
-      <div class="start-stat"><div class="start-stat-num">8</div><div class="start-stat-label">Patients</div></div>
-      <div class="start-stat"><div class="start-stat-num">12+</div><div class="start-stat-label">Diagnostics</div></div>
-      <div class="start-stat"><div class="start-stat-num">5</div><div class="start-stat-label">Ranks</div></div>
+  <div class="start-desc">ICU Floor 7. 02:00 hrs.<br>12 patients. One shift. Every call counts.</div>
+  <div class="start-stats">
+    <div class="start-stat"><div class="start-stat-num">12</div><div class="start-stat-label">Patients</div></div>
     </div>
+</div>
+
+<div class="stat-row">
+  <span class="stat-key">PATIENTS TREATED</span>
+  <span class="stat-val" id="stat-patients">0/12</span>
+</div>
+
     <button class="btn" onclick="startGame()"><span>▶ BEGIN ROUNDS</span></button>
   </div>
 </div>
@@ -222,11 +227,12 @@ body::before { content:''; position:fixed; inset:0; background:repeating-linear-
 // ── RANKS ──
 const RANKS = [
   { min:0,    label:'STUDENT NURSE',    color:'#4a6a7a' },
-  { min:150,  label:'REGISTERED NURSE', color:'#00d4ff' },
-  { min:400,  label:'CHARGE NURSE',     color:'#7c3aed' },
-  { min:700,  label:'HEAD NURSE',       color:'#ff9500' },
-  { min:1000, label:'NURSE SUPERVISOR', color:'#ff2d55' },
+  { min:300,  label:'REGISTERED NURSE', color:'#00d4ff' },
+  { min:700,  label:'CHARGE NURSE',     color:'#7c3aed' },
+  { min:1100, label:'HEAD NURSE',       color:'#ff9500' },
+  { min:1500, label:'NURSE SUPERVISOR', color:'#ff2d55' },
 ];
+
 
 // ── MINI-GAME TOOL MAP ──
 // Maps tool names to their popup page + window features
