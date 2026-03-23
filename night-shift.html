@@ -180,7 +180,7 @@ body::before { content:''; position:fixed; inset:0; background:repeating-linear-
 
 <div class="stat-row">
   <span class="stat-key">PATIENTS TREATED</span>
-  <span class="stat-val" id="stat-patients">0/14</span>
+<span class="stat-val" id="start-stat-count">0/14</span>
 </div>
 
     <button class="btn" onclick="startGame()"><span>▶ BEGIN ROUNDS</span></button>
@@ -218,7 +218,9 @@ body::before { content:''; position:fixed; inset:0; background:repeating-linear-
     <div class="outcome-title" id="outcome-title">SHIFT COMPLETE</div>
     <div class="outcome-rank" id="outcome-rank">RANK: STUDENT NURSE</div>
     <div class="outcome-stats">
-      <div class="stat-row"><span class="stat-key">PATIENTS TREATED</span><span class="stat-val" id="stat-patients">0/8</span></div>
+      <div class="stat-row">
+  <span class="stat-key">PATIENTS TREATED</span>
+  <span class="stat-val" id="outcome-stat-count">0/14</span></div>
       <div class="stat-row"><span class="stat-key">CORRECT ACTIONS</span><span class="stat-val" id="stat-correct">0</span></div>
       <div class="stat-row"><span class="stat-key">CRITICAL SAVES</span><span class="stat-val" id="stat-critical">0</span></div>
       <div class="stat-row"><span class="stat-key">FINAL SCORE</span><span class="stat-val" id="stat-score">0</span></div>
@@ -299,13 +301,19 @@ function startGame() {
 
 // ── LOAD PATIENT ──
 function loadPatient() {
-  const s = currentScenario();
+  // 1. Keep original way of getting the scenario
+  const s = SCENARIOS[state.patientIndex]; 
+  
+  // 2. Reset state (Using original naming style)
   state.phase = 'tools';
   state.usedTools = {};
   state.resultsCollected = {};
   state._chartReady = false;
-  state._pendingMiniGame = null;
 
+  // 3. Update the 0/14 Counter
+  document.getElementById('stat-patients').textContent = `${state.patientIndex}/14`;
+
+  // 4. Update Progress Dots (original dynamic map style is better!)
   const dots = document.getElementById('progress-dots');
   dots.innerHTML = SCENARIOS.map((sc, i) => {
     let cls = 'dot';
@@ -314,14 +322,22 @@ function loadPatient() {
     return `<div class="${cls}"></div>`;
   }).join('');
 
+  // 5. Populate the UI
   document.getElementById('patient-name').textContent = s.name;
-  document.getElementById('patient-meta').textContent = `Age ${s.age} · Room ${s.room}`;
-  document.getElementById('patient-acuity').textContent = s.acuity;
-  document.getElementById('patient-acuity').style.borderColor = s.acuityColor;
-  document.getElementById('patient-acuity').style.color = s.acuityColor;
+  document.getElementById('patient-meta').textContent = `AGE: ${s.age} | RM: ${s.room}`;
+  
+  const acuityEl = document.getElementById('patient-acuity');
+  acuityEl.textContent = s.acuity;
+  // Using border/color to match original CSS style
+  acuityEl.style.borderColor = s.acuityColor;
+  acuityEl.style.color = s.acuityColor;
+  
   document.getElementById('patient-cc').textContent = s.cc;
 
+  // 6. Keep "Typewriter" effect for the patient talking
   typeText('dialogue-text', s.dialogue, 'PATIENT');
+  
+  // 7. Refresh the Top HUD (Points/Rank) and start the tools
   updateHUD();
   buildToolPhase();
 }
@@ -548,7 +564,7 @@ function showOutcome() {
   document.getElementById('outcome-title').className = 'outcome-title ' + (state.score >= 450 ? 'good' : 'bad');
   document.getElementById('outcome-rank').textContent = `RANK: ${rank.label}`;
   document.getElementById('outcome-rank').style.color = rank.color;
-  document.getElementById('stat-patients').textContent = `${SCENARIOS.length}/${SCENARIOS.length}`;
+  document.getElementById('outcome-stat-count').textContent = `${SCENARIOS.length}/${SCENARIOS.length}`;
   document.getElementById('stat-correct').textContent = state.correctActions;
   document.getElementById('stat-critical').textContent = state.criticalSaves;
   document.getElementById('stat-score').textContent = state.score;
