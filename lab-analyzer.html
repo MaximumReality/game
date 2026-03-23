@@ -4,112 +4,329 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>DIAGNOSTIC: LAB ANALYZER | Maximum Reality</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #060810; --panel: #0d121d; --primary: #00d4ff;
+  --bg: #060810; --panel: #0a1018; --panel2: #0d1420;
+  --primary: #00d4ff; --primary-dim: #004d66;
   --danger: #ff2d55; --warn: #ff9500; --success: #00e5a0;
-  --text: #c8d8e8;
+  --text: #c8d8e8; --text-dim: #4a6a7a;
+  --border: #1a2a3a;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-title: 'Orbitron', sans-serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { 
-  background: var(--bg); color: var(--text); 
-  font-family: 'Share Tech Mono', monospace; padding: 15px;
-  height: 100vh; overflow-y: auto;
+html, body { width: 100%; min-height: 100%; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--font-mono);
+  display: flex; flex-direction: column;
+  padding: 14px; gap: 10px;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);
+  pointer-events: none; z-index: 0;
+}
+* { position: relative; z-index: 1; }
+
+/* HEADER */
+.lab-header {
+  font-family: var(--font-title); color: var(--primary);
+  font-size: 0.72rem; letter-spacing: 0.2em;
+  border-bottom: 1px solid var(--border); padding-bottom: 10px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.lab-patient {
+  font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.1em;
 }
 
-.lab-header { font-family: 'Orbitron'; color: var(--primary); font-size: 0.8rem; margin-bottom: 15px; border-bottom: 1px solid #1a2a3a; padding-bottom: 8px; letter-spacing: 0.1em; }
-
-.lab-module { background: var(--panel); border: 1px solid #1a2a3a; padding: 15px; margin-bottom: 15px; position: relative; border-radius: 4px; }
-
-.lab-name { font-size: 1.1rem; color: #fff; margin-bottom: 3px; font-weight: bold; }
-.lab-unit { font-size: 0.65rem; color: var(--primary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
-
-/* The Visual Scale */
-.scale-container { position: relative; height: 32px; background: #1a2a3a; margin: 25px 0 15px 0; border-radius: 3px; overflow: hidden; display: flex; }
-.zone { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: bold; color: rgba(0,0,0,0.6); letter-spacing: 0.05em; }
-.low { width: 30%; background: var(--danger); }
-.normal { width: 40%; background: var(--success); }
-.high { width: 30%; background: var(--danger); }
-
-/* The Patient Marker */
-.marker { 
-  position: absolute; top: -5px; height: 42px; width: 3px; background: #fff; 
-  box-shadow: 0 0 10px #fff; z-index: 10;
+/* LAB MODULE */
+.lab-module {
+  background: var(--panel); border: 1px solid var(--border);
+  border-left: 3px solid var(--primary-dim);
+  padding: 14px; transition: border-color 0.3s;
 }
-.marker::after {
-  content: 'RESULT'; position: absolute; top: -16px; left: 50%; 
-  transform: translateX(-50%); font-size: 0.55rem; color: #fff; font-weight: bold;
+.lab-module.critical { border-left-color: var(--danger); }
+.lab-module.warning  { border-left-color: var(--warn); }
+.lab-module.normal   { border-left-color: var(--success); }
+
+.lab-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.lab-name { font-size: 0.95rem; color: #fff; font-weight: bold; }
+.lab-ref  { font-size: 0.6rem; color: var(--text-dim); margin-top: 2px; }
+.lab-badge {
+  font-family: var(--font-title); font-size: 0.55rem;
+  padding: 3px 8px; border: 1px solid currentColor;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.badge-critical { color: var(--danger); }
+.badge-low      { color: var(--warn); }
+.badge-normal   { color: var(--success); }
+.badge-high     { color: var(--danger); }
+
+/* SCALE BAR */
+.scale-wrap { margin: 14px 0 8px 0; }
+.scale-container {
+  position: relative; height: 28px;
+  background: var(--panel2); border: 1px solid var(--border);
+  display: flex; overflow: visible;
+}
+.zone {
+  height: 100%; display: flex; align-items: center;
+  justify-content: center; font-size: 0.5rem;
+  font-weight: bold; letter-spacing: 0.06em; color: rgba(0,0,0,0.7);
+}
+.z-low    { width: 25%; background: linear-gradient(90deg, #cc1133, #ff2d55); }
+.z-normal { width: 50%; background: linear-gradient(90deg, #00b87a, #00e5a0, #00b87a); }
+.z-high   { width: 25%; background: linear-gradient(90deg, #ff2d55, #cc1133); }
+
+.marker {
+  position: absolute; top: -6px; height: 40px; width: 3px;
+  background: #fff; box-shadow: 0 0 12px #fff, 0 0 4px #fff;
+  z-index: 10; transition: left 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+.marker-label {
+  position: absolute; top: -20px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.58rem; color: #fff; white-space: nowrap;
+  font-family: var(--font-title); letter-spacing: 0.05em;
+  text-shadow: 0 0 8px rgba(255,255,255,0.8);
 }
 
-.analysis-box { background: rgba(0,0,0,0.4); padding: 12px; border-left: 3px solid var(--primary); font-size: 0.78rem; line-height: 1.4; color: #a0b0c0; }
-.analysis-box strong { color: #fff; display: block; margin-bottom: 4px; font-size: 0.85rem; }
+.scale-labels {
+  display: flex; justify-content: space-between;
+  font-size: 0.55rem; color: var(--text-dim);
+  margin-top: 6px; padding: 0 2px;
+}
 
-.btn { width: 100%; padding: 16px; background: transparent; border: 2px solid var(--primary); color: var(--primary); font-family: 'Orbitron'; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em; transition: 0.2s; margin-top: 10px; }
-.btn:active { background: var(--primary); color: #000; }
+/* ANALYSIS BOX */
+.analysis-box {
+  background: rgba(0,0,0,0.4); padding: 10px 12px;
+  border-left: 2px solid var(--primary-dim);
+  font-size: 0.73rem; line-height: 1.5; color: #8aacbc;
+  margin-top: 4px;
+}
+.analysis-result {
+  color: #fff; font-size: 0.82rem; margin-bottom: 4px; display: block;
+}
+.analysis-result.danger { color: var(--danger); }
+.analysis-result.warn   { color: var(--warn); }
+.analysis-result.ok     { color: var(--success); }
+
+/* CLINICAL NOTE */
+.clinical-note {
+  background: rgba(0,212,255,0.04); border: 1px solid var(--border);
+  padding: 10px 12px; font-size: 0.68rem; line-height: 1.6;
+  color: var(--text-dim); margin-top: -2px;
+}
+.clinical-note strong { color: var(--primary); }
+
+/* SYNC BUTTON */
+.sync-btn {
+  width: 100%; padding: 16px; background: transparent;
+  border: 2px solid var(--primary); color: var(--primary);
+  font-family: var(--font-title); font-size: 0.8rem;
+  cursor: pointer; letter-spacing: 0.2em; text-transform: uppercase;
+  transition: all 0.2s; position: relative; overflow: hidden; margin-top: 4px;
+}
+.sync-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--primary); transform: translateX(-101%);
+  transition: transform 0.2s ease; z-index: 0;
+}
+.sync-btn:hover::before { transform: translateX(0); }
+.sync-btn:hover { color: #000; }
+.sync-btn span { position: relative; z-index: 1; }
+.sync-btn.synced {
+  border-color: var(--success); color: var(--success);
+}
+.sync-btn.synced::before { background: var(--success); }
+.sync-btn:disabled { cursor: default; opacity: 0.8; }
+
+.footer-note {
+  font-size: 0.58rem; color: var(--text-dim); text-align: center;
+  letter-spacing: 0.08em; margin-top: -4px;
+}
 </style>
 </head>
 <body>
 
-<div class="lab-header">◈ DIAGNOSTIC LAB: BIOCHEMISTRY</div>
-
-<div class="lab-module">
-  <div class="lab-name">Potassium (K+)</div>
-  <div class="lab-unit">Ref Range: 3.5 — 5.0 mEq/L</div>
-  
-  <div class="scale-container">
-    <div class="zone low">LOW</div>
-    <div class="zone normal">NORMAL</div>
-    <div class="zone high">HIGH</div>
-    <div id="k-marker" class="marker" style="left: 88%;"></div>
-  </div>
-
-  <div class="analysis-box">
-    <strong>RESULT: 6.2 mEq/L (CRITICAL)</strong>
-    Hyperkalemia identified. High risk for cardiac dysrhythmias. Notify cardiology immediately.
-  </div>
+<div class="lab-header">
+  <span>◈ BIOCHEM LAB RESULTS</span>
+  <span class="lab-patient" id="patient-label">LOADING...</span>
 </div>
 
-<div class="lab-module">
-  <div class="lab-name">Hemoglobin (Hgb)</div>
-  <div class="lab-unit">Ref Range: 12.0 — 16.0 g/dL</div>
-  
-  <div class="scale-container">
-    <div class="zone low">LOW</div>
-    <div class="zone normal">NORMAL</div>
-    <div class="zone high">HIGH</div>
-    <div id="hgb-marker" class="marker" style="left: 18%;"></div>
-  </div>
-
-  <div class="analysis-box">
-    <strong>RESULT: 8.4 g/dL (LOW)</strong>
-    Anemia pattern detected. Monitor for active bleeding and assess hemodynamic stability.
-  </div>
+<div id="labs-container">
+  <!-- populated by JS -->
 </div>
 
-<button class="btn" onclick="syncLabs()"><span>◎ SYNC LAB DATA</span></button>
+<button class="sync-btn" id="sync-btn" onclick="syncLabs()">
+  <span id="sync-label">◎ SYNC LAB DATA TO CHART</span>
+</button>
+<div class="footer-note">Review all values before syncing to patient chart</div>
 
 <script>
-function syncLabs() {
-    const btn = document.querySelector('.btn');
-    
-    // UI Feedback
-    btn.innerHTML = "<span>✓ DATA SYNCED</span>";
-    btn.style.borderColor = "var(--success)";
-    btn.style.color = "var(--success)";
-
-    // Handshake with main Night Shift app
-    if (window.opener && !window.opener.closed) {
-        // We'll call this a 'Lab Draw' in the main score logic
-        window.opener.handleMiniGameResult('Troponin Draw', true, 50);
-    }
-
-    // Auto-close after 1 second
-    setTimeout(() => {
-        window.close();
-    }, 1000);
+// ── AUDIO ──
+// Files needed in /game/audio/ folder:
+// ping.mp3   — soft beep
+// ding.mp3   — success chime
+// buzz.mp3   — error tone
+function playSound(name) {
+  try {
+    const a = new Audio(`audio/${name}.mp3`);
+    a.volume = 0.5;
+    a.play().catch(() => {});
+  } catch(e) {}
 }
-</script>
 
+// ── URL PARAMS ──
+const params    = new URLSearchParams(window.location.search);
+const toolName  = params.get('tool')    || 'Troponin Draw';
+const patientIdx = parseInt(params.get('patient') ?? '0');
+
+// ── LAB DATA ──
+// Each entry: { name, unit, refRange, refMin, refMax, scaleMin, scaleMax, value, valueDisplay, status, cls, analysis, clinicalNote }
+// markerPct is computed from scaleMin/scaleMax
+const LAB_LOOKUP = {
+  'Troponin Draw': {
+    0: [ // Patient 0 — John Harmon (STEMI)
+      { name:'Troponin I', unit:'ng/mL', refRange:'< 0.04 ng/mL', scaleMin:0, scaleMax:4, refMin:0, refMax:0.04,
+        value:2.8, valueDisplay:'2.8 ng/mL', status:'CRITICAL HIGH', cls:'critical',
+        analysis:'Markedly elevated troponin confirms acute myocardial injury.',
+        note:'<strong>Clinical significance:</strong> Troponin I >0.04 ng/mL indicates cardiomyocyte damage. Level 2.8 is 70× normal. Correlate with ECG findings. STEMI protocol indicated.' },
+      { name:'CK-MB', unit:'U/L', refRange:'< 25 U/L', scaleMin:0, scaleMax:200, refMin:0, refMax:25,
+        value:148, valueDisplay:'148 U/L', status:'HIGH', cls:'critical',
+        analysis:'Elevated CK-MB supports myocardial infarction pattern.',
+        note:'<strong>Clinical significance:</strong> CK-MB rises 3–6hrs post-MI, peaks at 12–24hrs. Useful for timing of injury.' },
+    ],
+  },
+  'Lactate Draw': {
+    4: [ // Patient 4 — Tyrone Wallace (Sepsis)
+      { name:'Serum Lactate', unit:'mmol/L', refRange:'0.5 — 2.0 mmol/L', scaleMin:0, scaleMax:8, refMin:0.5, refMax:2.0,
+        value:4.2, valueDisplay:'4.2 mmol/L', status:'CRITICAL HIGH', cls:'critical',
+        analysis:'Lactate >4 mmol/L confirms severe tissue hypoperfusion.',
+        note:'<strong>Clinical significance:</strong> Lactate 2–4 = sepsis. Lactate >4 = septic shock. Requires immediate fluid resuscitation and vasopressor readiness.' },
+      { name:'WBC', unit:'K/µL', refRange:'4.5 — 11.0 K/µL', scaleMin:0, scaleMax:40, refMin:4.5, refMax:11.0,
+        value:22.4, valueDisplay:'22.4 K/µL', status:'HIGH', cls:'critical',
+        analysis:'Leukocytosis — systemic inflammatory response confirmed.',
+        note:'<strong>Clinical significance:</strong> WBC >12K with infection source = SIRS criteria met. Supports sepsis diagnosis.' },
+    ],
+  },
+  'Urine Output': {
+    3: [ // Patient 3 — Eleanor Simms (Hypovolemia)
+      { name:'Urine Output Rate', unit:'mL/hr', refRange:'> 0.5 mL/kg/hr (≈ 30 mL/hr)', scaleMin:0, scaleMax:80, refMin:30, refMax:80,
+        value:4.5, valueDisplay:'4.5 mL/hr (18mL/4hrs)', status:'CRITICALLY LOW', cls:'critical',
+        analysis:'Severe oliguria — acute kidney injury pattern.',
+        note:'<strong>Clinical significance:</strong> UO <0.5 mL/kg/hr for >6hrs = AKI criteria. With CKD Stage 3 baseline, renal function is acutely compromised. Foley catheter + strict I&O required.' },
+      { name:'BUN', unit:'mg/dL', refRange:'7 — 20 mg/dL', scaleMin:0, scaleMax:80, refMin:7, refMax:20,
+        value:48, valueDisplay:'48 mg/dL', status:'HIGH', cls:'critical',
+        analysis:'Elevated BUN — prerenal azotemia pattern consistent with dehydration.',
+        note:'<strong>Clinical significance:</strong> BUN:Creatinine ratio >20:1 = prerenal cause. Hypovolemia confirmed by clinical picture and labs.' },
+    ],
+  },
+};
+
+// Fallback generic data if no match found
+const FALLBACK = {
+  name:'No Lab Data', unit:'—', refRange:'—', scaleMin:0, scaleMax:100, refMin:30, refMax:70,
+  value:50, valueDisplay:'See paper chart', status:'CHECK CHART', cls:'warning',
+  analysis:'Lab data unavailable for this tool/patient combination.',
+  note:'<strong>Note:</strong> Retrieve paper chart or reorder labs as directed by physician.'
+};
+
+function getLabData() {
+  const toolData = LAB_LOOKUP[toolName];
+  if (!toolData) return [FALLBACK];
+  const patientData = toolData[patientIdx];
+  if (!patientData) return [FALLBACK];
+  return patientData;
+}
+
+function computeMarkerPct(item) {
+  const pct = (item.value - item.scaleMin) / (item.scaleMax - item.scaleMin) * 100;
+  return Math.min(Math.max(pct, 2), 97); // clamp 2–97%
+}
+
+function renderLabs() {
+  const labs = getLabData();
+  const patientNames = ['John Harmon','Maria Delgado','Derek Phan','Eleanor Simms','Tyrone Wallace','Constance Adeyemi','Lucas Brennan','Abby Torres'];
+  document.getElementById('patient-label').textContent = `PATIENT: ${patientNames[patientIdx] || 'UNKNOWN'} — ROOM 7${String.fromCharCode(65+patientIdx)}`;
+
+  const container = document.getElementById('labs-container');
+  container.innerHTML = '';
+
+  labs.forEach((item, i) => {
+    const pct = computeMarkerPct(item);
+    const isLow = item.value < item.refMin;
+    const isHigh = item.value > item.refMax;
+    const badgeClass = item.cls === 'critical' ? (isLow ? 'badge-low' : 'badge-critical') : item.cls === 'warning' ? 'badge-low' : 'badge-normal';
+    const resultClass = isHigh ? 'danger' : isLow ? 'warn' : 'ok';
+
+    const div = document.createElement('div');
+    div.className = `lab-module ${item.cls}`;
+    div.style.animationDelay = `${i * 0.1}s`;
+    div.innerHTML = `
+      <div class="lab-top">
+        <div>
+          <div class="lab-name">${item.name}</div>
+          <div class="lab-ref">Ref: ${item.refRange} · Unit: ${item.unit}</div>
+        </div>
+        <div class="lab-badge ${badgeClass}">${item.status}</div>
+      </div>
+      <div class="scale-wrap">
+        <div class="scale-container">
+          <div class="zone z-low">LOW</div>
+          <div class="zone z-normal">NORMAL</div>
+          <div class="zone z-high">HIGH</div>
+          <div class="marker" id="marker-${i}" style="left:2%">
+            <div class="marker-label">${item.valueDisplay}</div>
+          </div>
+        </div>
+        <div class="scale-labels">
+          <span>${item.scaleMin} ${item.unit}</span>
+          <span>↑ Normal Range</span>
+          <span>${item.scaleMax} ${item.unit}</span>
+        </div>
+      </div>
+      <div class="analysis-box">
+        <span class="analysis-result ${resultClass}">${item.valueDisplay} — ${item.status}</span>
+        ${item.analysis}
+      </div>
+      <div class="clinical-note">${item.note}</div>
+    `;
+    container.appendChild(div);
+
+    // Animate marker in after paint
+    setTimeout(() => {
+      const marker = document.getElementById(`marker-${i}`);
+      if (marker) marker.style.left = pct + '%';
+    }, 100 + i * 150);
+  });
+
+  playSound('ping');
+}
+
+function syncLabs() {
+  const btn = document.getElementById('sync-btn');
+  const label = document.getElementById('sync-label');
+
+  btn.classList.add('synced');
+  btn.disabled = true;
+  label.textContent = '✓ SYNCED — CHART UPDATED';
+  playSound('ding');
+
+  if (window.opener && !window.opener.closed) {
+    window.opener.handleMiniGameResult(toolName, true, 50);
+  } else {
+    // Standalone mode — show result then close
+    console.log('Standalone mode: would report', toolName, 'success');
+  }
+
+  setTimeout(() => window.close(), 2500);
+}
+
+// ── INIT ──
+renderLabs();
+</script>
 </body>
 </html>
