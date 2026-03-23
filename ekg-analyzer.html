@@ -1,124 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DIAGNOSTIC: EKG ANALYZER | Maximum Reality</title>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #060810;
-            --grid-major: rgba(0, 212, 255, 0.3);
-            --grid-minor: rgba(0, 212, 255, 0.1);
-            --ekg-line: #00ffcc;
-            --primary: #00d4ff;
-            --danger: #ff2d55;
-            --text: #c8d8e8;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DIAGNOSTIC: EKG ANALYZER | Maximum Reality</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --lead-bg: #050a0f; --grid-red: rgba(255, 0, 0, 0.15); --trace-green: #00ff9d;
+  --text: #c8d8e8; --primary: #00d4ff; --danger: #ff2d55;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+  background: var(--lead-bg); color: var(--text); 
+  font-family: 'Share Tech Mono', monospace; overflow: hidden; height: 100vh;
+}
 
-        body {
-            margin: 0; background: var(--bg); color: var(--text);
-            font-family: 'Share Tech Mono', monospace; overflow: hidden;
-            display: flex; flex-direction: column; height: 100vh;
-        }
+/* The Clinical Grid */
+#ekg-viewport {
+  width: 100%; height: 50vh; background-color: #000; position: relative;
+  background-image: 
+    linear-gradient(var(--grid-red) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-red) 1px, transparent 1px),
+    linear-gradient(rgba(255, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+  border-bottom: 2px solid var(--primary);
+}
 
-        /* EKG GRID */
-        #ekg-viewport {
-            flex: 1; position: relative; overflow: hidden;
-            background-color: #050a10;
-            background-image: 
-                linear-gradient(var(--grid-minor) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px),
-                linear-gradient(var(--grid-major) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-major) 1px, transparent 1px);
-            background-size: 10px 10px, 10px 10px, 50px 50px, 50px 50px;
-            display: flex; align-items: center; justify-content: center;
-        }
+#trace-svg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+.trace-line { fill: none; stroke: var(--trace-green); stroke-width: 3; stroke-linecap: round; filter: drop-shadow(0 0 5px var(--trace-green)); }
 
-        svg { width: 100%; height: 200px; filter: drop-shadow(0 0 8px var(--ekg-line)); }
-        
-        .ekg-path {
-            fill: none; stroke: var(--ekg-line);
-            stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
-        }
+.info-panel { padding: 20px; height: 50vh; overflow-y: auto; background: linear-gradient(180deg, #0a1520, #050a0f); }
+.header { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--primary); margin-bottom: 15px; border-left: 4px solid var(--primary); padding-left: 10px; }
 
-        .scanline {
-            position: absolute; top: 0; bottom: 0; width: 50px;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 204, 0.2));
-            border-right: 2px solid var(--ekg-line);
-            animation: scan 3s linear infinite;
-        }
+.finding-card { background: rgba(0,0,0,0.4); border: 1px solid #1a2a3a; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
+.label { color: var(--primary); font-size: 0.7rem; letter-spacing: 0.1em; display: block; margin-bottom: 5px; }
+.value { font-size: 1.1rem; color: #fff; }
 
-        @keyframes scan { from { left: -50px; } to { left: 100%; } }
+.educational-note { font-size: 0.85rem; line-height: 1.6; color: #a0b0c0; border-top: 1px solid #1a2a3a; pt: 10px; margin-top: 10px; }
+.btn { width: 100%; padding: 15px; background: transparent; border: 2px solid var(--primary); color: var(--primary); font-family: 'Orbitron'; cursor: pointer; margin-top: 10px; }
+.btn:hover { background: var(--primary); color: #000; }
 
-        /* UI ELEMENTS */
-        .ui-panel {
-            background: rgba(15, 21, 32, 0.95);
-            border-top: 2px solid var(--primary);
-            padding: 20px; text-align: center;
-        }
-
-        .header { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: var(--primary); margin-bottom: 10px; }
-        .data-readout { font-size: 0.8rem; color: var(--text); margin-bottom: 15px; }
-        .btn {
-            background: transparent; border: 1px solid var(--primary);
-            color: var(--primary); padding: 12px 20px; cursor: pointer;
-            text-transform: uppercase; font-family: 'Orbitron'; font-size: 0.7rem;
-        }
-        .btn.active { background: var(--primary); color: var(--bg); }
-
-        #info-box {
-            position: absolute; top: 20px; left: 20px; right: 20px;
-            background: rgba(0, 0, 0, 0.8); padding: 10px; border: 1px solid var(--primary);
-            font-size: 0.75rem; line-height: 1.4; display: none;
-        }
-    </style>
+/* Animation for the "Scanning" effect */
+@keyframes scan { from { stroke-dashoffset: 2000; } to { stroke-dashoffset: 0; } }
+.animate-trace { stroke-dasharray: 2000; animation: scan 4s linear infinite; }
+</style>
 </head>
 <body>
 
-    <div id="ekg-viewport">
-        <div id="info-box"></div>
-        <div class="scanline"></div>
-        <svg viewBox="0 0 500 200">
-            <path class="ekg-path" d="
-                M 0,100 L 40,100 
-                Q 50,80 60,100  L 80,100 L 85,120 L 95,20 L 105,120 L 110,70 L 150,70 
-                Q 170,50 190,70 L 250,70 L 290,100 L 500,100
-            " />
-            
-            <circle cx="50" cy="90" r="15" fill="transparent" onclick="showInfo('P-WAVE: Atrial contraction. If missing, suspect A-Fib.')" />
-            <circle cx="95" cy="50" r="20" fill="transparent" onclick="showInfo('QRS COMPLEX: Ventricular contraction. Should be narrow (<0.12s).')" />
-            <circle cx="130" cy="70" r="20" fill="transparent" onclick="showInfo('ST SEGMENT: This is ELEVATED (above baseline). Diagnostic for STEMI/Heart Attack!')" />
-        </svg>
+<div id="ekg-viewport">
+  <svg id="trace-svg" viewBox="0 0 1000 200" preserveAspectRatio="none">
+    <path class="trace-line animate-trace" d="M0,100 L50,100 L60,90 L70,100 L90,100 L100,120 L110,40 L120,130 L130,100 L160,70 L200,70 L230,100 L300,100 L310,90 L320,100 L340,100 L350,120 L360,40 L370,130 L380,100 L410,70 L450,70 L480,100" />
+  </svg>
+</div>
+
+<div class="info-panel">
+  <div class="header">EKG ANALYSIS — LEAD II</div>
+  
+  <div class="finding-card">
+    <span class="label">RHYTHM TYPE</span>
+    <div class="value" id="rhythm-name">ST-ELEVATION MI (STEMI)</div>
+    <div class="educational-note">
+      <strong>Pro-Tip:</strong> Notice the "Fireman's Hat" appearance. The ST segment (the line after the tall spike) does not return to the baseline. It stays elevated.
     </div>
+  </div>
 
-    <div class="ui-panel">
-        <div class="header">DIAGNOSTIC: LEAD II</div>
-        <div class="data-readout" id="status">MODE: ANALYSIS — Identify Anomaly</div>
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            <button class="btn" onclick="checkAnswer('normal')">Normal Sinus</button>
-            <button class="btn" style="border-color: var(--danger); color: var(--danger);" onclick="checkAnswer('stemi')">ST Elevation</button>
-        </div>
-        <p style="font-size: 0.6rem; color: #4a6a7a; margin-top: 15px;">TAP WAVE SEGMENTS IN LEARN MODE TO STUDY</p>
+  <div class="finding-card">
+    <span class="label">CLINICAL SIGNIFICANCE</span>
+    <div class="value" style="color: var(--danger);">⚠ CRITICAL — MYOCARDIAL INFARCTION</div>
+    <div class="educational-note">
+      This indicates an acute blockage of a coronary artery. Tissue is actively dying. 
+      <strong>Action:</strong> Check troponin, give Aspirin, and notify cardiology for immediate cath lab activation.
     </div>
+  </div>
 
-    <script>
-        function showInfo(msg) {
-            const box = document.getElementById('info-box');
-            box.innerText = msg;
-            box.style.display = 'block';
-            setTimeout(() => { box.style.display = 'none'; }, 4000);
-        }
+  <button class="btn" onclick="window.close()">CONFIRM & RETURN TO CHART</button>
+</div>
 
-        function checkAnswer(choice) {
-            const status = document.getElementById('status');
-            if(choice === 'stemi') {
-                status.innerHTML = "<span style='color:#00ffcc'>CORRECT: STEMI DETECTED. TIME IS MUSCLE.</span>";
-                // If integrated: window.opener.postMessage('ekg-solved', '*');
-            } else {
-                status.innerHTML = "<span style='color:#ff2d55'>INCORRECT: OBSERVE ST SEGMENT HEIGHT.</span>";
-            }
-        }
-    </script>
 </body>
 </html>
