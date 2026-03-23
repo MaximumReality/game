@@ -279,4 +279,145 @@ const SCENARIOS = [
     },
     education:"Opioid Overdose Triad: Pinpoint pupils + respiratory depression + altered LOC. AIRWAY FIRST — BVM if RR <8 or SpO₂ <90%. Naloxone (Narcan) 0.4–2mg IV/IM/IN reverses opioids. Watch for re-narcotization — naloxone half-life is shorter than most opioids. Repeat q2–3 min PRN. Approach with compassion — OUD is a medical condition."
   }
+    {
+    id:8, name:"Marcus Thorne", age:62, room:"7I",
+    acuity:"CRITICAL", acuityColor:"var(--danger)",
+    cc:"Chief Complaint: Sudden onset shortness of breath and sharp chest pain. Post-op Day 2: Total Hip Arthroplasty.",
+    dialogue:"I was just... trying to get to the chair... and I couldn't breathe. My chest hurts right here when I take a deep breath. I feel like I'm going to pass out.",
+    critical:true,
+    tools: {
+      "Pulse Ox":     {result:"86% SpO₂ — CRITICAL",class:"danger",note:"⚠ Acute desaturation",key:true},
+      "BP Cuff":      {result:"102/64 — Borderline",class:"warn",note:"Dropping from baseline"},
+      "Stethoscope":  {result:"Lungs clear bilaterally. Tachycardic 124 bpm.",class:"warn",note:"Tachycardia out of proportion to pain"},
+      "12-Lead ECG":  {result:"Sinus Tachycardia. S1Q3T3 pattern present.",class:"danger",note:"⚠ Suggestive of Right Heart Strain",key:true},
+      "Lower Extremity":{result:"Right calf: Warm, erythematous, +2 edema.",class:"danger",note:"⚠ DVT suspected",key:true},
+      "Thermometer":  {result:"37.4°C — Low-grade",class:"ok",note:"Post-op expected"}
+    },
+    requiredTools:["Pulse Ox","12-Lead ECG","Lower Extremity"],
+    chartQuestion:{
+      prompt:"PRIORITY nursing diagnosis for Mr. Thorne?",
+      options:[
+        {text:"Impaired Gas Exchange r/t ventilation-perfusion mismatch AEB SpO₂ 86%, tachycardia, sharp chest pain",correct:true,points:50},
+        {text:"Acute Pain r/t surgical incision",correct:false,points:0},
+        {text:"Impaired Mobility r/t recent hip surgery",correct:false,points:0},
+        {text:"Risk for Bleeding r/t anticoagulant therapy",correct:false,points:0},
+      ]
+    },
+    interventionQuestion:{
+      prompt:"Sudden SOB and suspected PE. Immediate priority?",
+      options:[
+        {text:"High-flow O₂ via NRB → Notify MD/Rapid Response → Prepare for CT Angiogram (PE Protocol) → Start Heparin",correct:true,points:75},
+        {text:"Administer PRN pain medication and encourage incentive spirometry",correct:false,points:0},
+        {text:"Apply sequential compression devices (SCDs) to both legs immediately",correct:false,points:0},
+        {text:"Lower the head of the bed to improve cerebral perfusion",correct:false,points:0},
+      ]
+    },
+    education:"Pulmonary Embolism (PE): Sudden SOB, pleuritic chest pain, and hypoxia. Post-op patients are high risk due to Virchow's Triad (stasis, injury, hypercoagulability). S1Q3T3 is a classic (though rare) ECG sign of right heart strain. NEVER apply SCDs/Massage a suspected DVT limb—it can dislodge the clot."
+  },
+  {
+    id:9, name:"Sarah Jenkins", age:48, room:"7J",
+    acuity:"HIGH RISK", acuityColor:"var(--danger)",
+    cc:"Chief Complaint: Dizziness and 'coffee-ground' emesis. History of chronic NSAID use.",
+    dialogue:"I've been taking a lot of ibuprofen for my back... today I felt so dizzy I nearly fell. Then I threw up and it looked like... old coffee? I'm so weak.",
+    critical:true,
+    tools: {
+      "BP Cuff":      {result:"82/44 — CRITICALLY LOW",class:"danger",note:"⚠ Hypovolemic shock risk",key:true},
+      "Stethoscope":  {result:"Hyperactive bowel sounds. Tachycardic 130 bpm.",class:"warn",note:"Compensatory tachycardia"},
+      "Skin Check":   {result:"Pale, cool, and clammy skin.",class:"danger",note:"⚠ Poor peripheral perfusion",key:true},
+      "Hgb/Hct Draw": {result:"Hgb: 6.8 g/dL — CRITICAL LOW",class:"danger",note:"⚠ Severe anemia",key:true},
+      "Pulse Ox":     {result:"95% SpO₂ — Normal",class:"ok",note:"Oxygenation stable for now"},
+      "NG Tube":      {result:"Coffee-ground drainage noted in canister.",class:"warn",note:"Confirming Upper GI source"}
+    },
+    requiredTools:["BP Cuff","Skin Check","Hgb/Hct Draw"],
+    chartQuestion:{
+      prompt:"Primary nursing diagnosis for Ms. Jenkins?",
+      options:[
+        {text:"Deficient Fluid Volume r/t active GI bleeding AEB hypotension, tachycardia, Hgb 6.8",correct:true,points:50},
+        {text:"Nausea r/t gastric irritation",correct:false,points:0},
+        {text:"Risk for Aspiration r/t emesis",correct:false,points:0},
+        {text:"Impaired Comfort r/t epigastric pain",correct:false,points:0},
+      ]
+    },
+    interventionQuestion:{
+      prompt:"Hgb is 6.8 and BP is 82/44. Correct nursing action?",
+      options:[
+        {text:"Insert 2 large-bore IVs (18G+) → Rapid IV fluid resuscitation → Prepare for Blood Transfusion (Type/Cross) → NPO for Endoscopy",correct:true,points:75},
+        {text:"Give oral fluids to raise blood pressure and wait for labs",correct:false,points:0},
+        {text:"Administer IV morphine for epigastric pain and reassess",correct:false,points:0},
+        {text:"Place patient in high-Fowler's position and start clear liquid diet",correct:false,points:0},
+      ]
+    },
+    education:"Upper GI Bleed (UGIB): Coffee-ground emesis (digested blood) or melena (black tarry stool). NSAIDs inhibit prostaglandins, weakening gastric mucosa. Priority: Circulation (Volume first!). Hemoglobin <7 usually requires transfusion. Large-bore IVs are crucial for rapid volume/blood replacement."
+  }
+  {
+    id:10, name:"Leo Vance", age:4, room:"7K",
+    acuity:"CRITICAL", acuityColor:"var(--danger)",
+    cc:"Chief Complaint: High fever, sore throat, and drooling. Onset was sudden.",
+    dialogue:"(Patient is silent, leaning forward in 'tripod' position, mouth open, drooling. Mother: 'He won't swallow and he's making a high-pitched noise when he breathes.')",
+    critical:true,
+    tools:{
+      "Stethoscope":  {result:"Inspiratory stridor heard. Diminished breath sounds.",class:"danger",note:"⚠ Impending airway loss",key:true},
+      "Thermometer":  {result:"39.9°C — HIGH FEVER",class:"danger",note:"⚠ Systemic infection"},
+      "Pulse Ox":     {result:"89% SpO₂ — HYPOXIC",class:"danger",note:"⚠ Significant distress",key:true},
+      "Visual Exam":  {result:"Drooling, 'Tripod' positioning, anxious appearance.",class:"danger",note:"⚠ Classic epiglottitis presentation",key:true},
+      "BP Cuff":      {result:"104/68 — Normal for age",class:"ok",note:"Stable hemodynamics"},
+      "Tongue Blade": {result:"⚠ DO NOT ATTEMPT — Risk of laryngospasm",class:"danger",note:"CRITICAL SAFETY ERROR"}
+    },
+    requiredTools:["Stethoscope","Pulse Ox","Visual Exam"],
+    chartQuestion:{
+      prompt:"PRIORITY nursing diagnosis for Leo?",
+      options:[
+        {text:"Ineffective Airway Clearance r/t inflammation of the epiglottis AEB stridor, drooling, and tripod positioning",correct:true,points:50},
+        {text:"Deficient Fluid Volume r/t inability to swallow",correct:false,points:0},
+        {text:"Hyperthermia r/t infectious process",correct:false,points:0},
+        {text:"Anxiety r/t respiratory distress and unfamiliar environment",correct:false,points:0},
+      ]
+    },
+    interventionQuestion:{
+      prompt:"Leo is in the 'Tripod' position and drooling. CORRECT priority action?",
+      options:[
+        {text:"Keep child calm and in parent's lap → Notify MD/Anesthesia STAT → Prepare for emergent intubation → Provide humidified O₂",correct:true,points:75},
+        {text:"Use a tongue depressor to visualize the throat immediately",correct:false,points:0},
+        {text:"Place the child supine to assess lung sounds more easily",correct:false,points:0},
+        {text:"Attempt to start a painful IV line right away to give antibiotics",correct:false,points:0},
+      ]
+    },
+    education:"Epiglottitis: A pediatric emergency. H. influenzae type B (Hib) is a common cause. Clinical triad: Drooling, Dysphagia, Distress. NEVER use a tongue blade or agitate the child—it can trigger fatal laryngospasm. Airway management is the absolute priority."
+  },
+  {
+    id:11, name:"Jax Miller", age:42, room:"7L",
+    acuity:"MONITOR", acuityColor:"var(--warn)",
+    cc:"Chief Complaint: Confusion, ataxia (unsteady gait), and double vision. History of chronic alcohol use.",
+    dialogue:"I... I don't know how I got here. The floor is moving. My eyes... I can't focus. Where's my shoes?",
+    critical:false,
+    tools:{
+      "Neuro Check":  {result:"Nystagmus (involuntary eye movement) and ophthalmoplegia.",class:"danger",note:"⚠ Cranial nerve involvement",key:true},
+      "Gait Assess":  {result:"Wide-based, unsteady gait (Ataxia). High fall risk.",class:"danger",note:"⚠ Neurological motor deficit",key:true},
+      "Glucometer":   {result:"Blood glucose: 72 mg/dL — Low Normal",class:"ok",note:"Rule out hypoglycemia"},
+      "BP Cuff":      {result:"138/88 — Slightly elevated",class:"warn",note:"Withdrawal risk?"},
+      "Skin Check":   {result:"Spider angiomas on chest. Jaundice noted in sclera.",class:"warn",note:"Suggestive of liver disease",key:true},
+      "Pulse Ox":     {result:"98% SpO₂ — Normal",class:"ok",note:"Respiration stable"}
+    },
+    requiredTools:["Neuro Check","Gait Assess","Skin Check"],
+    chartQuestion:{
+      prompt:"What is the likely cause of Mr. Miller’s neurological triad?",
+      options:[
+        {text:"Wernicke's Encephalopathy r/t Thiamine (Vitamin B1) deficiency",correct:true,points:50},
+        {text:"Acute Ischemic Stroke",correct:false,points:0},
+        {text:"Opioid Intoxication",correct:false,points:0},
+        {text:"Acute Schizophrenia",correct:false,points:0},
+      ]
+    },
+    interventionQuestion:{
+      prompt:"The physician orders IV Thiamine and IV Dextrose. Which is the CORRECT administration sequence?",
+      options:[
+        {text:"Administer Thiamine FIRST, then Dextrose. (Giving dextrose first can worsen the brain injury).",correct:true,points:75},
+        {text:"Administer Dextrose first to treat the low-normal blood sugar",correct:false,points:0},
+        {text:"Give both simultaneously in the same IV line",correct:false,points:0},
+        {text:"Hold Thiamine; it is only a vitamin and not a priority in acute confusion",correct:false,points:0},
+      ]
+    },
+    education:"Wernicke's Encephalopathy: Triad of Confusion, Ataxia, and Ophthalmoplegia (eye changes). Caused by Thiamine (B1) deficiency, often in chronic alcohol use. CRITICAL: Always give Thiamine before Glucose to avoid precipitating Korsakoff Syndrome (permanent memory loss)."
+  }
+
 ];
