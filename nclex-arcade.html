@@ -421,7 +421,7 @@ let hasStarted = false; // prevents repeat start sound
     winSound.play().catch(() => {});
     clearInterval(timerInterval);
     questionEl.innerText = "";
-    optionsEl.innerHTML = "<button class='arcade-btn continue-btn' onclick='initGame()'>INSERT COIN (RESTART)</button>";
+    optionsEl.innerHTML = "<button class='arcade-btn continue-btn' onclick='initGame()'>RESTART</button>";
 
     ctx.fillStyle = "#39ff14";
     ctx.font = "bold 50px Courier New";
