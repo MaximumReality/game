@@ -15,13 +15,11 @@ body {
   background: #060810; color: var(--text); 
   font-family: 'Share Tech Mono', monospace; display: flex; flex-direction: column; height: 100vh;
 }
-
 .order-panel {
   padding: 15px; background: rgba(0,212,255,0.05); border-bottom: 2px solid var(--primary);
 }
 .order-header { font-family: 'Orbitron'; font-size: 0.8rem; color: var(--primary); margin-bottom: 8px; }
 .order-text { background: #000; padding: 12px; border-left: 3px solid var(--primary); font-size: 0.9rem; line-height: 1.4; }
-
 .pump-interface {
   flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
@@ -34,7 +32,6 @@ body {
 }
 .screen-label { font-size: 0.6rem; color: var(--primary); letter-spacing: 0.1em; margin-bottom: 5px; }
 .screen-value { font-family: 'Orbitron'; font-size: 2rem; color: var(--led-green); text-shadow: 0 0 10px var(--led-green); }
-
 .keypad {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
 }
@@ -44,8 +41,7 @@ body {
 }
 .key:active { background: var(--primary); color: #000; }
 .key.clear { color: var(--danger); font-size: 0.8rem; }
-.key.enter { grid-column: span 2; background: var(--primary); color: #000; font-size: 0.9rem; }
-
+.key.enter { grid-column: span 3; background: var(--primary); color: #000; font-size: 0.9rem; }
 #result-msg { margin-top: 15px; text-align: center; font-size: 0.8rem; min-height: 1em; }
 @keyframes shake {
   0% { transform: translateX(0); }
@@ -53,18 +49,19 @@ body {
   75% { transform: translateX(5px); }
   100% { transform: translateX(0); }
 }
-
 </style>
 </head>
 <body>
 
+<!-- Audio -->
+<audio id="ping-sound" src="https://freesound.org/data/previews/256/256113_3263906-lq.mp3"></audio>
+<audio id="ding-sound" src="https://freesound.org/data/previews/66/66717_931655-lq.mp3"></audio>
+<audio id="buzz-sound" src="https://freesound.org/data/previews/151/151022_2193265-lq.mp3"></audio>
+
 <div class="order-panel">
   <div class="order-header">◈ PHYSICIAN'S ORDER</div>
-  <div class="order-text">
-    <strong>PATIENT:</strong> Derek Phan (Room 7C)<br>
-    <strong>ORDER:</strong> 1,000 mL Normal Saline IV<br>
-    <strong>INFUSE OVER:</strong> 8 hours<br>
-    <span style="color:var(--primary)">TASK: Calculate the Flow Rate (mL/hr)</span>
+  <div class="order-text" id="order-text">
+    <!-- Dynamic order will appear here -->
   </div>
 </div>
 
@@ -95,13 +92,40 @@ body {
 </div>
 
 <script>
-let currentInput = "";
-const correctValue = 125; // 1000 / 8 = 125
+// Audio references
+const pingSound = document.getElementById('ping-sound');
+const dingSound = document.getElementById('ding-sound');
+const buzzSound = document.getElementById('buzz-sound');
 
+let currentInput = "";
+let correctValue = 0;
+
+// Example patients and orders
+const patients = [
+  { name: "Derek Phan", volume: 1000, time: 8 },
+  { name: "Lila Tran", volume: 500, time: 4 },
+  { name: "Marcus Lee", volume: 750, time: 6 },
+  { name: "Sofia Kim", volume: 1200, time: 12 }
+];
+
+function newOrder() {
+  const order = patients[Math.floor(Math.random() * patients.length)];
+  correctValue = order.volume / order.time;
+  document.getElementById('order-text').innerHTML =
+    `<strong>PATIENT:</strong> ${order.name}<br>
+     <strong>ORDER:</strong> ${order.volume} mL Normal Saline IV<br>
+     <strong>INFUSE OVER:</strong> ${order.time} hours<br>
+     <span style="color:var(--primary)">TASK: Calculate the Flow Rate (mL/hr)</span>`;
+  currentInput = "";
+  document.getElementById('display').innerText = "0";
+  document.getElementById('result-msg').innerText = "";
+}
+
+// Keypad functions
 function press(num) {
-  // Prevent leading zeros unless it's a decimal
+  pingSound.play();
   if (currentInput === "" && num === 0) return;
-  if (currentInput.length < 5) {
+  if (currentInput.length < 6) {
     currentInput += num;
     document.getElementById('display').innerText = currentInput;
   }
@@ -122,27 +146,22 @@ function checkMath() {
     msg.style.color = "var(--led-green)";
     msg.innerText = "✓ CORRECT: INFUSION STARTED";
     display.style.color = "var(--led-green)";
+    dingSound.play();
     
-    // Communicate with the main game page
     if (window.opener && !window.opener.closed) {
-      // Arguments: Tool Name, Success, Points
       window.opener.handleMiniGameResult('IV Pump', true, 50);
     }
     
-    // Pause briefly so the player sees the success before the window vanishes
-    setTimeout(() => { 
-      window.close(); 
-    }, 1500);
+    setTimeout(() => { window.close(); }, 1500);
 
   } else {
     msg.style.color = "var(--danger)";
     msg.innerText = "✗ CALC ERROR: RE-CHECK DOSAGE";
     display.style.color = "var(--danger)";
+    buzzSound.play();
     
-    // Optional: Shake the pump body for feedback
     const body = document.querySelector('.pump-body');
     body.style.animation = "shake 0.2s ease-in-out 0s 2";
-    
     setTimeout(() => {
       display.style.color = "var(--led-green)";
       body.style.animation = "";
@@ -150,6 +169,8 @@ function checkMath() {
   }
 }
 
+// Initialize first order
+newOrder();
 </script>
 
 </body>
