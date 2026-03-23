@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DIAGNOSTIC: LAB ANALYZER | Maximum Reality</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060810; --panel: #0d121d; --primary: #00d4ff;
+  --danger: #ff2d55; --warn: #ff9500; --success: #00e5a0;
+  --text: #c8d8e8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+  background: var(--bg); color: var(--text); 
+  font-family: 'Share Tech Mono', monospace; padding: 20px;
+}
+
+.lab-header { font-family: 'Orbitron'; color: var(--primary); font-size: 0.9rem; margin-bottom: 20px; border-bottom: 1px solid #1a2a3a; padding-bottom: 10px; }
+
+.lab-module { background: var(--panel); border: 1px solid #1a2a3a; padding: 20px; margin-bottom: 20px; position: relative; }
+
+.lab-name { font-size: 1.2rem; color: #fff; margin-bottom: 5px; }
+.lab-unit { font-size: 0.7rem; color: var(--primary); margin-bottom: 15px; }
+
+/* The Visual Scale */
+.scale-container { position: relative; height: 40px; background: #1a2a3a; margin: 30px 0; border-radius: 4px; overflow: hidden; display: flex; }
+.zone { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; color: rgba(0,0,0,0.5); }
+.low { width: 30%; background: var(--danger); }
+.normal { width: 40%; background: var(--success); }
+.high { width: 30%; background: var(--danger); }
+
+/* The Patient Marker */
+.marker { 
+  position: absolute; top: -10px; height: 60px; width: 4px; background: #fff; 
+  box-shadow: 0 0 15px #fff; transition: left 1s ease-in-out; z-index: 10;
+}
+.marker::after {
+  content: 'PATIENT'; position: absolute; top: -20px; left: 50%; 
+  transform: translateX(-50%); font-size: 0.6rem; color: #fff; white-space: nowrap;
+}
+
+.analysis-box { background: rgba(0,0,0,0.3); padding: 15px; border-left: 3px solid var(--primary); font-size: 0.85rem; line-height: 1.5; }
+
+.btn { width: 100%; padding: 15px; background: transparent; border: 2px solid var(--primary); color: var(--primary); font-family: 'Orbitron'; cursor: pointer; margin-top: 20px; }
+.btn:hover { background: var(--primary); color: #000; }
+</style>
+</head>
+<body>
+
+<div class="lab-header">◈ HEMATOLOGY / BIOCHEMISTRY</div>
+
+<div class="lab-module">
+  <div class="lab-name">Potassium (K+)</div>
+  <div class="lab-unit">Normal Range: 3.5 — 5.0 mEq/L</div>
+  
+  <div class="scale-container">
+    <div class="zone low">LOW</div>
+    <div class="zone normal">NORMAL</div>
+    <div class="zone high">HIGH</div>
+    <div id="k-marker" class="marker" style="left: 85%;"></div>
+  </div>
+
+  <div class="analysis-box">
+    <strong>RESULT: 6.2 mEq/L (CRITICAL HIGH)</strong><br>
+    <p style="margin-top:8px;">Elevated potassium (Hyperkalemia) is life-threatening. It can lead to cardiac dysrhythmias and cardiac arrest.</p>
+  </div>
+</div>
+
+<div class="lab-module">
+  <div class="lab-name">Hemoglobin (Hgb)</div>
+  <div class="lab-unit">Normal Range: 12.0 — 16.0 g/dL</div>
+  
+  <div class="scale-container">
+    <div class="zone low">LOW</div>
+    <div class="zone normal">NORMAL</div>
+    <div class="zone high">HIGH</div>
+    <div id="hgb-marker" class="marker" style="left: 20%;"></div>
+  </div>
+
+  <div class="analysis-box">
+    <strong>RESULT: 8.4 g/dL (LOW)</strong><br>
+    <p style="margin-top:8px;">Low hemoglobin indicates anemia or active bleeding. Monitor for fatigue, pallor, and shortness of breath.</p>
+  </div>
+</div>
+
+<button class="btn" onclick="window.close()">CLOSE DATA LAB</button>
+
+</body>
+</html>
