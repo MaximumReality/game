@@ -7,98 +7,185 @@
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --lead-bg: #050a0f; --grid-red: rgba(255, 0, 0, 0.15); --trace-green: #00ff9d;
-  --text: #c8d8e8; --primary: #00d4ff; --danger: #ff2d55;
+  --bg: #060810;
+  --grid-major: rgba(0, 212, 255, 0.3);
+  --grid-minor: rgba(0, 212, 255, 0.1);
+  --ekg-line: #00ffcc;
+  --primary: #00d4ff;
+  --danger: #ff2d55;
+  --text: #c8d8e8;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { 
-  background: var(--lead-bg); color: var(--text); 
-  font-family: 'Share Tech Mono', monospace; overflow: hidden; height: 100vh;
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
 #ekg-viewport {
-  width: 100%; height: 45vh; background-color: #000; position: relative;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background-color: #050a10;
   background-image: 
-    linear-gradient(var(--grid-red) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-red) 1px, transparent 1px),
-    linear-gradient(rgba(255, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 0, 0, 0.05) 1px, transparent 1px);
-  background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
-  border-bottom: 2px solid var(--primary);
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px);
+  background-size: 10px 10px, 10px 10px, 50px 50px, 50px 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-#trace-svg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-.trace-line { 
-  fill: none; stroke: var(--trace-green); stroke-width: 3; 
-  stroke-linecap: round; filter: drop-shadow(0 0 5px var(--trace-green)); 
+svg { width: 100%; height: 200px; filter: drop-shadow(0 0 8px var(--ekg-line)); }
+
+.ekg-path { fill: none; stroke: var(--ekg-line); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+.scanline {
+  position: absolute; top: 0; bottom: 0; width: 50px;
+  background: linear-gradient(90deg, transparent, rgba(0,255,204,0.2));
+  border-right: 2px solid var(--ekg-line);
+  animation: scan 3s linear infinite;
 }
 
-.info-panel { padding: 15px; height: 55vh; overflow-y: auto; background: linear-gradient(180deg, #0a1520, #050a0f); }
-.header { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: var(--primary); margin-bottom: 12px; border-left: 4px solid var(--primary); padding-left: 10px; }
+@keyframes scan { from { left: -50px; } to { left: 100%; } }
 
-.finding-card { background: rgba(0,0,0,0.4); border: 1px solid #1a2a3a; padding: 12px; border-radius: 4px; margin-bottom: 12px; }
-.label { color: var(--primary); font-size: 0.65rem; letter-spacing: 0.1em; display: block; margin-bottom: 4px; text-transform: uppercase; }
-.value { font-size: 1rem; color: #fff; font-weight: bold; }
+.ui-panel {
+  background: rgba(15,21,32,0.95);
+  border-top: 2px solid var(--primary);
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}
 
-.educational-note { font-size: 0.8rem; line-height: 1.5; color: #a0b0c0; border-top: 1px solid #1a2a3a; padding-top: 8px; margin-top: 8px; }
-.btn { width: 100%; padding: 16px; background: transparent; border: 2px solid var(--primary); color: var(--primary); font-family: 'Orbitron'; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em; transition: 0.2s; }
-.btn:active { background: var(--primary); color: #000; }
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
 
-@keyframes scan { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
-.animate-trace { stroke-dasharray: 1000; animation: scan 3s linear infinite; }
+.btn {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 8px 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  flex: 1 1 auto;
+  min-width: 60px;
+}
+
+.btn.active { background: var(--primary); color: var(--bg); }
+
+#info-box {
+  position: absolute;
+  top: 20px; left: 10px; right: 10px;
+  background: rgba(0,0,0,0.8);
+  padding: 8px;
+  border: 1px solid var(--primary);
+  font-size: 12px;
+  line-height: 1.4;
+  display: none;
+}
+
+.data-readout { margin-bottom: 6px; }
 </style>
 </head>
 <body>
 
+<!-- Audio files -->
+<audio id="ping-sound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
+<audio id="ding-sound" src="https://actions.google.com/sounds/v1/cartoon/metal_clang.ogg" preload="auto"></audio>
+<audio id="buzz-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+<audio id="whoosh-sound" src="https://actions.google.com/sounds/v1/cartoon/slide_whistle.ogg" preload="auto"></audio>
+
 <div id="ekg-viewport">
-  <svg id="trace-svg" viewBox="0 0 1000 200" preserveAspectRatio="none">
-    <path class="trace-line animate-trace" d="M0,120 L40,120 Q50,110 60,120 L80,120 L90,140 L110,20 L130,80 L180,80 Q200,80 220,120 L300,120 L340,120 Q350,110 360,120 L380,120 L390,140 L410,20 L430,80 L480,80 Q500,80 520,120" />
+  <div id="info-box"></div>
+  <div class="scanline"></div>
+  <svg viewBox="0 0 500 200">
+    <path class="ekg-path" d="
+      M0,100 L40,100 Q50,80 60,100 L80,100 L85,120 L95,20 L105,120 L110,70 L150,70
+      Q170,50 190,70 L250,70 L290,100 L500,100
+    " />
+    <circle cx="50" cy="90" r="15" fill="transparent" onclick="showInfo('P-WAVE: Atrial contraction. If missing, suspect A-Fib.'); playSound(\'ping\');" />
+    <circle cx="95" cy="50" r="20" fill="transparent" onclick="showInfo('QRS COMPLEX: Ventricular contraction. Should be narrow (<0.12s).'); playSound(\'ding\');" />
+    <circle cx="130" cy="70" r="20" fill="transparent" onclick="showInfo('ST SEGMENT: This is ELEVATED (above baseline). Diagnostic for STEMI/Heart Attack!'); playSound(\'buzz\');" />
   </svg>
 </div>
 
-<div class="info-panel">
-  <div class="header">DIAGNOSTIC: 12-LEAD ECG ANALYSIS</div>
-  
-  <div class="finding-card">
-    <span class="label">RHYTHM TYPE</span>
-    <div class="value" id="rhythm-display">ST-ELEVATION MI (STEMI)</div>
-    <div class="educational-note">
-      <strong>Observation:</strong> ST segment elevation is noted in Lead II. This is the classic "Fireman's Hat" sign of acute myocardial injury.
-    </div>
+<div class="ui-panel">
+  <div class="button-row">
+    <button class="btn active" onclick="switchLead('II')">Lead II</button>
+    <button class="btn" onclick="switchLead('I')">Lead I</button>
+    <button class="btn" onclick="switchLead('III')">Lead III</button>
+    <button class="btn" onclick="switchLead('aVR')">aVR</button>
+    <button class="btn" onclick="switchLead('aVL')">aVL</button>
+    <button class="btn" onclick="switchLead('aVF')">aVF</button>
   </div>
-
-  <div class="finding-card">
-    <span class="label">STATUS</span>
-    <div class="value" style="color: var(--danger);">⚠ CRITICAL FINDING</div>
-    <div class="educational-note">
-      Myocardial tissue is currently ischemic. Immediate cardiology consultation and cardiac catheterization are required.
-    </div>
+  <div class="header" id="lead-header">DIAGNOSTIC: Lead II</div>
+  <div class="data-readout" id="status">MODE: ANALYSIS — Identify Anomaly</div>
+  <div class="button-row">
+    <button class="btn" onclick="checkAnswer('normal')">Normal Sinus</button>
+    <button class="btn" style="border-color: var(--danger); color: var(--danger);" onclick="checkAnswer('stemi')">ST Elevation</button>
   </div>
-
-  <button class="btn" onclick="syncAndClose()"><span>◎ SYNC TO CHART</span></button>
+  <button class="btn" onclick="scanAnalysis()">Scan Analysis</button>
+  <p style="font-size: 0.6rem; color: #4a6a7a; margin-top: 5px;">Tap waves to learn why or run Scan Analysis.</p>
 </div>
 
 <script>
-function syncAndClose() {
-    const btn = document.querySelector('.btn');
-    const display = document.getElementById('rhythm-display');
-    
-    // UI Feedback
-    btn.innerHTML = "<span>✓ SYNCED</span>";
-    btn.style.borderColor = "var(--trace-green)";
-    btn.style.color = "var(--trace-green)";
-    display.style.color = "var(--trace-green)";
+let currentLead = 'II';
+const leadButtons = document.querySelectorAll('.button-row:first-child .btn');
 
-    // Communicate back to the main Night Shift dashboard
-    if (window.opener && !window.opener.closed) {
-        // (Tool Name, Success, Points)
-        window.opener.handleMiniGameResult('12-Lead ECG', true, 50);
-    }
+function switchLead(lead) {
+  currentLead = lead;
+  document.getElementById('lead-header').innerText = 'DIAGNOSTIC: Lead ' + lead;
+  leadButtons.forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  playSound('whoosh');
+  document.getElementById('status').innerText = 'MODE: ANALYSIS — Identify Anomaly';
+}
 
-    // Auto-close after a short delay
-    setTimeout(() => {
-        window.close();
-    }, 1000);
+// Show wave info
+function showInfo(msg) {
+  const box = document.getElementById('info-box');
+  box.innerText = msg;
+  box.style.display = 'block';
+  setTimeout(() => { box.style.display = 'none'; }, 4000);
+}
+
+// Check answer buttons
+function checkAnswer(choice) {
+  const status = document.getElementById('status');
+  if(choice === 'stemi') {
+    status.innerHTML = "<span style='color:#00ffcc'>CORRECT: STEMI DETECTED. TIME IS MUSCLE.</span>";
+    playSound('ding');
+  } else {
+    status.innerHTML = "<span style='color:#ff2d55'>INCORRECT: Observe ST segment height.</span>";
+    playSound('buzz');
+  }
+}
+
+// Scan Analysis button
+function scanAnalysis() {
+  const status = document.getElementById('status');
+  status.innerHTML = "<span style='color:#00ffcc'>SCANNING: ST segment elevated in Lead II. STEMI suspected.</span>";
+  playSound('ping');
+}
+
+// Play sound
+function playSound(name) {
+  const sound = document.getElementById(name + '-sound');
+  if(sound) { sound.currentTime = 0; sound.play(); }
 }
 </script>
 
