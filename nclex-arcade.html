@@ -185,13 +185,12 @@
         }
 
       #footer-nav {
-    position: fixed;
-    bottom: 60px; /* 👈 adjust this number freely now */
+    position: absolute;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     gap: 10px;
-    z-index: 200;
 }
 
 .nav-btn {
@@ -222,7 +221,11 @@
     <audio id="startSound" src="start.mp3" preload="auto"></audio>
 <audio id="exitSound" src="exit.mp3" preload="auto"></audio>
 <audio id="winSound" src="won.mp3" preload="auto"></audio>
-
+ 
+    <div id="footer-nav">
+    <a href="https://maximumreality.github.io/games" class="nav-btn" onclick="playExit(event, this.href)">⬅ EXIT ARCADE</a>
+    <a href="https://maximumreality.xyz" class="nav-btn" onclick="playExit(event, this.href)">🏙️RETURN TO REALITY</a>
+</div>
 <div id="arcade-cabinet">
     <div id="arcade-header">
     <span>NCLEX ARCADE</span>
@@ -449,9 +452,6 @@ let hasStarted = false; // prevents repeat start sound
     }, 300);
 }
 </script>
-    <div id="footer-nav">
-    <a href="https://maximumreality.github.io/games" class="nav-btn" onclick="playExit(event, this.href)">⬅ EXIT ARCADE</a>
-    <a href="https://maximumreality.xyz" class="nav-btn" onclick="playExit(event, this.href)">🏙️RETURN TO REALITY</a>
-</div>
+  
 </body>
 </html>
