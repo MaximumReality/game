@@ -278,7 +278,7 @@ const SCENARIOS = [
       ]
     },
     education:"Opioid Overdose Triad: Pinpoint pupils + respiratory depression + altered LOC. AIRWAY FIRST — BVM if RR <8 or SpO₂ <90%. Naloxone (Narcan) 0.4–2mg IV/IM/IN reverses opioids. Watch for re-narcotization — naloxone half-life is shorter than most opioids. Repeat q2–3 min PRN. Approach with compassion — OUD is a medical condition."
-  }
+  },
     {
     id:8, name:"Marcus Thorne", age:62, room:"7I",
     acuity:"CRITICAL", acuityColor:"var(--danger)",
@@ -348,7 +348,7 @@ const SCENARIOS = [
       ]
     },
     education:"Upper GI Bleed (UGIB): Coffee-ground emesis (digested blood) or melena (black tarry stool). NSAIDs inhibit prostaglandins, weakening gastric mucosa. Priority: Circulation (Volume first!). Hemoglobin <7 usually requires transfusion. Large-bore IVs are crucial for rapid volume/blood replacement."
-  }
+  },
   {
     id:10, name:"Leo Vance", age:4, room:"7K",
     acuity:"CRITICAL", acuityColor:"var(--danger)",
@@ -418,7 +418,7 @@ const SCENARIOS = [
       ]
     },
     education:"Wernicke's Encephalopathy: Triad of Confusion, Ataxia, and Ophthalmoplegia (eye changes). Caused by Thiamine (B1) deficiency, often in chronic alcohol use. CRITICAL: Always give Thiamine before Glucose to avoid precipitating Korsakoff Syndrome (permanent memory loss)."
-  }
+  },
   {
     id:12, name:"Arthur Gable", age:84, room:"7N",
     acuity:"MONITOR", acuityColor:"var(--warn)",
