@@ -517,9 +517,15 @@ const SCENARIOS = [
 // ... state and basic navigation functions ...
 
 let state = {
-  score:0, correctActions:0, criticalSaves:0,
-  patientIndex:0, phase:'tools',
-  usedTools:{}, resultsCollected:{}, reviewNotes:[], _chartReady:false
+  score: 0, 
+  correctActions: 0, 
+  criticalSaves: 0,
+  patientIndex: 0, 
+  phase: 'tools',
+  usedTools: {}, 
+  resultsCollected: {}, 
+  reviewNotes: [], 
+  _chartReady: false
 };
 
 function currentScenario() { return SCENARIOS[state.patientIndex]; }
@@ -530,7 +536,7 @@ function switchScreen(id) {
 }
 
 function startGame() {
-  state = { score:0,correctActions:0,criticalSaves:0,patientIndex:0,phase:'tools',usedTools:{},resultsCollected:{},reviewNotes:[],_chartReady:false };
+  state = { score:0, correctActions:0, criticalSaves:0, patientIndex:0, phase:'tools', usedTools:{}, resultsCollected:{}, reviewNotes:[], _chartReady:false };
   document.getElementById('hud').classList.add('visible');
   switchScreen('game-screen');
   loadPatient();
@@ -538,20 +544,26 @@ function startGame() {
 
 function loadPatient() {
   const s = currentScenario();
-  state.phase='tools'; state.usedTools={}; state.resultsCollected={}; state._chartReady=false;
+  state.phase = 'tools'; 
+  state.usedTools = {}; 
+  state.resultsCollected = {}; 
+  state._chartReady = false;
+  
   const dots = document.getElementById('progress-dots');
-  dots.innerHTML = SCENARIOS.map((sc,i) => {
-    let cls='dot';
-    if(i<state.patientIndex) cls+=' done';
-    if(i===state.patientIndex) cls+=' active';
+  dots.innerHTML = SCENARIOS.map((sc, i) => {
+    let cls = 'dot';
+    if(i < state.patientIndex) cls += ' done';
+    if(i === state.patientIndex) cls += ' active';
     return `<div class="${cls}"></div>`;
   }).join('');
+  
   document.getElementById('patient-name').textContent = s.name;
   document.getElementById('patient-meta').textContent = `Age ${s.age} · Room ${s.room}`;
   document.getElementById('patient-acuity').textContent = s.acuity;
   document.getElementById('patient-acuity').style.borderColor = s.acuityColor;
   document.getElementById('patient-acuity').style.color = s.acuityColor;
   document.getElementById('patient-cc').textContent = s.cc;
+  
   typeText('dialogue-text', s.dialogue, 'PATIENT');
   updateHUD();
   buildToolPhase();
@@ -565,7 +577,7 @@ function buildToolPhase() {
     <div>
       <div class="section-label">◈ ASSESSMENT TOOLS</div>
       <div class="tools-grid">
-        ${toolKeys.map(t=>`
+        ${toolKeys.map(t => `
           <button class="tool-btn" id="tool-${sanitize(t)}" onclick="useTool('${t}')">
             <span class="tool-icon">${toolIcon(t)}</span>
             <span>${t}</span>
@@ -581,27 +593,37 @@ function buildToolPhase() {
 function sanitize(s) { return s.replace(/[^a-zA-Z0-9]/g,'_'); }
 
 function toolIcon(name) {
-  const icons = {'BP Cuff':'🩺','Pulse Ox':'💉','12-Lead ECG':'📈','Stethoscope':'🔊','Troponin Draw':'🧪','Thermometer':'🌡️','Glucometer':'💊','Neuro Check':'🧠','Urine Output':'⚗️','Skin Turgor':'🖐️','Lactate Draw':'🧬','Skin Check':'🔴'};
+  const icons = {'BP Cuff':'🩺','Pulse Ox':'💉','12-Lead ECG':'📈','Stethoscope':'🔊','Troponin Draw':'🧪','Thermometer':'🌡️','Glucometer':'💊','Neuro Check':'🧠','Urine Output':'⚗️','Skin Turgor':'🖐️','Lactate Draw':'🧬','Skin Check':'🔴', 'IV Pump':'📟'};
   return icons[name] || '🔬';
+}
+
+function handleMiniGameResult(toolName, success, points) {
+    if (success) {
+        addScore(points, `✓ ${toolName.toUpperCase()} SYNCED`);
+        toast(`${toolName} Data Received`, 'success');
+        // Visual "Handshake" effect
+        document.body.style.boxShadow = "inset 0 0 50px var(--success)";
+        setTimeout(() => document.body.style.boxShadow = "", 500);
+    }
 }
 
 function useTool(toolName) {
   if(state.usedTools[toolName]) return;
 
-  // 1. Logic for Mini-Game Pop-ups
+  // Mini-Game Openers
+  const winFeatures = 'width=400,height=700,top=100,left=100';
   if (toolName === '12-Lead ECG') {
-    window.open('ekg-analyzer.html', 'DiagnosticWindow', 'width=400,height=700');
+    window.open('ekg-analyzer.html', 'DiagnosticWindow', winFeatures);
   } else if (toolName === 'IV Pump') {
-    window.open('med-math.html', 'DiagnosticWindow', 'width=400,height=700');
-  } else if (toolName === 'Troponin Draw' || toolName === 'Lactate Draw' || toolName === 'Urine Output') {
-    window.open('lab-analyzer.html', 'DiagnosticWindow', 'width=400,height=700');
+    window.open('med-math.html', 'DiagnosticWindow', winFeatures);
+  } else if (['Troponin Draw', 'Lactate Draw', 'Urine Output'].includes(toolName)) {
+    window.open('lab-analyzer.html', 'DiagnosticWindow', winFeatures);
   }
 
   const s = currentScenario();
   const d = s.tools[toolName];
   if(!d) return;
 
-  // 2. State & UI Updates
   state.usedTools[toolName] = true;
   state.resultsCollected[toolName] = d;
   
@@ -610,13 +632,13 @@ function useTool(toolName) {
   
   const ra = document.getElementById('results-area');
   const row = document.createElement('div');
+  row.className = "tool-result-row"; 
   row.style.cssText = 'display:flex;gap:8px;align-items:baseline;font-family:var(--font-mono);font-size:0.67rem;margin-bottom:4px';
   const col = d.class === 'danger' ? 'var(--danger)' : d.class === 'warn' ? 'var(--warn)' : 'var(--success)';
   
   row.innerHTML = `<span style="color:var(--text-dim);min-width:100px;font-size:0.57rem;letter-spacing:0.08em;flex-shrink:0">${toolName.toUpperCase()}</span><span style="color:${col}">${d.result}</span>`;
   ra.appendChild(row);
 
-  // 3. Scoring
   if(d.key) { 
     addScore(20, d.class === 'danger' ? '🚨 CRITICAL FIND' : '✓ KEY FINDING'); 
     state.correctActions++; 
@@ -624,7 +646,6 @@ function useTool(toolName) {
     addScore(5); 
   }
 
-  // 4. Check for Phase Completion
   const allFound = s.requiredTools.every(r => state.usedTools[r]);
   if(allFound && !state._chartReady) {
     state._chartReady = true;
@@ -633,56 +654,17 @@ function useTool(toolName) {
   }
 }
 
-
-
 function goToChart() {
-  state.phase='chart';
+  state.phase = 'chart';
   const s = currentScenario();
-  document.getElementById('chart-content').innerHTML=`
+  document.getElementById('chart-content').innerHTML = `
     <div class="chart-field"><label>PATIENT</label><div class="field-value filled">${s.name} · ${s.age}yrs · Room ${s.room}</div></div>
-    <div class="chart-field"><label>CHIEF COMPLAINT</label><div class="field-value filled">${s.cc.replace('Chief Complaint: ','')}</div></div>
     <div class="chart-field"><label>KEY FINDINGS</label><div class="field-value filled" style="font-size:0.67rem;line-height:1.6">${Object.entries(state.resultsCollected).map(([k,v])=>`${k}: ${v.result}`).join('<br>')}</div></div>
     <div class="chart-field"><label>◈ ${s.chartQuestion.prompt}</label>
       <div class="chart-options">${s.chartQuestion.options.map((opt,i)=>`<button class="chart-option" onclick="answerChart(${i})"><span style="color:var(--text-dim);margin-right:8px">${i+1}.</span>${opt.text}</button>`).join('')}</div>
     </div>`;
   switchScreen('chart-screen');
 }
-
-function answerChart(idx) {
-  const s = currentScenario();
-  const opt = s.chartQuestion.options[idx];
-  const btns = document.querySelectorAll('.chart-option');
-  btns.forEach((b,i) => { b.onclick=null; if(s.chartQuestion.options[i].correct) b.classList.add('selected'); });
-  if(opt.correct) {
-    btns[idx].classList.add('selected');
-    addScore(opt.points,'✓ CORRECT DX');
-    state.correctActions++;
-    toast('Correct nursing diagnosis!','success');
-    state.reviewNotes.push({patient:s.name,phase:'Diagnosis',result:'✓ CORRECT',note:s.education});
-  } else {
-    btns[idx].classList.add('wrong');
-    toast('Incorrect — correct answer highlighted','danger');
-    state.reviewNotes.push({patient:s.name,phase:'Diagnosis',result:'✗ INCORRECT',note:s.education});
-  }
-  showStudyNote(s.chartQuestion.prompt);
-  }, 500); // Small delay so player sees the "Correct/Wrong" feedback first
-
-  setTimeout(()=>goToIntervention(), 1800);
-}
-
-function goToIntervention() {
-  state.phase='intervention';
-  const s = currentScenario();
-  switchScreen('game-screen');
-  typeText('dialogue-text',`[PHYSICIAN ORDER RECEIVED — ROOM ${s.room}]\n\nNurse, what do you do FIRST?`,'SYSTEM');
-  document.getElementById('action-area').innerHTML=`
-    <div>
-      <div class="section-label">◈ INTERVENTION</div>
-      <div style="font-family:var(--font-mono);font-size:0.73rem;color:var(--text);background:rgba(0,0,0,0.3);border-left:2px solid var(--accent);padding:10px 12px;margin-bottom:10px;line-height:1.5">${s.interventionQuestion.prompt}</div>
-      <div class="choices-section">${s.interventionQuestion.options.map((opt,i)=>`<button class="choice-btn" onclick="answerIntervention(${i})"><span class="choice-num">${i+1}</span>${opt.text}</button>`).join('')}</div>
-    </div>`;
-}
-
 
 function answerChart(idx) {
   const s = currentScenario();
@@ -698,66 +680,52 @@ function answerChart(idx) {
     btns[idx].classList.add('selected');
     addScore(opt.points, '✓ CORRECT DX');
     state.correctActions++;
-    toast('Correct nursing diagnosis!', 'success');
   } else {
     btns[idx].classList.add('wrong');
-    toast('Incorrect Diagnosis', 'danger');
   }
 
   state.reviewNotes.push({
     patient: s.name, 
     phase: 'Diagnosis', 
-    result: opt.correct ? '✓' : '✗', 
+    result: opt.correct ? '✓ CORRECT' : '✗ INCORRECT', 
     note: s.education
   });
 
-  // Delay the note slightly so she sees the feedback
-  setTimeout(() => {
-    showStudyNote(s.name + " Diagnosis: " + opt.text);
-  }, 1200);
+  setTimeout(() => { goToIntervention(); }, 2000);
 }
 
-function showStudyNote(topic) {
-  const modal = document.createElement('div');
-  modal.id = 'study-modal';
-  modal.style.display = 'flex';
-  
-  modal.innerHTML = `
-    <div class="study-card">
-      <div class="study-header">◈ CLINICAL REFLECTION</div>
-      <p style="font-size:0.75rem; color:var(--text-dim); margin-bottom:12px; font-family:var(--font-mono);">TOPIC: ${topic}</p>
-      <textarea id="clinical-note" placeholder="Synthesize your findings here... Why was this the priority?"></textarea>
-      <button class="btn" onclick="closeStudyNote()"><span>SAVE & CONTINUE</span></button>
-    </div>
-  `;
-  document.body.appendChild(modal);
-}
-
-function closeStudyNote() {
-  const noteContent = document.getElementById('clinical-note').value;
-  // You could push noteContent to state.reviewNotes here if you want to save user text
-  document.getElementById('study-modal').remove();
-  goToIntervention();
+function goToIntervention() {
+  state.phase = 'intervention';
+  const s = currentScenario();
+  switchScreen('game-screen');
+  typeText('dialogue-text', `[PHYSICIAN ORDER RECEIVED — ROOM ${s.room}]\n\nNurse, what do you do FIRST?`, 'SYSTEM');
+  document.getElementById('action-area').innerHTML = `
+    <div>
+      <div class="section-label">◈ INTERVENTION</div>
+      <div style="font-family:var(--font-mono);font-size:0.73rem;color:var(--text);background:rgba(0,0,0,0.3);border-left:2px solid var(--accent);padding:10px 12px;margin-bottom:10px;line-height:1.5">${s.interventionQuestion.prompt}</div>
+      <div class="choices-section">${s.interventionQuestion.options.map((opt,i)=>`<button class="choice-btn" onclick="answerIntervention(${i})"><span class="choice-num">${i+1}</span>${opt.text}</button>`).join('')}</div>
+    </div>`;
 }
 
 function answerIntervention(idx) {
   const s = currentScenario();
   const opt = s.interventionQuestion.options[idx];
   const btns = document.querySelectorAll('.choice-btn');
-  btns.forEach(b=>b.onclick=null);
-  btns[idx].classList.add(opt.correct?'correct':'wrong');
+  btns.forEach(b => b.onclick = null);
+  btns[idx].classList.add(opt.correct ? 'correct' : 'wrong');
+  
   if(opt.correct) {
     if(s.critical) state.criticalSaves++;
-    addScore(opt.points, s.critical?'🚨 CRITICAL SAVE':'✓ CORRECT TX');
+    addScore(opt.points, s.critical ? '🚨 CRITICAL SAVE' : '✓ CORRECT TX');
     state.correctActions++;
-    typeText('dialogue-text',`[TREATMENT INITIATED — PATIENT STABILIZING]\n\n${s.education}`,'SYSTEM');
-    state.reviewNotes.push({patient:s.name,phase:'Intervention',result:'✓ CORRECT',note:s.education});
+    typeText('dialogue-text', `[TREATMENT INITIATED — PATIENT STABILIZING]\n\n${s.education}`, 'SYSTEM');
+    state.reviewNotes.push({patient:s.name, phase:'Intervention', result:'✓ CORRECT', note:s.education});
   } else {
-    s.interventionQuestion.options.forEach((o,i)=>{ if(o.correct) btns[i].classList.add('correct'); });
-    typeText('dialogue-text',`[INCORRECT]\n\n${s.education}`,'SYSTEM');
-    state.reviewNotes.push({patient:s.name,phase:'Intervention',result:'✗ INCORRECT',note:s.education});
+    s.interventionQuestion.options.forEach((o, i) => { if(o.correct) btns[i].classList.add('correct'); });
+    typeText('dialogue-text', `[INCORRECT]\n\n${s.education}`, 'SYSTEM');
+    state.reviewNotes.push({patient:s.name, phase:'Intervention', result:'✗ INCORRECT', note:s.education});
   }
-  setTimeout(nextPatient, 2800);
+  setTimeout(nextPatient, 3500);
 }
 
 function nextPatient() {
@@ -769,8 +737,9 @@ function nextPatient() {
 function showOutcome() {
   document.getElementById('hud').classList.remove('visible');
   const rank = getRank();
-  document.getElementById('outcome-title').textContent = state.score>=800?'EXEMPLARY SHIFT':state.score>=450?'SOLID SHIFT':'NEEDS REVIEW';
-  document.getElementById('outcome-title').className = 'outcome-title '+(state.score>=400?'good':'bad');
+  const outTitle = document.getElementById('outcome-title');
+  outTitle.textContent = state.score >= 800 ? 'EXEMPLARY SHIFT' : state.score >= 450 ? 'SOLID SHIFT' : 'NEEDS REVIEW';
+  outTitle.className = 'outcome-title ' + (state.score >= 450 ? 'good' : 'bad');
   document.getElementById('outcome-rank').textContent = `RANK: ${rank.label}`;
   document.getElementById('outcome-rank').style.color = rank.color;
   document.getElementById('stat-patients').textContent = `${SCENARIOS.length}/${SCENARIOS.length}`;
@@ -781,9 +750,9 @@ function showOutcome() {
 }
 
 function showReview() {
-  document.getElementById('chart-content').innerHTML=`
+  document.getElementById('chart-content').innerHTML = `
     <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim);letter-spacing:0.1em;margin-bottom:14px">◆ SHIFT REVIEW — CLINICAL NOTES</div>
-    ${state.reviewNotes.map(n=>`
+    ${state.reviewNotes.map(n => `
       <div style="margin-bottom:13px;padding:10px;background:rgba(0,0,0,0.3);border-left:2px solid ${n.result.includes('✓')?'var(--success)':'var(--danger)'}">
         <div style="font-family:var(--font-mono);font-size:0.57rem;color:var(--text-dim);margin-bottom:5px">${n.patient} — ${n.phase} — <span style="color:${n.result.includes('✓')?'var(--success)':'var(--danger)'}">${n.result}</span></div>
         <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text);line-height:1.6">${n.note}</div>
@@ -793,49 +762,69 @@ function showReview() {
 }
 
 function getRank() {
-  let r=RANKS[0];
-  RANKS.forEach(rank=>{ if(state.score>=rank.min) r=rank; });
+  let r = RANKS[0];
+  RANKS.forEach(rank => { if(state.score >= rank.min) r = rank; });
   return r;
 }
 function updateHUD() {
-  document.getElementById('hud-score').textContent=state.score;
-  const rank=getRank();
-  const el=document.getElementById('hud-rank');
-  el.textContent=rank.label; el.style.color=rank.color;
+  document.getElementById('hud-score').textContent = state.score;
+  const rank = getRank();
+  const el = document.getElementById('hud-rank');
+  el.textContent = rank.label; el.style.color = rank.color;
 }
-function addScore(pts,label) {
-  state.score+=pts; updateHUD();
+function addScore(pts, label) {
+  state.score += pts; updateHUD();
   if(label) {
-    const f=document.createElement('div');
-    f.className='score-flash';
-    f.style.color=label.includes('SAVE')?'var(--danger)':label.includes('✓')?'var(--success)':'var(--primary)';
-    f.textContent=label;
+    const f = document.createElement('div');
+    f.className = 'score-flash';
+    f.style.color = label.includes('SAVE') ? 'var(--danger)' : label.includes('✓') ? 'var(--success)' : 'var(--primary)';
+    f.textContent = label;
     document.body.appendChild(f);
-    setTimeout(()=>f.remove(),1100);
+    setTimeout(() => f.remove(), 1100);
   }
 }
 let toastTimer;
-function toast(msg,type='primary') {
-  const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.style.borderColor=type==='success'?'var(--success)':type==='danger'?'var(--danger)':'var(--primary)';
-  el.style.color=type==='success'?'var(--success)':type==='danger'?'var(--danger)':'var(--primary)';
+function toast(msg, type = 'primary') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.borderColor = type === 'success' ? 'var(--success)' : type === 'danger' ? 'var(--danger)' : 'var(--primary)';
+  el.style.color = type === 'success' ? 'var(--success)' : type === 'danger' ? 'var(--danger)' : 'var(--primary)';
   el.classList.add('show'); clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 let typeTimer;
-function typeText(elId,text,speaker) {
+function typeText(elId, text, speaker) {
   clearTimeout(typeTimer);
-  if(speaker) document.getElementById('dialogue-speaker').textContent=speaker;
-  const el=document.getElementById(elId);
-  el.textContent=''; el.classList.add('blink-cursor');
-  let i=0;
+  if(speaker) document.getElementById('dialogue-speaker').textContent = speaker;
+  const el = document.getElementById(elId);
+  el.textContent = ''; el.classList.add('blink-cursor');
+  let i = 0;
   function next() {
-    if(i<text.length){ el.textContent+=text[i++]; typeTimer=setTimeout(next,13); }
+    if(i < text.length) { el.textContent += text[i++]; typeTimer = setTimeout(next, 13); }
     else el.classList.remove('blink-cursor');
   }
   next();
 }
+/** * THE HANDSHAKE: Receives data from popup windows 
+ * @param {string} toolName - Name of the diagnostic tool used
+ * @param {boolean} success - Whether the user got the answer right
+ * @param {number} points - How many points to award
+ */
+function handleMiniGameResult(toolName, success, points) {
+    if (success) {
+        addScore(points, `✓ ${toolName.toUpperCase()} SYNCED`);
+        toast(`${toolName} successfully processed.`, 'success');
+        
+        // Optional: Trigger a "Hacker Cat" visual glitch if it's a critical tool
+        if (points >= 50) {
+            document.body.style.filter = "hue-rotate(90deg) contrast(1.5)";
+            setTimeout(() => { document.body.style.filter = ""; }, 200);
+        }
+    } else {
+        toast(`${toolName} Error: Data Corrupted`, 'danger');
+    }
+}
+
 </script>
 </body>
 </html>
