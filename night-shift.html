@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NIGHT SHIFT — Nursing RPG</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060810;
+  --bg2: #0d1117;
+  --panel: #0f1520;
+  --border: #1a2a3a;
+  --primary: #00d4ff;
+  --primary-dim: #006680;
+  --accent: #7c3aed;
+  --danger: #ff2d55;
+  --warn: #ff9500;
+  --success: #00e5a0;
+  --text: #c8d8e8;
+  --text-dim: #4a6a7a;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-ui: 'Rajdhani', sans-serif;
+  --font-title: 'Orbitron', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 16px;
+}
+body {
+  background: radial-gradient(ellipse at 30% 20%, #0a1628 0%, #060810 60%);
+}
+
+/* SCANLINES */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* SCREENS */
+.screen { display: none; width: 100%; height: 100vh; position: absolute; inset: 0; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ─── START SCREEN ─── */
+#start-screen {
+  align-items: center; justify-content: center;
+  gap: 0;
+  background:
+    radial-gradient(ellipse at 50% 40%, #0a1f30 0%, transparent 70%),
+    var(--bg);
+}
+.title-block { text-align: center; margin-bottom: 40px; }
+.title-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--primary-dim);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  animation: pulse-text 2s ease-in-out infinite;
+}
+@keyframes pulse-text { 0%,100%{opacity:0.5} 50%{opacity:1} }
+.title-main {
+  font-family: var(--font-title);
+  font-size: clamp(2.8rem, 8vw, 5rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #fff;
+  text-shadow:
+    0 0 30px var(--primary),
+    0 0 60px rgba(0,212,255,0.3);
+  line-height: 1;
+}
+.title-glitch {
+  position: relative;
+  display: inline-block;
+}
+.title-glitch::before {
+  content: 'NIGHT SHIFT';
+  position: absolute; inset: 0;
+  color: var(--danger);
+  clip-path: inset(40% 0 50% 0);
+  animation: glitch1 3s infinite steps(1);
+  opacity: 0.7;
+}
+.title-glitch::after {
+  content: 'NIGHT SHIFT';
+  position: absolute; inset: 0;
+  color: var(--primary);
+  clip-path: inset(60% 0 20% 0);
+  animation: glitch2 3.5s infinite steps(1);
+  opacity: 0.5;
+  transform: translateX(3px);
+}
+@keyframes glitch1 {
+  0%,90%{transform:translateX(0);clip-path:inset(40% 0 50% 0)}
+  91%{transform:translateX(-4px);clip-path:inset(20% 0 60% 0)}
+  93%{transform:translateX(4px);clip-path:inset(70% 0 10% 0)}
+  95%{transform:translateX(0)}
+}
+@keyframes glitch2 {
+  0%,88%{transform:translateX(3px)}
+  89%{transform:translateX(-6px)}
+  91%{transform:translateX(3px)}
+}
+.title-sub {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  color: var(--primary-dim);
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+.start-card {
+  background: rgba(15,21,32,0.9);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--primary);
+  padding: 28px 32px;
+  width: min(380px, 90vw);
+  text-align: center;
+  position: relative;
+  backdrop-filter: blur(10px);
+}
+.start-card::before {
+  content: '◆ ICU NIGHT SHIFT — FLOOR 7 ◆';
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--primary-dim);
+  position: absolute;
+  top: -10px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg);
+  padding: 0 8px;
+  white-space: nowrap;
+}
+.start-desc {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  font-family: var(--font-mono);
+}
+.btn {
+  display: inline-block;
+  font-family: var(--font-title);
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 14px 32px;
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+  width: 100%;
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--primary);
+  transform: translateX(-101%);
+  transition: transform 0.2s ease;
+  z-index: 0;
+}
+.btn:hover::before { transform: translateX(0); }
+.btn:hover { color: var(--bg); }
+.btn span { position: relative; z-index: 1; }
+.btn-danger { border-color: var(--danger); color: var(--danger); }
+.btn-danger::before { background: var(--danger); }
+.btn-success { border-color: var(--success); color: var(--success); }
+.btn-success::before { background: var(--success); }
+.btn-sm {
+  font-size: 0.7rem;
+  padding: 8px 16px;
+  width: auto;
+}
+
+/* ─── HUD ─── */
+#hud {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(6,8,16,0.95);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 16px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  backdrop-filter: blur(8px);
+}
+#hud.visible { display: flex; }
+.hud-item {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+.hud-item span { color: var(--primary); }
+.hud-item.danger span { color: var(--danger); }
+#vitals-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+}
+.vital-pip {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.5);opacity:0.6}
+}
+.vital-text {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--success);
+  letter-spacing: 0.05em;
+}
+
+/* ─── GAME SCREEN ─── */
+#game-screen {
+  padding-top: 46px;
+  flex-direction: column;
+  overflow: hidden;
+}
+.game-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  padding: 12px;
+  gap: 10px;
+}
+
+/* PATIENT CARD */
+.patient-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  padding: 14px 16px;
+  position: relative;
+}
+.patient-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.patient-name {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+.patient-meta {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.patient-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  padding: 3px 8px;
+  border: 1px solid var(--warn);
+  color: var(--warn);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.patient-cc {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text);
+  background: rgba(0,0,0,0.3);
+  border-left: 2px solid var(--accent);
+  padding: 8px 12px;
+  line-height: 1.5;
+}
+
+/* DIALOGUE */
+.dialogue-box {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 12px 14px;
+  min-height: 70px;
+  position: relative;
+  flex: 1;
+  overflow-y: auto;
+}
+.dialogue-speaker {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--primary-dim);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.dialogue-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+.blink-cursor::after {
+  content: '█';
+  animation: blink 1s step-start infinite;
+  color: var(--primary);
+  font-size: 0.8em;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* TOOL SECTION */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.tool-btn {
+  background: rgba(15,21,32,0.8);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 10px 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+}
+.tool-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(0,212,255,0.05);
+}
+.tool-btn.used {
+  border-color: var(--primary-dim);
+  color: var(--primary-dim);
+  background: rgba(0,100,128,0.1);
+}
+.tool-btn.used::after {
+  content: '✓ DONE';
+  position: absolute;
+  top: 2px; right: 4px;
+  font-size: 0.5rem;
+  color: var(--success);
+}
+.tool-icon { font-size: 1.2rem; }
+
+/* RESULT PANEL */
+.result-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+.result-panel.visible { display: flex; }
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+.result-label {
+  color: var(--text-dim);
+  min-width: 90px;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+}
+.result-value { color: var(--text); flex: 1; }
+.result-value.warn { color: var(--warn); }
+.result-value.danger { color: var(--danger); }
+.result-value.ok { color: var(--success); }
+
+/* CHOICES */
+.choices-section { display: flex; flex-direction: column; gap: 8px; }
+.choice-btn {
+  background: rgba(15,21,32,0.8);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.choice-btn:hover {
+  border-color: var(--accent);
+  background: rgba(124,58,237,0.08);
+  color: #fff;
+}
+.choice-btn.correct {
+  border-color: var(--success) !important;
+  background: rgba(0,229,160,0.1) !important;
+  color: var(--success) !important;
+  animation: flash-good 0.4s ease;
+}
+.choice-btn.wrong {
+  border-color: var(--danger) !important;
+  background: rgba(255,45,85,0.1) !important;
+  color: var(--danger) !important;
+  animation: flash-bad 0.4s ease;
+}
+@keyframes flash-good { 0%,100%{opacity:1} 50%{opacity:0.5} }
+@keyframes flash-bad { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+.choice-num {
+  font-size: 0.6rem;
+  border: 1px solid currentColor;
+  padding: 1px 5px;
+  min-width: 22px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+/* OUTCOME SCREEN */
+#outcome-screen {
+  align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at 50% 50%, #0d1a28 0%, var(--bg) 70%);
+}
+.outcome-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  width: min(400px, 92vw);
+  padding: 32px 28px;
+  text-align: center;
+  position: relative;
+}
+.outcome-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.outcome-title {
+  font-family: var(--font-title);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.outcome-title.good { color: var(--success); text-shadow: 0 0 20px var(--success); }
+.outcome-title.bad { color: var(--danger); text-shadow: 0 0 20px var(--danger); }
+.outcome-rank {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  color: var(--primary);
+  letter-spacing: 0.2em;
+  margin-bottom: 20px;
+}
+.outcome-stats {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+.stat-key { color: var(--text-dim); }
+.stat-val { color: var(--primary); }
+.outcome-buttons { display: flex; flex-direction: column; gap: 8px; }
+
+/* CHART SCREEN */
+#chart-screen {
+  align-items: center; justify-content: center;
+  background: rgba(6,8,16,0.97);
+}
+.chart-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--primary);
+  width: min(400px, 94vw);
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+.chart-title {
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  color: var(--primary);
+  margin-bottom: 16px;
+  text-align: center;
+}
+.chart-field {
+  margin-bottom: 14px;
+}
+.chart-field label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+.chart-field .field-value {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text);
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  min-height: 32px;
+  line-height: 1.4;
+}
+.chart-field .field-value.filled { border-color: var(--primary-dim); color: var(--primary); }
+.chart-options { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.chart-option {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 9px 12px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+.chart-option:hover { border-color: var(--primary); color: var(--primary); }
+.chart-option.selected { border-color: var(--success); color: var(--success); background: rgba(0,229,160,0.08); }
+.chart-option.wrong { border-color: var(--danger); color: var(--danger); background: rgba(255,45,85,0.08); }
+
+/* NOTIFICATION TOAST */
+#toast {
+  position: fixed;
+  top: 60px; left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: var(--panel);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 8px 16px;
+  letter-spacing: 0.1em;
+  z-index: 200;
+  opacity: 0;
+  transition: all 0.2s;
+  white-space: nowrap;
+  pointer-events: none;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* SCORE FLASH */
+.score-flash {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-title);
+  font-size: 3rem;
+  font-weight: 900;
+  pointer-events: none;
+  z-index: 500;
+  animation: score-pop 1s ease forwards;
+}
+@keyframes score-pop {
+  0%{opacity:1;transform:translate(-50%,-50%) scale(0.5)}
+  30%{transform:translate(-50%,-50%) scale(1.2)}
+  60%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-80%)}
+}
+
+/* PROGRESS DOTS */
+.progress-dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  padding: 6px 0;
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all 0.3s;
+}
+.dot.done { background: var(--success); }
+.dot.active { background: var(--primary); box-shadow: 0 0 8px var(--primary); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--primary-dim); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-item">LOC: <span>ICU-7</span></div>
+  <div id="vitals-bar">
+    <div class="vital-pip"></div>
+    <div class="vital-text" id="hud-vitals">● MONITORING</div>
+  </div>
+  <div class="hud-item"><span id="hud-rank">STUDENT</span></div>
+  <div class="hud-item">PTS: <span id="hud-score">0</span></div>
+</div>
+
+<!-- START SCREEN -->
+<div id="start-screen" class="screen active">
+  <div class="title-block">
+    <div class="title-eyebrow">▸ ANTHROPIC MED-SIM v2.4 ◂</div>
+    <div class="title-main">
+      <div class="title-glitch">NIGHT SHIFT</div>
+    </div>
+    <div class="title-sub">Nursing RPG</div>
+  </div>
+  <div class="start-card">
+    <div class="start-desc">
+      ICU Floor 7. 02:00 hrs.<br>
+      You have 4 patients on rounds.<br>
+      Diagnose. Chart. Treat.<br>
+      <br>
+      Every call counts.
+    </div>
+    <button class="btn" onclick="startGame()"><span>▶ BEGIN ROUNDS</span></button>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game-screen" class="screen">
+  <div class="game-layout">
+    <!-- Progress -->
+    <div class="progress-dots" id="progress-dots"></div>
+
+    <!-- Patient Info -->
+    <div class="patient-card" id="patient-card">
+      <div class="patient-header">
+        <div>
+          <div class="patient-name" id="patient-name">—</div>
+          <div class="patient-meta" id="patient-meta">—</div>
+        </div>
+        <div class="patient-badge" id="patient-acuity">STABLE</div>
+      </div>
+      <div class="patient-cc" id="patient-cc">Awaiting patient...</div>
+    </div>
+
+    <!-- Dialogue -->
+    <div class="dialogue-box">
+      <div class="dialogue-speaker" id="dialogue-speaker">PATIENT</div>
+      <div class="dialogue-text blink-cursor" id="dialogue-text"></div>
+    </div>
+
+    <!-- Tool/Choice area - dynamically populated -->
+    <div id="action-area"></div>
+  </div>
+</div>
+
+<!-- CHART SCREEN -->
+<div id="chart-screen" class="screen">
+  <div class="chart-card">
+    <div class="chart-title">◆ PATIENT CHART ◆</div>
+    <div id="chart-content"></div>
+  </div>
+</div>
+
+<!-- OUTCOME SCREEN -->
+<div id="outcome-screen" class="screen">
+  <div class="outcome-card">
+    <div class="outcome-label">SHIFT COMPLETE — 06:00 HRS</div>
+    <div class="outcome-title" id="outcome-title">SHIFT COMPLETE</div>
+    <div class="outcome-rank" id="outcome-rank">RANK: STUDENT NURSE</div>
+    <div class="outcome-stats">
+      <div class="stat-row"><span class="stat-key">PATIENTS TREATED</span><span class="stat-val" id="stat-patients">0/4</span></div>
+      <div class="stat-row"><span class="stat-key">CORRECT ACTIONS</span><span class="stat-val" id="stat-correct">0</span></div>
+      <div class="stat-row"><span class="stat-key">CRITICAL SAVES</span><span class="stat-val" id="stat-critical">0</span></div>
+      <div class="stat-row"><span class="stat-key">FINAL SCORE</span><span class="stat-val" id="stat-score">0</span></div>
+    </div>
+    <div class="outcome-buttons">
+      <button class="btn btn-success" onclick="startGame()"><span>▶ NEW SHIFT</span></button>
+      <button class="btn" onclick="showReview()"><span>◎ REVIEW NOTES</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// GAME DATA
+// ──────────────────────────────────────────────
+const RANKS = [
+  { min: 0,   label: 'STUDENT NURSE',    color: '#4a6a7a' },
+  { min: 100, label: 'REGISTERED NURSE', color: '#00d4ff' },
+  { min: 250, label: 'CHARGE NURSE',     color: '#7c3aed' },
+  { min: 450, label: 'HEAD NURSE',       color: '#ff9500' },
+  { min: 700, label: 'NURSE SUPERVISOR', color: '#ff2d55' },
+];
+
+const SCENARIOS = [
+  {
+    id: 0,
+    name: "John Harmon",
+    age: 67,
+    room: "7A",
+    acuity: "HIGH RISK",
+    acuityColor: "var(--danger)",
+    cc: "Chief Complaint: Chest pain radiating to left arm. Diaphoretic on admission.",
+    dialogue: "Nurse... I've had this crushing pressure in my chest for about 2 hours. It goes right up into my jaw. I feel like I'm sweating but I'm cold.",
+    critical: true,
+    phase: "assess",
+
+    tools: {
+      "BP Cuff":        { result: "168/98 — ELEVATED", class: "warn", note: "Hypertensive" },
+      "Pulse Ox":       { result: "94% SpO₂ — LOW NORMAL", class: "warn", note: "Monitor closely" },
+      "12-Lead ECG":    { result: "ST elevation in leads II, III, aVF — STEMI pattern", class: "danger", note: "⚠ CRITICAL FINDING", key: true },
+      "Stethoscope":    { result: "S1/S2 present. Mild S3 gallop noted.", class: "warn", note: "Possible cardiac failure" },
+      "Troponin Draw":  { result: "Troponin I: 2.8 ng/mL (↑↑ Critical)", class: "danger", note: "⚠ Cardiac injury confirmed", key: true },
+      "Thermometer":    { result: "37.1°C — Normal", class: "ok", note: "Afebrile" }
+    },
+    requiredTools: ["12-Lead ECG", "Troponin Draw"],
+
+    chartQuestion: {
+      prompt: "Based on your assessment, what is the PRIORITY nursing diagnosis for Mr. Harmon?",
+      options: [
+        { text: "Acute Pain r/t myocardial ischemia AEB chest pressure, ST elevation, elevated troponin", correct: true, points: 50 },
+        { text: "Risk for Infection r/t IV access", correct: false, points: 0 },
+        { text: "Ineffective Tissue Perfusion r/t dehydration", correct: false, points: 0 },
+        { text: "Anxiety r/t hospitalization environment", correct: false, points: 0 },
+      ]
+    },
+
+    interventionQuestion: {
+      prompt: "STAT order received. Which intervention is MOST critical RIGHT NOW?",
+      options: [
+        { text: "Administer aspirin 325mg PO + call rapid response / cardiology STAT", correct: true, points: 75 },
+        { text: "Provide blanket and dim lights for comfort", correct: false, points: 0 },
+        { text: "Encourage ambulation to improve circulation", correct: false, points: 0 },
+        { text: "Obtain urine specimen for UA", correct: false, points: 0 },
+      ]
+    },
+
+    education: "STEMI (ST-Elevation MI): Classic signs — crushing chest pain, jaw/arm radiation, diaphoresis, ST elevation on ECG, elevated troponin. TIME IS MUSCLE — activate cath lab immediately.",
+    points: 125
+  },
+
+  {
+    id: 1,
+    name: "Maria Delgado",
+    age: 52,
+    room: "7B",
+    acuity: "STABLE",
+    acuityColor: "var(--success)",
+    cc: "Chief Complaint: Shortness of breath. 2-day history of productive cough and fever.",
+    dialogue: "I've been coughing up thick yellow stuff for two days. My chest hurts when I breathe deep and I can't seem to catch my breath. Had a fever at home — 101 something.",
+    critical: false,
+    phase: "assess",
+
+    tools: {
+      "Thermometer":   { result: "38.9°C — FEBRILE", class: "danger", note: "Fever confirmed", key: true },
+      "Pulse Ox":      { result: "91% SpO₂ — HYPOXIC", class: "danger", note: "⚠ Requires supplemental O₂", key: true },
+      "BP Cuff":       { result: "118/76 — Normal", class: "ok", note: "Hemodynamically stable" },
+      "Stethoscope":   { result: "Decreased breath sounds RLL. Crackles on inspiration.", class: "warn", note: "Consolidation suspected", key: true },
+      "12-Lead ECG":   { result: "Sinus tachycardia at 104 bpm", class: "warn", note: "Likely fever-related" },
+      "Glucometer":    { result: "Blood glucose 118 mg/dL — Normal", class: "ok", note: "No concern" }
+    },
+    requiredTools: ["Thermometer", "Pulse Ox", "Stethoscope"],
+
+    chartQuestion: {
+      prompt: "Your assessment points to which primary nursing diagnosis?",
+      options: [
+        { text: "Impaired Gas Exchange r/t alveolar consolidation AEB SpO₂ 91%, crackles, productive cough", correct: true, points: 50 },
+        { text: "Deficient Knowledge r/t new medication regimen", correct: false, points: 0 },
+        { text: "Imbalanced Nutrition: Less Than Body Requirements", correct: false, points: 0 },
+        { text: "Risk for Falls r/t altered mobility", correct: false, points: 0 },
+      ]
+    },
+
+    interventionQuestion: {
+      prompt: "Priority intervention for Ms. Delgado's hypoxia?",
+      options: [
+        { text: "Apply supplemental O₂ via nasal cannula, obtain sputum culture, notify MD for antibiotic order", correct: true, points: 75 },
+        { text: "Encourage deep breathing exercises only — no supplemental O₂ needed yet", correct: false, points: 0 },
+        { text: "Increase IV fluid rate and reposition to prone", correct: false, points: 0 },
+        { text: "Administer PRN acetaminophen and reassess in 4 hours", correct: false, points: 0 },
+      ]
+    },
+
+    education: "Community-Acquired Pneumonia: Signs — fever, productive cough, crackles, ↓ breath sounds, hypoxia. SpO₂ <94% requires supplemental O₂. Get cultures BEFORE antibiotics. CAP most commonly caused by Streptococcus pneumoniae.",
+    points: 125
+  },
+
+  {
+    id: 2,
+    name: "Derek Phan",
+    age: 44,
+    room: "7C",
+    acuity: "CRITICAL",
+    acuityColor: "var(--danger)",
+    cc: "Chief Complaint: Found unresponsive by family. Hx of Type 1 Diabetes.",
+    dialogue: "...unresponsive on arrival. Wife reports he skipped dinner and took his insulin. Last seen normal at 22:00. Found on kitchen floor at 02:30.",
+    critical: true,
+    phase: "assess",
+
+    tools: {
+      "Glucometer":     { result: "Blood glucose: 34 mg/dL — CRITICAL LOW", class: "danger", note: "⚠ Severe hypoglycemia", key: true },
+      "BP Cuff":        { result: "92/60 — LOW", class: "danger", note: "Hypotensive — shock risk" },
+      "Pulse Ox":       { result: "97% SpO₂ — Normal", class: "ok", note: "Airway maintained" },
+      "Thermometer":    { result: "36.2°C — Normal", class: "ok", note: "Afebrile" },
+      "Stethoscope":    { result: "Breath sounds clear bilaterally", class: "ok", note: "No respiratory concern" },
+      "Neuro Check":    { result: "GCS 8 — Eyes 2, Verbal 2, Motor 4. Pupils equal/reactive.", class: "danger", note: "⚠ Altered consciousness", key: true },
+    },
+    requiredTools: ["Glucometer", "Neuro Check"],
+
+    chartQuestion: {
+      prompt: "Priority nursing diagnosis for Mr. Phan?",
+      options: [
+        { text: "Risk for Injury r/t altered level of consciousness AEB GCS 8, blood glucose 34 mg/dL", correct: true, points: 50 },
+        { text: "Chronic Pain r/t diabetic neuropathy", correct: false, points: 0 },
+        { text: "Ineffective Health Management r/t diabetes education deficit", correct: false, points: 0 },
+        { text: "Disturbed Sleep Pattern r/t hospitalization", correct: false, points: 0 },
+      ]
+    },
+
+    interventionQuestion: {
+      prompt: "Mr. Phan cannot swallow safely (GCS 8). What is the CORRECT intervention?",
+      options: [
+        { text: "IV Dextrose 50% (D50W) 25g IV push STAT — recheck glucose in 15 min", correct: true, points: 75 },
+        { text: "Oral glucose gel under tongue — easiest and safest", correct: false, points: 0 },
+        { text: "Glucagon IM and call family to bring food", correct: false, points: 0 },
+        { text: "Hold intervention, wait for physician orders first", correct: false, points: 0 },
+      ]
+    },
+
+    education: "Severe Hypoglycemia (<50 mg/dL with altered LOC): NEVER give oral glucose to unconscious patient — aspiration risk. IV D50W is first-line. If no IV access: Glucagon 1mg IM/SC. Rule of 15: 15g fast carbs → recheck in 15 min.",
+    points: 125
+  },
+
+  {
+    id: 3,
+    name: "Eleanor Simms",
+    age: 78,
+    room: "7D",
+    acuity: "MONITOR",
+    acuityColor: "var(--warn)",
+    cc: "Chief Complaint: Confusion and decreased urine output since yesterday. Hx of HTN, CKD stage 3.",
+    dialogue: "I... where am I? I was at home... I don't feel right. My daughter brought me in. I'm so thirsty. Haven't needed to use the bathroom much.",
+    critical: false,
+    phase: "assess",
+
+    tools: {
+      "BP Cuff":        { result: "88/58 — HYPOTENSIVE", class: "danger", note: "⚠ Hemodynamically unstable", key: true },
+      "Thermometer":    { result: "37.8°C — Low-grade fever", class: "warn", note: "Possible infection" },
+      "Urine Output":   { result: "UO: 18mL over past 4hrs — OLIGURIA", class: "danger", note: "⚠ AKI pattern", key: true },
+      "Skin Turgor":    { result: "Tenting present. Dry mucous membranes. Sunken eyes.", class: "danger", note: "⚠ Severe dehydration", key: true },
+      "Pulse Ox":       { result: "96% SpO₂ — Normal", class: "ok", note: "Adequate oxygenation" },
+      "Neuro Check":    { result: "GCS 13 — Oriented x1 (person only). Mild agitation.", class: "warn", note: "Altered cognition — likely metabolic" }
+    },
+    requiredTools: ["BP Cuff", "Urine Output", "Skin Turgor"],
+
+    chartQuestion: {
+      prompt: "What is the PRIORITY nursing diagnosis for Mrs. Simms?",
+      options: [
+        { text: "Deficient Fluid Volume r/t inadequate intake AEB hypotension, oliguria, skin tenting, altered LOC", correct: true, points: 50 },
+        { text: "Chronic Confusion r/t dementia progression", correct: false, points: 0 },
+        { text: "Risk for Pressure Injury r/t immobility", correct: false, points: 0 },
+        { text: "Caregiver Role Strain r/t patient dependence", correct: false, points: 0 },
+      ]
+    },
+
+    interventionQuestion: {
+      prompt: "Physician orders received. Which intervention bundle is CORRECT for Mrs. Simms?",
+      options: [
+        { text: "IV fluid bolus NS 500mL over 1hr, strict I&O q1h, Foley catheter, labs (BMP/BUN/Cr), fall precautions", correct: true, points: 75 },
+        { text: "Encourage oral fluids, recheck BP in 4 hours, ambulate to toilet PRN", correct: false, points: 0 },
+        { text: "Fluid restrict to 1L/day given CKD history", correct: false, points: 0 },
+        { text: "Start diuretic therapy to improve kidney function", correct: false, points: 0 },
+      ]
+    },
+
+    education: "Hypovolemia / Dehydration in Elderly: Key signs — ↓BP, oliguria (<0.5mL/kg/hr), skin tenting, dry mucous membranes, acute confusion. AKI risk with CKD. IV resuscitation + strict I&O. Diuretics are CONTRAINDICATED in hypovolemia.",
+    points: 125
+  }
+];
+
+// ──────────────────────────────────────────────
+// GAME STATE
+// ──────────────────────────────────────────────
+let state = {
+  score: 0,
+  correctActions: 0,
+  criticalSaves: 0,
+  patientIndex: 0,
+  phase: 'tools', // tools | chart | intervention | done
+  usedTools: {},
+  resultsCollected: {},
+  reviewNotes: []
+};
+
+function currentScenario() { return SCENARIOS[state.patientIndex]; }
+
+// ──────────────────────────────────────────────
+// SCREEN MANAGEMENT
+// ──────────────────────────────────────────────
+function switchScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ──────────────────────────────────────────────
+// GAME START
+// ──────────────────────────────────────────────
+function startGame() {
+  state = {
+    score: 0, correctActions: 0, criticalSaves: 0,
+    patientIndex: 0, phase: 'tools',
+    usedTools: {}, resultsCollected: {}, reviewNotes: []
+  };
+  document.getElementById('hud').classList.add('visible');
+  switchScreen('game-screen');
+  loadPatient();
+}
+
+// ──────────────────────────────────────────────
+// LOAD PATIENT
+// ──────────────────────────────────────────────
+function loadPatient() {
+  const s = currentScenario();
+  state.phase = 'tools';
+  state.usedTools = {};
+  state.resultsCollected = {};
+
+  // Progress dots
+  const dots = document.getElementById('progress-dots');
+  dots.innerHTML = SCENARIOS.map((sc, i) => {
+    let cls = 'dot';
+    if (i < state.patientIndex) cls += ' done';
+    if (i === state.patientIndex) cls += ' active';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  // Patient info
+  document.getElementById('patient-name').textContent = s.name;
+  document.getElementById('patient-meta').textContent = `Age ${s.age} · Room ${s.room}`;
+  document.getElementById('patient-acuity').textContent = s.acuity;
+  document.getElementById('patient-acuity').style.borderColor = s.acuityColor;
+  document.getElementById('patient-acuity').style.color = s.acuityColor;
+  document.getElementById('patient-cc').textContent = s.cc;
+
+  // Dialogue
+  typeText('dialogue-text', s.dialogue, 'PATIENT');
+
+  // Update HUD
+  updateHUD();
+
+  // Build tool area
+  buildToolPhase();
+}
+
+// ──────────────────────────────────────────────
+// TOOL PHASE
+// ──────────────────────────────────────────────
+function buildToolPhase() {
+  const s = currentScenario();
+  const area = document.getElementById('action-area');
+  const toolKeys = Object.keys(s.tools);
+
+  let html = `
+    <div>
+      <div class="section-label">◈ ASSESSMENT TOOLS</div>
+      <div class="tools-grid">
+        ${toolKeys.map(t => `
+          <button class="tool-btn" id="tool-${sanitize(t)}" onclick="useTool('${t}')">
+            <span class="tool-icon">${toolIcon(t)}</span>
+            <span>${t}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+    <div id="results-area" style="margin-top:8px"></div>
+    <div id="chart-trigger" style="margin-top:8px;display:none">
+      <button class="btn btn-success" onclick="goToChart()"><span>◎ CHART FINDINGS</span></button>
+    </div>
+  `;
+  area.innerHTML = html;
+}
+
+function sanitize(s) { return s.replace(/[^a-zA-Z0-9]/g, '_'); }
+
+function toolIcon(name) {
+  const icons = {
+    'BP Cuff': '🩺', 'Pulse Ox': '💉', '12-Lead ECG': '📈', 'Stethoscope': '🔊',
+    'Troponin Draw': '🧪', 'Thermometer': '🌡️', 'Glucometer': '💊', 'Neuro Check': '🧠',
+    'Urine Output': '⚗️', 'Skin Turgor': '🖐️'
+  };
+  return icons[name] || '🔬';
+}
+
+function useTool(toolName) {
+  if (state.usedTools[toolName]) return;
+  const s = currentScenario();
+  const toolData = s.tools[toolName];
+
+  state.usedTools[toolName] = true;
+  state.resultsCollected[toolName] = toolData;
+
+  // Mark button used
+  const btn = document.getElementById('tool-' + sanitize(toolName));
+  if (btn) btn.classList.add('used');
+
+  // Add to results
+  const resultsArea = document.getElementById('results-area');
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:8px;align-items:baseline;font-family:var(--font-mono);font-size:0.7rem;margin-bottom:4px;animation:flash-good 0.3s ease';
+  row.innerHTML = `
+    <span style="color:var(--text-dim);min-width:110px;font-size:0.6rem;letter-spacing:0.1em">${toolName.toUpperCase()}</span>
+    <span class="${toolData.class === 'danger' ? '' : ''}" style="color:${toolData.class === 'danger' ? 'var(--danger)' : toolData.class === 'warn' ? 'var(--warn)' : 'var(--success)'}">${toolData.result}</span>
+  `;
+  resultsArea.appendChild(row);
+
+  // Points for key tools
+  if (toolData.key) {
+    addScore(20, toolData.class === 'danger' ? '⚠ CRITICAL FIND' : '✓ KEY FINDING');
+    state.correctActions++;
+  } else {
+    addScore(5);
+  }
+
+  // Check if required tools used
+  const required = s.requiredTools;
+  const allFound = required.every(r => state.usedTools[r]);
+  if (allFound) {
+    document.getElementById('chart-trigger').style.display = 'block';
+    if (!state._chartReady) {
+      state._chartReady = true;
+      toast('All critical findings identified — chart now!', 'success');
+    }
+  }
+}
+
+// ──────────────────────────────────────────────
+// CHART PHASE
+// ──────────────────────────────────────────────
+function goToChart() {
+  state.phase = 'chart';
+  const s = currentScenario();
+
+  const content = document.getElementById('chart-content');
+  content.innerHTML = `
+    <div class="chart-field">
+      <label>PATIENT</label>
+      <div class="field-value filled">${s.name} · ${s.age}yrs · Room ${s.room}</div>
+    </div>
+    <div class="chart-field">
+      <label>CHIEF COMPLAINT</label>
+      <div class="field-value filled">${s.cc.replace('Chief Complaint: ','')}</div>
+    </div>
+    <div class="chart-field">
+      <label>KEY FINDINGS</label>
+      <div class="field-value filled" style="font-size:0.7rem;line-height:1.6">
+        ${Object.entries(state.resultsCollected).map(([k,v]) => `${k}: ${v.result}`).join('<br>')}
+      </div>
+    </div>
+    <div class="chart-field">
+      <label>◈ ${s.chartQuestion.prompt}</label>
+      <div class="chart-options">
+        ${s.chartQuestion.options.map((opt, i) => `
+          <button class="chart-option" onclick="answerChart(${i})" id="copt-${i}">
+            <span style="color:var(--text-dim);margin-right:8px">${i+1}.</span>${opt.text}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  switchScreen('chart-screen');
+}
+
+function answerChart(idx) {
+  const s = currentScenario();
+  const opt = s.chartQuestion.options[idx];
+  const btns = document.querySelectorAll('.chart-option');
+
+  btns.forEach((b, i) => {
+    b.onclick = null;
+    if (s.chartQuestion.options[i].correct) b.classList.add('selected');
+  });
+
+  if (opt.correct) {
+    btns[idx].classList.add('selected');
+    addScore(opt.points, '✓ CORRECT DX');
+    state.correctActions++;
+    toast('Correct nursing diagnosis!', 'success');
+    state.reviewNotes.push({ patient: s.name, phase: 'Diagnosis', result: '✓ CORRECT', note: s.education });
+  } else {
+    btns[idx].classList.add('wrong');
+    toast('Incorrect — see correct answer above', 'danger');
+    state.reviewNotes.push({ patient: s.name, phase: 'Diagnosis', result: '✗ INCORRECT', note: s.education });
+  }
+
+  setTimeout(() => goToIntervention(), 1800);
+}
+
+// ──────────────────────────────────────────────
+// INTERVENTION PHASE
+// ──────────────────────────────────────────────
+function goToIntervention() {
+  state.phase = 'intervention';
+  const s = currentScenario();
+  switchScreen('game-screen');
+
+  typeText('dialogue-text', `[PHYSICIAN ORDER RECEIVED — ROOM ${s.room}]\n\nNurse, what do you do FIRST?`, 'SYSTEM');
+  document.getElementById('dialogue-speaker').textContent = 'SYSTEM';
+
+  const area = document.getElementById('action-area');
+  area.innerHTML = `
+    <div>
+      <div class="section-label">◈ INTERVENTION</div>
+      <div style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text);background:rgba(0,0,0,0.3);border-left:2px solid var(--accent);padding:10px 12px;margin-bottom:10px;line-height:1.5">
+        ${s.interventionQuestion.prompt}
+      </div>
+      <div class="choices-section">
+        ${s.interventionQuestion.options.map((opt, i) => `
+          <button class="choice-btn" onclick="answerIntervention(${i})" id="iopt-${i}">
+            <span class="choice-num">${i+1}</span>
+            ${opt.text}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function answerIntervention(idx) {
+  const s = currentScenario();
+  const opt = s.interventionQuestion.options[idx];
+  const btns = document.querySelectorAll('.choice-btn');
+
+  btns.forEach(b => b.onclick = null);
+  btns[idx].classList.add(opt.correct ? 'correct' : 'wrong');
+
+  if (opt.correct) {
+    if (s.critical) { state.criticalSaves++; }
+    addScore(opt.points, opt.correct ? (s.critical ? '🚨 CRITICAL SAVE' : '✓ CORRECT TX') : '');
+    state.correctActions++;
+    typeText('dialogue-text', `[TREATMENT INITIATED — PATIENT STABILIZING]\n\n${s.education}`, 'SYSTEM');
+    state.reviewNotes.push({ patient: s.name, phase: 'Intervention', result: '✓ CORRECT', note: s.education });
+  } else {
+    // Show correct
+    s.interventionQuestion.options.forEach((o, i) => {
+      if (o.correct) btns[i].classList.add('correct');
+    });
+    typeText('dialogue-text', `[INCORRECT]\n\n${s.education}`, 'SYSTEM');
+    state.reviewNotes.push({ patient: s.name, phase: 'Intervention', result: '✗ INCORRECT', note: s.education });
+  }
+
+  setTimeout(nextPatient, 2800);
+}
+
+// ──────────────────────────────────────────────
+// NEXT PATIENT / END
+// ──────────────────────────────────────────────
+function nextPatient() {
+  state.patientIndex++;
+  state._chartReady = false;
+  if (state.patientIndex >= SCENARIOS.length) {
+    showOutcome();
+  } else {
+    loadPatient();
+  }
+}
+
+function showOutcome() {
+  document.getElementById('hud').classList.remove('visible');
+  const rank = getRank();
+
+  document.getElementById('outcome-title').textContent = state.score >= 400 ? 'EXEMPLARY SHIFT' : state.score >= 200 ? 'SOLID SHIFT' : 'NEEDS REVIEW';
+  document.getElementById('outcome-title').className = 'outcome-title ' + (state.score >= 200 ? 'good' : 'bad');
+  document.getElementById('outcome-rank').textContent = `RANK: ${rank.label}`;
+  document.getElementById('outcome-rank').style.color = rank.color;
+  document.getElementById('stat-patients').textContent = `${SCENARIOS.length}/${SCENARIOS.length}`;
+  document.getElementById('stat-correct').textContent = state.correctActions;
+  document.getElementById('stat-critical').textContent = state.criticalSaves;
+  document.getElementById('stat-score').textContent = state.score;
+
+  switchScreen('outcome-screen');
+}
+
+function showReview() {
+  // reuse chart screen for review
+  const content = document.getElementById('chart-content');
+  content.innerHTML = `
+    <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:0.1em;margin-bottom:16px">SHIFT REVIEW — LEARNING NOTES</div>
+    ${state.reviewNotes.map(n => `
+      <div style="margin-bottom:16px;padding:12px;background:rgba(0,0,0,0.3);border-left:2px solid ${n.result.includes('✓') ? 'var(--success)' : 'var(--danger)'}">
+        <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim);margin-bottom:4px">${n.patient} — ${n.phase} — <span style="color:${n.result.includes('✓') ? 'var(--success)' : 'var(--danger)'}">${n.result}</span></div>
+        <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text);line-height:1.6">${n.note}</div>
+      </div>
+    `).join('')}
+    <div style="margin-top:16px">
+      <button class="btn" onclick="switchScreen('outcome-screen')"><span>◀ BACK</span></button>
+    </div>
+  `;
+  switchScreen('chart-screen');
+}
+
+// ──────────────────────────────────────────────
+// HELPERS
+// ──────────────────────────────────────────────
+function getRank() {
+  let r = RANKS[0];
+  RANKS.forEach(rank => { if (state.score >= rank.min) r = rank; });
+  return r;
+}
+
+function updateHUD() {
+  document.getElementById('hud-score').textContent = state.score;
+  const rank = getRank();
+  const el = document.getElementById('hud-rank');
+  el.textContent = rank.label;
+  el.style.color = rank.color;
+}
+
+function addScore(pts, label) {
+  state.score += pts;
+  updateHUD();
+  if (label) {
+    const flash = document.createElement('div');
+    flash.className = 'score-flash';
+    flash.style.color = label.includes('SAVE') ? 'var(--danger)' : label.includes('✓') ? 'var(--success)' : 'var(--primary)';
+    flash.textContent = label || `+${pts}`;
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 1100);
+  }
+}
+
+let toastTimer;
+function toast(msg, type = 'primary') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.borderColor = type === 'success' ? 'var(--success)' : type === 'danger' ? 'var(--danger)' : 'var(--primary)';
+  el.style.color = type === 'success' ? 'var(--success)' : type === 'danger' ? 'var(--danger)' : 'var(--primary)';
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+let typeTimer;
+function typeText(elId, text, speaker) {
+  clearTimeout(typeTimer);
+  if (speaker) document.getElementById('dialogue-speaker').textContent = speaker;
+  const el = document.getElementById(elId);
+  el.textContent = '';
+  el.classList.add('blink-cursor');
+  let i = 0;
+  function next() {
+    if (i < text.length) {
+      el.textContent += text[i++];
+      typeTimer = setTimeout(next, i < 20 ? 20 : 12);
+    } else {
+      el.classList.remove('blink-cursor');
+    }
+  }
+  next();
+}
+</script>
+</body>
+</html>
