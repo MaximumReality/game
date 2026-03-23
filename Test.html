@@ -144,19 +144,14 @@ body::before { content:''; position:fixed; inset:0; background:repeating-linear-
 #study-modal {
   display: none; position: fixed; inset: 0; 
   background: rgba(6, 8, 16, 0.98); z-index: 1000;
-  padding: 30px; flex-direction: column; justify-content: center;
+  padding: 30px; flex-direction: column; justify-content: center; align-items: center;
+  backdrop-filter: blur(10px);
 }
 .study-card {
   background: var(--panel); border: 1px solid var(--primary);
-  padding: 20px; box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+  padding: 20px; width: 100%; max-width: 420px;
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
 }
-.study-header { font-family: 'Orbitron'; color: var(--primary); margin-bottom: 15px; }
-textarea#clinical-note {
-  width: 100%; height: 120px; background: #000; color: var(--success);
-  border: 1px solid var(--border); padding: 10px; font-family: var(--font-mono);
-  margin-bottom: 15px; resize: none; outline: none;
-}
-
 </style>
 </head>
 <body>
@@ -250,9 +245,10 @@ const SCENARIOS = [
       "12-Lead ECG":  {result:"ST elevation leads II, III, aVF — STEMI pattern",class:"danger",note:"⚠ CRITICAL FINDING",key:true},
       "Stethoscope":  {result:"S1/S2 present. Mild S3 gallop.",class:"warn",note:"Possible cardiac failure"},
       "Troponin Draw":{result:"Troponin I: 2.8 ng/mL (↑↑ Critical)",class:"danger",note:"⚠ Cardiac injury confirmed",key:true},
+      "IV Pump":      {result:"Access Patent. Ready for Heparin/Nitro drip.",class:"ok",note:"Needs rate calculation"},
       "Thermometer":  {result:"37.1°C — Normal",class:"ok",note:"Afebrile"}
     },
-    requiredTools:["12-Lead ECG","Troponin Draw"],
+    requiredTools:["12-Lead ECG","Troponin Draw","IV Pump"],
     chartQuestion:{
       prompt:"PRIORITY nursing diagnosis for Mr. Harmon?",
       options:[
@@ -312,17 +308,16 @@ const SCENARIOS = [
     id:2, name:"Derek Phan", age:44, room:"7C",
     acuity:"CRITICAL", acuityColor:"var(--danger)",
     cc:"Chief Complaint: Found unresponsive. History of Type 1 Diabetes.",
-    dialogue:"...unresponsive on arrival. Wife reports he skipped dinner and took his insulin. Last seen normal at 22:00. Found on kitchen floor at 02:30.",
+    dialogue:"...unresponsive on arrival. Wife reports he skipped dinner and took his insulin. Found on kitchen floor at 02:30.",
     critical:true,
     tools:{
       "Glucometer":  {result:"Blood glucose: 34 mg/dL — CRITICAL LOW",class:"danger",note:"⚠ Severe hypoglycemia",key:true},
+      "Neuro Check": {result:"GCS 8 — E2V2M4. Pupils equal/reactive.",class:"danger",note:"⚠ Altered consciousness",key:true},
+      "IV Pump":     {result:"D50W infusion required.",class:"warn",note:"Calculate rate for maintenance fluids"},
       "BP Cuff":     {result:"92/60 — LOW",class:"danger",note:"Hypotensive — shock risk"},
-      "Pulse Ox":    {result:"97% SpO₂ — Normal",class:"ok",note:"Airway maintained"},
-      "Thermometer": {result:"36.2°C — Normal",class:"ok",note:"Afebrile"},
-      "Stethoscope": {result:"Clear breath sounds bilaterally",class:"ok",note:"No respiratory concern"},
-      "Neuro Check": {result:"GCS 8 — E2V2M4. Pupils equal/reactive.",class:"danger",note:"⚠ Altered consciousness",key:true}
+      "Pulse Ox":    {result:"97% SpO₂ — Normal",class:"ok",note:"Airway maintained"}
     },
-    requiredTools:["Glucometer","Neuro Check"],
+    requiredTools:["Glucometer","Neuro Check","IV Pump"],
     chartQuestion:{
       prompt:"Priority nursing diagnosis for Mr. Phan?",
       options:[
@@ -519,6 +514,7 @@ const SCENARIOS = [
     education:"Opioid Overdose Triad: Pinpoint pupils + respiratory depression + altered LOC. AIRWAY FIRST — BVM if RR <8 or SpO₂ <90%. Naloxone (Narcan) 0.4–2mg IV/IM/IN reverses opioids. Watch for re-narcotization — naloxone half-life is shorter than most opioids. Repeat q2–3 min PRN. Approach with compassion — OUD is a medical condition."
   }
 ];
+// ... state and basic navigation functions ...
 
 let state = {
   score:0, correctActions:0, criticalSaves:0,
@@ -592,48 +588,51 @@ function toolIcon(name) {
 function useTool(toolName) {
   if(state.usedTools[toolName]) return;
 
-  // --- NEW: MINI-GAME TRIGGERS ---
+  // 1. Logic for Mini-Game Pop-ups
   if (toolName === '12-Lead ECG') {
     window.open('ekg-analyzer.html', 'DiagnosticWindow', 'width=400,height=700');
-  } else if (toolName === 'IV Pump') { // Ensure 'IV Pump' is a tool in your SCENARIOS
+  } else if (toolName === 'IV Pump') {
     window.open('med-math.html', 'DiagnosticWindow', 'width=400,height=700');
-  } else if (toolName === 'Labs' || toolName === 'Troponin Draw' || toolName === 'Lactate Draw') {
+  } else if (toolName === 'Troponin Draw' || toolName === 'Lactate Draw' || toolName === 'Urine Output') {
     window.open('lab-analyzer.html', 'DiagnosticWindow', 'width=400,height=700');
   }
-  // ------------------------------
 
   const s = currentScenario();
   const d = s.tools[toolName];
-  if(!d) return; // Safety check
+  if(!d) return;
 
-  state.usedTools[toolName]=true;
-  state.resultsCollected[toolName]=d;
+  // 2. State & UI Updates
+  state.usedTools[toolName] = true;
+  state.resultsCollected[toolName] = d;
   
-  const btn = document.getElementById('tool-'+sanitize(toolName));
+  const btn = document.getElementById('tool-' + sanitize(toolName));
   if(btn) btn.classList.add('used');
   
   const ra = document.getElementById('results-area');
   const row = document.createElement('div');
-  row.style.cssText='display:flex;gap:8px;align-items:baseline;font-family:var(--font-mono);font-size:0.67rem;margin-bottom:4px';
-  const col = d.class==='danger'?'var(--danger)':d.class==='warn'?'var(--warn)':'var(--success)';
+  row.style.cssText = 'display:flex;gap:8px;align-items:baseline;font-family:var(--font-mono);font-size:0.67rem;margin-bottom:4px';
+  const col = d.class === 'danger' ? 'var(--danger)' : d.class === 'warn' ? 'var(--warn)' : 'var(--success)';
   
-  row.innerHTML=`<span style="color:var(--text-dim);min-width:100px;font-size:0.57rem;letter-spacing:0.08em;flex-shrink:0">${toolName.toUpperCase()}</span><span style="color:${col}">${d.result}</span>`;
+  row.innerHTML = `<span style="color:var(--text-dim);min-width:100px;font-size:0.57rem;letter-spacing:0.08em;flex-shrink:0">${toolName.toUpperCase()}</span><span style="color:${col}">${d.result}</span>`;
   ra.appendChild(row);
 
+  // 3. Scoring
   if(d.key) { 
-    addScore(20, d.class==='danger'?'⚠ CRITICAL FIND':'✓ KEY FINDING'); 
+    addScore(20, d.class === 'danger' ? '🚨 CRITICAL FIND' : '✓ KEY FINDING'); 
     state.correctActions++; 
   } else { 
     addScore(5); 
   }
 
-  const allFound = s.requiredTools.every(r=>state.usedTools[r]);
+  // 4. Check for Phase Completion
+  const allFound = s.requiredTools.every(r => state.usedTools[r]);
   if(allFound && !state._chartReady) {
-    state._chartReady=true;
-    document.getElementById('chart-trigger').style.display='block';
-    toast('Critical findings identified — chart now!','success');
+    state._chartReady = true;
+    document.getElementById('chart-trigger').style.display = 'block';
+    toast('Assessment Complete — Chart Findings', 'success');
   }
 }
+
 
 
 function goToChart() {
@@ -682,6 +681,63 @@ function goToIntervention() {
       <div style="font-family:var(--font-mono);font-size:0.73rem;color:var(--text);background:rgba(0,0,0,0.3);border-left:2px solid var(--accent);padding:10px 12px;margin-bottom:10px;line-height:1.5">${s.interventionQuestion.prompt}</div>
       <div class="choices-section">${s.interventionQuestion.options.map((opt,i)=>`<button class="choice-btn" onclick="answerIntervention(${i})"><span class="choice-num">${i+1}</span>${opt.text}</button>`).join('')}</div>
     </div>`;
+}
+
+
+function answerChart(idx) {
+  const s = currentScenario();
+  const opt = s.chartQuestion.options[idx];
+  const btns = document.querySelectorAll('.chart-option');
+  
+  btns.forEach((b, i) => { 
+    b.onclick = null; 
+    if(s.chartQuestion.options[i].correct) b.classList.add('selected'); 
+  });
+
+  if(opt.correct) {
+    btns[idx].classList.add('selected');
+    addScore(opt.points, '✓ CORRECT DX');
+    state.correctActions++;
+    toast('Correct nursing diagnosis!', 'success');
+  } else {
+    btns[idx].classList.add('wrong');
+    toast('Incorrect Diagnosis', 'danger');
+  }
+
+  state.reviewNotes.push({
+    patient: s.name, 
+    phase: 'Diagnosis', 
+    result: opt.correct ? '✓' : '✗', 
+    note: s.education
+  });
+
+  // Delay the note slightly so she sees the feedback
+  setTimeout(() => {
+    showStudyNote(s.name + " Diagnosis: " + opt.text);
+  }, 1200);
+}
+
+function showStudyNote(topic) {
+  const modal = document.createElement('div');
+  modal.id = 'study-modal';
+  modal.style.display = 'flex';
+  
+  modal.innerHTML = `
+    <div class="study-card">
+      <div class="study-header">◈ CLINICAL REFLECTION</div>
+      <p style="font-size:0.75rem; color:var(--text-dim); margin-bottom:12px; font-family:var(--font-mono);">TOPIC: ${topic}</p>
+      <textarea id="clinical-note" placeholder="Synthesize your findings here... Why was this the priority?"></textarea>
+      <button class="btn" onclick="closeStudyNote()"><span>SAVE & CONTINUE</span></button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function closeStudyNote() {
+  const noteContent = document.getElementById('clinical-note').value;
+  // You could push noteContent to state.reviewNotes here if you want to save user text
+  document.getElementById('study-modal').remove();
+  goToIntervention();
 }
 
 function answerIntervention(idx) {
