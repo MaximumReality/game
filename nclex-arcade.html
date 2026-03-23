@@ -419,18 +419,32 @@ let hasStarted = false; // prevents repeat start sound
     }
 
     function victory() {
-         winSound.currentTime = 0;
-         winSound.play().catch(()=>{});
-        clearInterval(timerInterval);
-        questionEl.innerText = "";
-        optionsEl.innerHTML = "<button class='arcade-btn continue-btn' onclick='initGame()'>INSERT COIN (RESTART)</button>";
-        
-        ctx.fillStyle = "#39ff14";
-        ctx.font = "bold 50px Courier New";
-        ctx.textAlign = "center";
-        ctx.fillText("LEVEL", canvas.width/2, 130);
-        ctx.fillText("COMPLETE", canvas.width/2, 190);
-    }
+    winSound.currentTime = 0;
+    winSound.play().catch(() => {});
+    clearInterval(timerInterval);
+    questionEl.innerText = "";
+    optionsEl.innerHTML = "<button class='arcade-btn continue-btn' onclick='initGame()'>INSERT COIN (RESTART)</button>";
+
+    ctx.fillStyle = "#39ff14";
+    ctx.font = "bold 50px Courier New";
+    ctx.textAlign = "center";
+    
+    // Neon glow
+    ctx.shadowColor = "#00ffff";
+    ctx.shadowBlur = 20;
+
+    ctx.fillText("LEVEL", canvas.width / 2, 130);
+    ctx.fillText("COMPLETE", canvas.width / 2, 190);
+    ctx.fillText("INSERT COIN", canvas.width / 2, 260); // <-- add this on the screen
+
+    // Optional: flicker effect
+    setInterval(() => {
+        ctx.clearRect(0, 240, canvas.width, 60);
+        if (Math.random() > 0.5) {
+            ctx.fillText("INSERT COIN", canvas.width / 2, 260);
+        }
+    }, 300);
+}
     initGame();
     document.addEventListener("click", () => {
     if (!hasStarted) {
