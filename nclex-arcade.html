@@ -4,6 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NCLEX ARCADE: MAXIMUM REALITY</title>
+    <!-- BASIC SEO -->
+<title>NCLEX Arcade: Maximum Reality</title>
+<meta name="description" content="Play NCLEX Arcade: Maximum Reality — a retro neon nursing game where you answer real NCLEX-style questions under pressure. Train your brain like a pro.">
+<meta name="keywords" content="NCLEX, nursing, study game, medical quiz, pharmacology, nursing students, NCLEX prep, arcade game">
+<meta name="author" content="Maximum Reality">
+
+<!-- FAVICON -->
+<link rel="icon" type="image/png" href="https://maximumreality.github.io/game/nclex-favicon.png">
+
+<!-- MOBILE / THEME -->
+<meta name="theme-color" content="#2b0040">
+
+<!-- OPEN GRAPH (Facebook, Discord, WhatsApp, etc.) -->
+<meta property="og:title" content="NCLEX Arcade: Maximum Reality">
+<meta property="og:description" content="A neon arcade-style NCLEX prep game. Answer fast. Think faster. Save your patient.">
+<meta property="og:image" content="https://maximumreality.github.io/game/nclex-favicon.png">
+<meta property="og:url" content="https://maximumreality.github.io/game/nclex-arcade.html">
+<meta property="og:type" content="website">
+
+<!-- TWITTER / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NCLEX Arcade: Maximum Reality">
+<meta name="twitter:description" content="Retro arcade meets nursing school. Can you survive the NCLEX?">
+<meta name="twitter:image" content="https://maximumreality.github.io/game/nclex-favicon.png">
+
+<!-- PWA (optional but nice) -->
+<link rel="apple-touch-icon" href="https://maximumreality.github.io/game/nclex-favicon.png">
     <style>
         :root {
             --neon-green: #39ff14;
@@ -135,8 +162,41 @@
             font-weight: bold;
             z-index: 20;
         }
+
+        #footer-nav {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 200;
+}
+
+.nav-btn {
+    text-decoration: none;
+    background: #111;
+    color: var(--neon-green);
+    border: 2px solid var(--neon-blue);
+    padding: 8px 12px;
+    font-size: 0.7rem;
+    font-family: 'Courier New', monospace;
+    box-shadow: 2px 2px 0 #000;
+    transition: 0.15s;
+}
+
+.nav-btn:hover {
+    background: var(--neon-blue);
+    color: black;
+}
+
+.nav-btn:active {
+    transform: translate(2px,2px);
+    box-shadow: none;
+}
     </style>
 </head>
+    
 <body>
 
 <div id="arcade-cabinet">
@@ -337,5 +397,9 @@
 
     initGame();
 </script>
+    <div id="footer-nav">
+    <a href="https://maximumreality.github.io/games" class="nav-btn">⬅ EXIT ARCADE</a>
+    <a href="https://maximumreality.xyz" class="nav-btn">🏙️RETURN TO REALITY</a>
+</div>
 </body>
 </html>
