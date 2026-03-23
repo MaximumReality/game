@@ -1,27 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Maximum Reality Games</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="description" content="Play experimental AI-powered browser games by Maximum Reality. Glitchy, surreal, and interactive web experiences.">
+<title>Maximum Reality Games</title>
+
+<meta name="description" content="Play experimental AI-powered browser games by Maximum Reality. Glitchy, surreal, and interactive web experiences.">
+<meta name="theme-color" content="#050508">
+
+<style>
+  :root {
+    --bg:#050508;
+    --panel:#0a0a12;
+    --neon:#00ffff;
+    --mag:#ff00aa;
+    --text:#c8d8e8;
+    --dim:#445566;
+  }
+
+  * { box-sizing:border-box; margin:0; padding:0; }
+
+  body {
+    background:var(--bg);
+    color:var(--text);
+    font-family:system-ui, -apple-system, sans-serif;
+    padding:20px;
+  }
+
+  /* scanlines */
+  body::after {
+    content:"";
+    position:fixed;
+    inset:0;
+    background:repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.2) 2px,
+      rgba(0,0,0,0.2) 4px
+    );
+    pointer-events:none;
+    opacity:.25;
+  }
+
+  .container {
+    max-width:500px;
+    margin:0 auto;
+  }
+
+  h1 {
+    font-size:1.6rem;
+    letter-spacing:.15em;
+    color:var(--neon);
+    text-shadow:0 0 10px #00ffff80;
+    margin-bottom:10px;
+  }
+
+  .subtitle {
+    font-size:.8rem;
+    color:var(--dim);
+    margin-bottom:20px;
+    line-height:1.5;
+  }
+
+  /* VIDEO */
+  .video-wrap {
+    margin-bottom:20px;
+    border:1px solid #ffffff10;
+    border-radius:10px;
+    overflow:hidden;
+    background:#000;
+  }
+
+  .video-title {
+    font-size:.6rem;
+    letter-spacing:.2em;
+    color:var(--dim);
+    padding:8px;
+    border-bottom:1px solid #ffffff10;
+    text-transform:uppercase;
+  }
+
+  iframe {
+    width:100%;
+    height:320px;
+    border:none;
+  }
+
+  /* CARDS */
+  .card {
+    display:block;
+    text-decoration:none;
+    background:var(--panel);
+    border:1px solid #ffffff10;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:12px;
+    transition:0.15s;
+  }
+
+  .card:hover {
+    border-color:var(--neon);
+    box-shadow:0 0 10px #00ffff30;
+    transform:translateY(-2px);
+  }
+
+  .card-top {
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .icon {
+    width:52px;
+    height:52px;
+    border-radius:8px;
+    border:1px solid var(--neon);
+    object-fit:cover;
+  }
+
+  .info { flex:1; }
+
+  .title {
+    font-weight:bold;
+    color:var(--neon);
+    letter-spacing:.1em;
+  }
+
+  .desc {
+    font-size:.75rem;
+    color:var(--dim);
+  }
+
+  .play {
+    font-size:.7rem;
+    border:1px solid var(--neon);
+    padding:6px 10px;
+    color:var(--neon);
+  }
+
+  /* FOOTER */
+  .footer {
+    margin-top:20px;
+    text-align:center;
+  }
+
+  .home-link {
+    font-size:.75rem;
+    color:var(--mag);
+    text-decoration:none;
+    border:1px solid #ff00aa40;
+    padding:8px 12px;
+    display:inline-block;
+  }
+
+  .home-link:hover {
+    box-shadow:0 0 10px #ff00aa40;
+  }
+
+</style>
 </head>
+
 <body>
 
-<h1>Maximum Reality Games</h1>
+<div class="container">
 
-<p>Explore experimental browser-based games featuring AI systems, glitch aesthetics, and surreal gameplay.</p>
+  <h1>MAXIMUM REALITY</h1>
+  <div class="subtitle">
+    Experimental browser games. AI systems. Glitch worlds.  
+    Signals recovered from the edge of the network.
+  </div>
 
-<ul>
-  <li>
-    <a href="cipher.html">CIPHER — Wasteland Word Game</a>
-    <p>Crack ciphers and survive a cyberpunk wasteland.</p>
-  </li>
-  //<li>//
-  <a href="nextgame.html">Next Game Title</a>
-  <p>Short description.</p>
-//</li>//
-</ul>
-<a href="https://maximumreality.xyz">← Back to Maximum Reality</a>
+  <!-- 🎬 TEASER -->
+  <div class="video-wrap">
+    <div class="video-title">🛰️ Incoming Transmission</div>
+    <iframe 
+      src="https://www.youtube.com/embed/2L9qUoKx8f0"
+      title="CIPHER Teaser"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <!-- GAME CARD -->
+  <a href="cipher.html" class="card">
+    <div class="card-top">
+      <img src="cipher-favicon.jpeg" class="icon" alt="Cipher Wasteland Game">
+      
+      <div class="info">
+        <div class="title">CIPHER</div>
+        <div class="desc">Crack ciphers. Survive the wasteland.</div>
+      </div>
+
+      <div class="play">PLAY</div>
+    </div>
+  </a>
+
+  <!-- FUTURE GAME TEMPLATE -->
+  <!--
+  <a href="nextgame.html" class="card">
+    <div class="card-top">
+      <img src="next-icon.png" class="icon">
+      <div class="info">
+        <div class="title">NEXT GAME</div>
+        <div class="desc">Short description.</div>
+      </div>
+      <div class="play">PLAY</div>
+    </div>
+  </a>
+  -->
+
+  <div class="footer">
+    <a href="https://maximumreality.xyz" class="home-link">
+      ← Return to Maximum Reality
+    </a>
+  </div>
+
+</div>
+
 </body>
 </html>
