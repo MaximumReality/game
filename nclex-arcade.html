@@ -40,37 +40,59 @@
         }
 
         body {
-            background-color: var(--dark-bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: 'Courier New', Courier, monospace;
-            color: white;
-            overflow: hidden;
-        }
+    background-color: var(--dark-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh; /* better for mobile */
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+    overflow: hidden;
+}
 
-        /* Arcade Cabinet Container */
-        #arcade-cabinet {
-            position: relative;
-            width: 90vw;
-            max-width: 600px;
-            height: 95vh;
-            background: #111;
-            border: 8px solid #333;
-            border-radius: 20px;
-            box-shadow: 0 0 40px var(--neon-pink);
-            display: flex;
-            flex-direction: column;
-        }
+/* Arcade Cabinet */
+#arcade-cabinet {
+    position: relative;
+    width: 95vw;
+    max-width: 520px;
+    height: 90dvh; /* slightly smaller so it fits */
+    background: #111;
+    border: 6px solid #333;
+    border-radius: 20px;
+    box-shadow: 0 0 30px var(--neon-pink);
+    display: flex;
+    flex-direction: column;
+}
+
+        #arcade-header {
+    height: 40px;
+    background: #000;
+    border-bottom: 2px solid var(--neon-blue);
+    color: var(--neon-green);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+}
+
+.blink {
+    color: #ff0033;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.2; }
+}
 
         /* Screen Area */
         #screen-container {
             position: relative;
-            flex: 2;
+            flex: 1;
             background: var(--retro-purple);
-            margin: 15px;
+            margin: 10px;
             border: 4px solid #222;
             overflow: hidden;
             display: flex;
@@ -121,7 +143,7 @@
             background: #333;
             color: white;
             border: 3px solid #555;
-            padding: 12px 5px;
+            padding: 10px 5px;
             font-family: 'Courier New', monospace;
             font-size: 0.8rem;
             font-weight: bold;
@@ -164,7 +186,7 @@
 
         #footer-nav {
     position: fixed;
-    bottom: env(safe-area-inset-bottom, 10px);
+    bottom: env(safe-area-inset-bottom, 25px);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -202,6 +224,10 @@
 <audio id="winSound" src="won.mp3" preload="auto"></audio>
 
 <div id="arcade-cabinet">
+    <div id="arcade-header">
+    <span>NCLEX ARCADE</span>
+    <span class="blink">● LIVE</span>
+</div>
     <div id="screen-container">
         <div id="score-counter">XP: 0/20</div>
         <canvas id="gameCanvas"></canvas>
