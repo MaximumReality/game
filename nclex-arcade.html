@@ -4,32 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NCLEX ARCADE: MAXIMUM REALITY</title>
+
     <!-- BASIC SEO -->
-<meta name="description" content="Play NCLEX Arcade: Maximum Reality — a retro neon nursing game where you answer real NCLEX-style questions under pressure. Train your brain like a pro.">
-<meta name="keywords" content="NCLEX, nursing, study game, medical quiz, pharmacology, nursing students, NCLEX prep, arcade game">
-<meta name="author" content="Maximum Reality">
+    <meta name="description" content="Play NCLEX Arcade: Maximum Reality — a retro neon nursing game where you answer real NCLEX-style questions under pressure. Train your brain like a pro.">
+    <meta name="keywords" content="NCLEX, nursing, study game, medical quiz, pharmacology, nursing students, NCLEX prep, arcade game">
+    <meta name="author" content="Maximum Reality">
 
-<!-- FAVICON -->
-<link rel="icon" type="image/png" href="https://maximumreality.github.io/game/nclex-favicon.png">
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="https://maximumreality.github.io/game/nclex-favicon.png">
 
-<!-- MOBILE / THEME -->
-<meta name="theme-color" content="#2b0040">
+    <!-- MOBILE / THEME -->
+    <meta name="theme-color" content="#2b0040">
 
-<!-- OPEN GRAPH (Facebook, Discord, WhatsApp, etc.) -->
-<meta property="og:title" content="NCLEX Arcade: Maximum Reality">
-<meta property="og:description" content="A neon arcade-style NCLEX prep game. Answer fast. Think faster. Save your patient.">
-<meta property="og:image" content="https://maximumreality.github.io/game/nclex-favicon.png">
-<meta property="og:url" content="https://maximumreality.github.io/game/nclex-arcade.html">
-<meta property="og:type" content="website">
+    <!-- OPEN GRAPH -->
+    <meta property="og:title" content="NCLEX Arcade: Maximum Reality">
+    <meta property="og:description" content="A neon arcade-style NCLEX prep game. Answer fast. Think faster. Save your patient.">
+    <meta property="og:image" content="https://maximumreality.github.io/game/nclex-favicon.png">
+    <meta property="og:url" content="https://maximumreality.github.io/game/nclex-arcade.html">
+    <meta property="og:type" content="website">
 
-<!-- TWITTER / X -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="NCLEX Arcade: Maximum Reality">
-<meta name="twitter:description" content="Retro arcade meets nursing school. Can you survive the NCLEX?">
-<meta name="twitter:image" content="https://maximumreality.github.io/game/nclex-favicon.png">
+    <!-- TWITTER / X -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="NCLEX Arcade: Maximum Reality">
+    <meta name="twitter:description" content="Retro arcade meets nursing school. Can you survive the NCLEX?">
+    <meta name="twitter:image" content="https://maximumreality.github.io/game/nclex-favicon.png">
 
-<!-- PWA (optional but nice) -->
-<link rel="apple-touch-icon" href="https://maximumreality.github.io/game/nclex-favicon.png">
+    <!-- PWA -->
+    <link rel="apple-touch-icon" href="https://maximumreality.github.io/game/nclex-favicon.png">
+
     <style>
         :root {
             --neon-green: #39ff14;
@@ -40,54 +42,52 @@
         }
 
         body {
-    background-color: var(--dark-bg);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100dvh; /* better for mobile */
-    margin: 0;
-    font-family: 'Courier New', Courier, monospace;
-    color: white;
-    overflow: hidden;
-}
+            background-color: var(--dark-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100dvh;
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            color: white;
+            overflow: hidden;
+        }
 
-/* Arcade Cabinet */
-#arcade-cabinet {
-    position: relative;
-    width: 95vw;
-    max-width: 520px;
-    height: 90dvh; /* slightly smaller so it fits */
-    background: #111;
-    border: 6px solid #333;
-    border-radius: 20px;
-    box-shadow: 0 0 30px var(--neon-pink);
-    display: flex;
-    flex-direction: column;
-}
+        #arcade-cabinet {
+            position: relative;
+            width: 95vw;
+            max-width: 520px;
+            height: 90dvh;
+            background: #111;
+            border: 6px solid #333;
+            border-radius: 20px;
+            box-shadow: 0 0 30px var(--neon-pink);
+            display: flex;
+            flex-direction: column;
+        }
 
         #arcade-header {
-    height: 40px;
-    background: #000;
-    border-bottom: 2px solid var(--neon-blue);
-    color: var(--neon-green);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
-    font-size: 0.7rem;
-    letter-spacing: 1px;
-}
+            height: 40px;
+            background: #000;
+            border-bottom: 2px solid var(--neon-blue);
+            color: var(--neon-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
 
-.blink {
-    color: #ff0033;
-    animation: blink 1s infinite;
-}
+        .blink {
+            color: #ff0033;
+            animation: blink 1s infinite;
+        }
 
-@keyframes blink {
-    50% { opacity: 0.2; }
-}
+        @keyframes blink {
+            50% { opacity: 0.2; }
+        }
 
-        /* Screen Area */
         #screen-container {
             position: relative;
             flex: 1;
@@ -104,7 +104,7 @@
             content: " ";
             position: absolute;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
                         linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             background-size: 100% 3px, 3px 100%;
             pointer-events: none;
@@ -117,12 +117,20 @@
             height: auto;
         }
 
-        /* UI Styling */
         #ui-layer {
             flex: 1;
             padding: 10px;
             text-align: center;
             z-index: 10;
+        }
+
+        /* FIX: score counter now lives inside ui-layer flow, no absolute positioning conflict */
+        #score-counter {
+            color: var(--neon-blue);
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-align: right;
+            padding: 4px 10px 0;
         }
 
         #question-display {
@@ -156,7 +164,6 @@
         .arcade-btn:hover { background: #444; border-color: var(--neon-blue); }
         .arcade-btn:active { transform: translate(2px, 2px); box-shadow: none; background: var(--neon-green); color: black; }
 
-        /* Rationale Overlay */
         #rationale-overlay {
             display: none;
             position: absolute;
@@ -176,75 +183,64 @@
             color: black !important;
         }
 
-        #score-counter {
-            position: absolute;
-            top: 45px; right: 10px;
-            color: var(--neon-blue);
-            font-weight: bold;
-            z-index: 20;
+        #footer-nav {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 200;
         }
 
-     #footer-nav {
-    position: fixed;
-    bottom: 60px; /* 👈 adjust this number freely now */
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-    z-index: 200;
-}
+        .nav-btn {
+            text-decoration: none;
+            background: #111;
+            color: var(--neon-green);
+            border: 2px solid var(--neon-blue);
+            padding: 8px 12px;
+            font-size: 0.7rem;
+            font-family: 'Courier New', monospace;
+            box-shadow: 2px 2px 0 #000;
+            transition: 0.15s;
+        }
 
-.nav-btn {
-    text-decoration: none;
-    background: #111;
-    color: var(--neon-green);
-    border: 2px solid var(--neon-blue);
-    padding: 8px 12px;
-    font-size: 0.7rem;
-    font-family: 'Courier New', monospace;
-    box-shadow: 2px 2px 0 #000;
-    transition: 0.15s;
-}
-
-.nav-btn:hover {
-    background: var(--neon-blue);
-    color: black;
-}
-
-.nav-btn:active {
-    transform: translate(2px,2px);
-    box-shadow: none;
-}
+        .nav-btn:hover { background: var(--neon-blue); color: black; }
+        .nav-btn:active { transform: translate(2px,2px); box-shadow: none; }
     </style>
 </head>
-    
+
 <body>
     <audio id="startSound" src="start.mp3" preload="auto"></audio>
-<audio id="exitSound" src="exit.mp3" preload="auto"></audio>
-<audio id="winSound" src="won.mp3" preload="auto"></audio>
- 
-    
-<div id="arcade-cabinet">
-    <div id="arcade-header">
-    <span>NCLEX ARCADE</span>
-    <span class="blink">● LIVE</span>
-</div>
-    <div id="screen-container">
-        <div id="score-counter">XP: 0/20</div>
-        <canvas id="gameCanvas"></canvas>
-        
-        <div id="rationale-overlay">
-            <h2 id="result-text"></h2>
-            <p id="rationale-text"></p>
-            <button class="arcade-btn continue-btn" onclick="closeRationale()">PRESS START TO CONTINUE</button>
-        </div>
+    <audio id="exitSound" src="exit.mp3" preload="auto"></audio>
+    <audio id="winSound" src="won.mp3" preload="auto"></audio>
 
-        <div id="ui-layer">
-            <div id="question-display">INITIALIZING...</div>
-            <div id="options"></div>
+    <div id="arcade-cabinet">
+        <div id="arcade-header">
+            <span>NCLEX ARCADE</span>
+            <span class="blink">● LIVE</span>
+        </div>
+        <div id="screen-container">
+            <canvas id="gameCanvas"></canvas>
+
+            <div id="rationale-overlay">
+                <h2 id="result-text"></h2>
+                <p id="rationale-text"></p>
+                <button class="arcade-btn continue-btn" onclick="closeRationale()">PRESS START TO CONTINUE</button>
+            </div>
+
+            <div id="ui-layer">
+                <div id="score-counter">XP: 0/20</div>
+                <div id="question-display">INITIALIZING...</div>
+                <div id="options"></div>
+            </div>
         </div>
     </div>
-</div>
+
+    <div id="footer-nav">
+        <a href="https://maximumreality.github.io/games" class="nav-btn" onclick="playExit(event, this.href)">⬅ EXIT ARCADE</a>
+        <a href="https://maximumreality.xyz" class="nav-btn" onclick="playExit(event, this.href)">🏙️ RETURN TO REALITY</a>
+    </div>
 
 <script>
     const canvas = document.getElementById('gameCanvas');
@@ -257,15 +253,16 @@
     const exitSound = document.getElementById('exitSound');
     const winSound = document.getElementById('winSound');
 
-let hasStarted = false; // prevents repeat start sound
     canvas.width = 600;
     canvas.height = 300;
 
+    let hasStarted = false;
     let score = 0;
     let currentQA = {};
     let timeLeft = 100;
     let timerInterval;
-    const TIME_LIMIT = 20; // 20 seconds
+    let flickerInterval; // FIX: track flicker so it can be cleared on restart
+    const TIME_LIMIT = 20;
 
     const nclexData = [
         // --- PHARMACOLOGY ---
@@ -276,22 +273,55 @@ let hasStarted = false; // prevents repeat start sound
         { q: "Naloxone (Narcan) reverses what?", a: "Opioids", wrong: ["Benzos", "Alcohol", "Warfarin"], rationale: "Narcan is the 'wake up' call for respiratory depression caused by Opioids." },
         { q: "Digoxin toxicity sign?", a: "Yellow-Green Halos", wrong: ["Dry Mouth", "Hearing loss", "Hyperactivity"], rationale: "Visual changes and Nausea/Vomiting are classic signs of 'Dig' toxicity." },
         { q: "Antidote for Warfarin?", a: "Vitamin K", wrong: ["Protamine", "Narcan", "Glucagon"], rationale: "Warfarin (Coumadin) takes days to work; Vit K is the brake pedal." },
-        
+        { q: "Antidote for benzodiazepine overdose?", a: "Flumazenil", wrong: ["Naloxone", "Vitamin K", "Atropine"], rationale: "Flumazenil reverses benzodiazepine effects." },
+        { q: "Antidote for Acetaminophen?", a: "Acetylcysteine", wrong: ["Vitamin K", "Narcan", "Atropine"], rationale: "Mucomyst saves the liver from Tylenol." },
+        { q: "When to give Rapid Insulin?", a: "15 min before meal", wrong: ["Bedtime", "2 hrs after", "Fast"], rationale: "Don't shoot if the food isn't there!" },
+        { q: "Rifampin side effect?", a: "Orange body fluids", wrong: ["Hearing loss", "Neuropathy", "Diarrhea"], rationale: "Tears/Urine turn orange. Harmless but scary!" },
+        { q: "Status Epilepticus drug?", a: "Lorazepam (Ativan)", wrong: ["Phenytoin", "Valproic Acid", "Gabapentin"], rationale: "Benzos first to stop the seizing now!" },
+        { q: "Medication for acute asthma attack?", a: "Albuterol", wrong: ["Montelukast", "Fluticasone", "Theophylline"], rationale: "Albuterol is a fast-acting bronchodilator for acute symptoms." },
+        { q: "Drug for rapid-sequence intubation?", a: "Succinylcholine", wrong: ["Atropine", "Epinephrine", "Furosemide"], rationale: "Succinylcholine is a fast-acting paralytic used in RSI." },
+        { q: "Medication for heart failure?", a: "Furosemide", wrong: ["Metformin", "Ibuprofen", "Acetaminophen"], rationale: "Furosemide is a loop diuretic used to reduce fluid overload." },
+        { q: "Medication for Type 1 diabetes?", a: "Insulin", wrong: ["Metformin", "Glipizide", "Acarbose"], rationale: "Type 1 diabetics cannot produce insulin and need exogenous insulin." },
+        { q: "Safe pain med for pregnant patient?", a: "Acetaminophen", wrong: ["Ibuprofen", "Aspirin", "Naproxen"], rationale: "Acetaminophen is considered safe in pregnancy; NSAIDs are not recommended." },
+
         // --- LABS ---
         { q: "Normal Potassium (K+) range?", a: "3.5 - 5.0 mEq/L", wrong: ["1.5 - 2.5", "7.0 - 9.0", "135 - 145"], rationale: "K+ affects the heart. High or Low = EKG changes!" },
         { q: "Normal Sodium (Na+) range?", a: "135 - 145 mEq/L", wrong: ["110 - 120", "150 - 160", "3.5 - 5.0"], rationale: "Sodium = Neuro. Think Seizures if this is out of whack!" },
         { q: "Normal pH of Blood?", a: "7.35 - 7.45", wrong: ["7.00 - 7.15", "7.50 - 7.65", "6.80 - 7.00"], rationale: "Lower than 7.35 is Acidic; Higher than 7.45 is Alkalotic." },
         { q: "Normal Creatinine level?", a: "0.6 - 1.2 mg/dL", wrong: ["3.0 - 5.0", "0.1 - 0.3", "10 - 20"], rationale: "Creatinine is the best indicator of Kidney function." },
-        { q: "Normal WBC count?", a: "5k - 10k", wrong: ["1k - 2k", "20k - 30k", "100 - 500"], rationale: "Leukocytosis (high WBC) usually means infection." },
+        { q: "Normal WBC count?", a: "5,000 - 10,000/mm³", wrong: ["1k - 2k", "20k - 30k", "100 - 500"], rationale: "Leukocytosis (high WBC) usually means infection." },
         { q: "Normal Calcium level?", a: "9.0 - 10.5 mg/dL", wrong: ["1.0 - 2.0", "15 - 20", "4.0 - 5.0"], rationale: "Think: 'Call 9-11' (9 to 10.5) for Calcium!" },
-        
+        { q: "Normal Platelet count?", a: "150k - 400k", wrong: ["5k - 10k", "500k - 1M", "50k - 100k"], rationale: "Below 150k is Thrombocytopenia (Bleeding risk!)." },
+        { q: "Normal HbA1c?", a: "4% - 6%", wrong: ["8% - 10%", "1% - 2%", "12% - 15%"], rationale: "Shows 3-month average of blood sugar." },
+        { q: "Normal PT (Non-Warfarin)?", a: "11 - 12.5 seconds", wrong: ["30-45s", "5-8s", "60-90s"], rationale: "PT/INR is for Warfarin." },
+        { q: "Normal Phosphorus?", a: "3.0 - 4.5 mg/dL", wrong: ["1.0", "5.0", "0.5"], rationale: "Inverse to Calcium." },
+        { q: "Therapeutic PT/INR range for warfarin?", a: "2.0 - 3.0", wrong: ["1.0 - 1.5", "3.5 - 4.5", "0.5 - 1.0"], rationale: "Maintaining INR in 2–3 reduces risk of clot without causing bleeding." },
+        { q: "Target Therapeutic Digoxin Level?", a: "0.5 - 2.0 ng/mL", wrong: ["3.5 - 5.0", "10 - 20", "0.1 - 0.4"], rationale: "Dig has a narrow window. Watch for yellow halos!" },
+        { q: "Normal fasting blood glucose?", a: "70-99 mg/dL", wrong: ["40-60", "100-125", "126-150"], rationale: "Fasting glucose should be under 100 mg/dL to be normal." },
+        { q: "Normal adult hemoglobin?", a: "12-16 g/dL (female) / 14-18 g/dL (male)", wrong: ["8-10", "20-25", "5-8"], rationale: "Hemoglobin reflects oxygen-carrying capacity." },
+        { q: "Lab test for liver function?", a: "ALT & AST", wrong: ["BUN & Creatinine", "CBC", "PTT"], rationale: "ALT and AST are enzymes released when liver cells are damaged." },
+        { q: "Which lab indicates kidney injury?", a: "Elevated creatinine", wrong: ["Low potassium", "High sodium", "Elevated glucose"], rationale: "Creatinine is the most sensitive marker for kidney function." },
+        { q: "Which electrolyte imbalance causes peaked T-waves?", a: "Hyperkalemia", wrong: ["Hypokalemia", "Hypernatremia", "Hypocalcemia"], rationale: "High potassium affects cardiac conduction, seen as peaked T-waves." },
+        { q: "Normal adult BP range?", a: "90/60 - 120/80 mmHg", wrong: ["140/90 - 160/100", "60/40 - 70/50", "130/100 - 150/110"], rationale: "This is the standard normal BP range for adults." },
+        { q: "Normal adult respiratory rate?", a: "12-20 breaths/min", wrong: ["8-10", "20-28", "25-35"], rationale: "12–20 is the standard normal adult respiratory rate." },
+        { q: "Normal adult pulse rate?", a: "60-100 bpm", wrong: ["40-60", "100-120", "120-140"], rationale: "60–100 bpm is the standard resting heart rate for adults." },
+        { q: "Normal adult body temperature?", a: "36-37.5°C (97-99.5°F)", wrong: ["35-36", "38-39", "37.5-39"], rationale: "This is the standard normal adult temperature range." },
+        { q: "Normal oxygen saturation?", a: "95-100%", wrong: ["85-90%", "90-94%", "100-105%"], rationale: "95–100% indicates adequate oxygenation in healthy adults." },
+        { q: "Normal newborn heart rate?", a: "120-160 bpm", wrong: ["100-110", "160-180", "80-100"], rationale: "Newborns have a higher heart rate than adults." },
+        { q: "Normal pediatric heart rate (1-2 yrs)?", a: "80-130 bpm", wrong: ["60-80", "140-180", "50-70"], rationale: "Heart rate norms vary by age; toddlers are 80-130 bpm." },
+
         // --- MATERNITY ---
         { q: "Priority for Ruptured Membranes?", a: "Check Fetal Heart Rate", wrong: ["Check BP", "Start IV", "Call family"], rationale: "Check the baby first to rule out prolapsed cord!" },
         { q: "Position for Cord Prolapse?", a: "Knee-Chest", wrong: ["High Fowlers", "Left Lateral", "Supine"], rationale: "Knee-Chest uses gravity to keep the baby off the cord." },
         { q: "Nagele's Rule for EDD?", a: "-3 months +7 days", wrong: ["+3 months -7 days", "+9 months +10 days", "-1 month +1 day"], rationale: "Subtract 3 months, add 7 days to the first day of LMP." },
         { q: "Location of Fundus at 20 weeks?", a: "At the Umbilicus", wrong: ["At Pubic Bone", "At Xiphoid", "In Pelvis"], rationale: "20 weeks = Umbilicus (The halfway mark!)." },
         { q: "VEAL CHOP: 'V' (Variable) means?", a: "Cord Compression", wrong: ["Head Compression", "Placental Issue", "Oxygen"], rationale: "Variable Decels are bad! Turn the mom, give O2." },
-        
+        { q: "VEAL CHOP: 'L' (Late Decel) means?", a: "Placental Insufficiency", wrong: ["Head Compression", "Cord Compression", "Good Baby"], rationale: "Lates are bad. Give O2, Turn Mom, Stop Oxytocin!" },
+        { q: "Positive sign of pregnancy?", a: "Fetal Heart Tones", wrong: ["Missed Period", "Morning Sickness", "Positive Test"], rationale: "Objective proof only (Heartbeat/Ultrasound)." },
+        { q: "Sign of Preeclampsia?", a: "Proteinuria & HTN", wrong: ["Hypotension", "Low Reflexes", "Weight Loss"], rationale: "High BP + Protein in urine." },
+        { q: "Sign of magnesium toxicity?", a: "Loss of deep tendon reflexes", wrong: ["Hypertension", "Tachycardia", "Hyperactive reflexes"], rationale: "Magnesium suppresses neuromuscular activity; check reflexes." },
+        { q: "Priority for newborn with low Apgar?", a: "Resuscitation & oxygen", wrong: ["Feed immediately", "Call family", "Weigh baby"], rationale: "Immediate intervention is required for newborns with low Apgar scores." },
+
         // --- MED SURG / TRIAGE ---
         { q: "Rule of Nines: Entire Left Arm?", a: "9%", wrong: ["18%", "4.5%", "1%"], rationale: "Front is 4.5%, back is 4.5%. Total = 9%." },
         { q: "Sign of Hip Fracture?", a: "Shortened & External Rotation", wrong: ["Lengthened", "Cyanosis", "Internal Rotation"], rationale: "Affected leg looks shorter and toes point outward." },
@@ -300,7 +330,6 @@ let hasStarted = false; // prevents repeat start sound
         { q: "Airborne Precautions require?", a: "N95 & Negative Pressure", wrong: ["Surgical Mask", "Door Open", "No Mask"], rationale: "MTV (Measles, TB, Varicella) need the N95." },
         { q: "Maslow's Priority?", a: "Oxygen/Physiological", wrong: ["Safety", "Love", "Self-Esteem"], rationale: "ABC's and Physiological needs (Air/Water) always come first." },
         { q: "Phlebitis Sign?", a: "Erythema & Warmth", wrong: ["Cool skin", "Pallor", "Numbness"], rationale: "Red, warm streaks mean vein inflammation." },
-        { q: "Target Therapeutic Digoxin Level?", a: "0.5 - 2.0 ng/mL", wrong: ["3.5 - 5.0", "10 - 20", "0.1 - 0.4"], rationale: "Dig has a narrow window. Watch for yellow halos!" },
         { q: "Priority for Anaphylaxis?", a: "Epinephrine IM", wrong: ["Albuterol", "Normal Saline", "Benadryl"], rationale: "Epi is the only thing that stops the throat from closing!" },
         { q: "Donning PPE order?", a: "Gown, Mask, Goggles, Gloves", wrong: ["Gloves first", "Mask last", "Goggles first"], rationale: "Go from bottom up (Gown first) and end with Gloves." },
         { q: "Doffing PPE order?", a: "Gloves, Goggles, Gown, Mask", wrong: ["Mask first", "Gown last", "Goggles last"], rationale: "Remove dirtiest first (Gloves) and Mask last outside the room." },
@@ -309,154 +338,103 @@ let hasStarted = false; // prevents repeat start sound
         { q: "Non-maleficence means?", a: "Do no harm", wrong: ["Doing good", "Equality", "Right to choose"], rationale: "Non-maleficence = Do no harm." },
         { q: "Sign of NMS?", a: "Muscle Rigidity & High Fever", wrong: ["Low BP", "Hypothermia", "Hyperactivity"], rationale: "Neuroleptic Malignant Syndrome is a psych/pharma emergency!" },
         { q: "Primary prevention example?", a: "Immunizations", wrong: ["Screenings", "Rehab", "Physical Therapy"], rationale: "Primary = Prevention. Secondary = Screening." },
-        { q: "Normal Platelet count?", a: "150k - 400k", wrong: ["5k - 10k", "500k - 1M", "50k - 100k"], rationale: "Below 150k is Thrombocytopenia (Bleeding risk!)." },
-        { q: "Normal HbA1c?", a: "4% - 6%", wrong: ["8% - 10%", "1% - 2%", "12% - 15%"], rationale: "Shows 3-month average of blood sugar." },
-        { q: "Status Epilepticus drug?", a: "Lorazepam (Ativan)", wrong: ["Phenytoin", "Valproic Acid", "Gabapentin"], rationale: "Benzos first to stop the seizing now!" },
-        { q: "Rifampin side effect?", a: "Orange body fluids", wrong: ["Hearing loss", "Neuropathy", "Diarrhea"], rationale: "Tears/Urine turn orange. Harmless but scary!" },
-        { q: "When to give Rapid Insulin?", a: "15 min before meal", wrong: ["Bedtime", "2 hrs after", "Fast"], rationale: "Don't shoot if the food isn't there!" },
-        { q: "Normal PT (Non-Warfarin)?", a: "11 - 12.5 seconds", wrong: ["30-45s", "5-8s", "60-90s"], rationale: "PT/INR is for Warfarin." },
         { q: "Cardiac Tamponade sign?", a: "Muffled Heart Sounds", wrong: ["Loud Bruit", "Flat Veins", "Bradypnea"], rationale: "Beck's Triad: Muffled sounds, JVD, and Hypotension." },
         { q: "Position after Appendectomy?", a: "Semi-Fowlers", wrong: ["Prone", "Supine", "Lateral"], rationale: "Reduces strain and helps breathing." },
         { q: "Droplet Precautions need?", a: "Surgical Mask", wrong: ["N95", "Negative Pressure", "Gown only"], rationale: "Flu/Pertussis needs a mask within 3 feet." },
-        { q: "Normal Phosphorus?", a: "3.0 - 4.5 mg/dL", wrong: ["1.0", "5.0", "0.5"], rationale: "Inverse to Calcium." },
         { q: "Triage: Red Tag?", a: "Immediate / Life-Threatening", wrong: ["Dead", "Minor", "Delayed"], rationale: "Red = Can survive if treated right now." },
         { q: "Hypovolemic Shock priority?", a: "IV Fluids", wrong: ["Antibiotics", "Diet", "Bed rest"], rationale: "Fill the tank to fix the BP!" },
-        { q: "Sign of Preeclampsia?", a: "Proteinuria & HTN", wrong: ["Hypotension", "Low Reflexes", "Weight Loss"], rationale: "High BP + Protein in urine." },
-        { q: "Antidote for Acetaminophen?", a: "Acetylcysteine", wrong: ["Vitamin K", "Narcan", "Atropine"], rationale: "Mucomyst saves the liver from Tylenol." },
-        { q: "Positive sign of pregnancy?", a: "Fetal Heart Tones", wrong: ["Missed Period", "Morning Sickness", "Positive Test"], rationale: "Objective proof only (Heartbeat/Ultrasound)." },
-        { q: "VEAL CHOP: 'L' (Late Decel) means?", a: "Placental Insufficiency", wrong: ["Head Compression", "Cord Compression", "Good Baby"], rationale: "Lates are bad. Give O2, Turn Mom, Stop Oxytocin!" },
-        // --- NEW NCLEX QUESTIONS ---
-{ q: "Priority action for a patient with chest pain?", a: "Obtain ECG & vitals", wrong: ["Give water", "Call family", "Start antibiotics"], rationale: "Always assess cardiac status first; ECG and vitals are immediate priorities." },
-{ q: "Therapeutic PT/INR range for warfarin?", a: "2.0 - 3.0", wrong: ["1.0 - 1.5", "3.5 - 4.5", "0.5 - 1.0"], rationale: "Maintaining INR in 2–3 reduces risk of clot without causing bleeding." },
-{ q: "Medication for acute asthma attack?", a: "Albuterol", wrong: ["Montelukast", "Fluticasone", "Theophylline"], rationale: "Albuterol is a fast-acting bronchodilator for acute symptoms." },
-{ q: "Sign of hypoglycemia?", a: "Sweating & shakiness", wrong: ["Polyuria", "Weight gain", "Jaundice"], rationale: "Low blood sugar triggers adrenergic symptoms like sweating and tremors." },
-{ q: "Normal adult BP range?", a: "90/60 - 120/80 mmHg", wrong: ["140/90 - 160/100", "60/40 - 70/50", "130/100 - 150/110"], rationale: "This is the standard normal BP range for adults." },
-{ q: "Position for a patient with shock?", a: "Supine with legs elevated", wrong: ["Trendelenburg", "High Fowler's", "Prone"], rationale: "Supine with legs elevated improves venous return and perfusion." },
-{ q: "Lab test for liver function?", a: "ALT & AST", wrong: ["BUN & Creatinine", "CBC", "PTT"], rationale: "ALT and AST are enzymes released when liver cells are damaged." },
-{ q: "Most accurate way to take temperature?", a: "Oral or tympanic thermometer", wrong: ["Axillary only", "Temporal scanner only", "Under pillow"], rationale: "Oral and tympanic give the most reliable readings for adults." },
-{ q: "Priority for suspected stroke?", a: "Assess ABCs & call stroke team", wrong: ["Give fluids", "Take history first", "Check urine output"], rationale: "Airway, breathing, circulation and rapid stroke response are urgent." },
-{ q: "Normal fasting blood glucose?", a: "70-99 mg/dL", wrong: ["40-60", "100-125", "126-150"], rationale: "Fasting glucose should be under 100 mg/dL to be normal." },
-{ q: "What does HIPAA protect?", a: "Patient health information", wrong: ["Staff schedules", "Medication prices", "Hospital profits"], rationale: "HIPAA ensures patient confidentiality and privacy." },
-{ q: "Priority intervention for anaphylaxis?", a: "IM Epinephrine", wrong: ["Oral antihistamine", "IV fluids only", "Oxygen only"], rationale: "Epinephrine is life-saving and works immediately for severe allergic reactions." },
-{ q: "Best position for NG tube insertion?", a: "High Fowler's", wrong: ["Supine", "Trendelenburg", "Prone"], rationale: "High Fowler's helps prevent aspiration and facilitates insertion." },
-{ q: "Sign of digoxin toxicity?", a: "Bradycardia & visual halos", wrong: ["Tachycardia & rash", "Hypertension", "Constipation"], rationale: "Classic digoxin toxicity includes bradycardia and visual disturbances." },
-{ q: "Normal platelet count?", a: "150k - 400k", wrong: ["50k - 100k", "500k - 1M", "10k - 50k"], rationale: "150k–400k is the standard normal range for platelets." },
-{ q: "First step in CPR for adult?", a: "Check responsiveness & call for help", wrong: ["Give 2 breaths", "Start compressions", "Check pulse only"], rationale: "Always ensure safety, responsiveness, and activate emergency response first." },
-{ q: "Medication for Type 1 diabetes?", a: "Insulin", wrong: ["Metformin", "Glipizide", "Acarbose"], rationale: "Type 1 diabetics cannot produce insulin and need exogenous insulin." },
-{ q: "How to prevent catheter-associated UTI?", a: "Maintain closed system & hygiene", wrong: ["Flush with saline daily", "Change tubing hourly", "Give prophylactic antibiotics"], rationale: "Proper technique and hygiene reduce risk of infection." },
-{ q: "Normal oxygen saturation?", a: "95-100%", wrong: ["85-90%", "90-94%", "100-105%"], rationale: "95–100% indicates adequate oxygenation in healthy adults." },
-{ q: "Most important when giving a blood transfusion?", a: "Verify patient ID & blood type", wrong: ["Start IV fast", "Warm blood", "Check vitals only"], rationale: "Correct patient and blood type verification prevent transfusion reactions." },
- // --- ADDITIONAL NCLEX QUESTIONS ---
-{ q: "Priority for patient with shortness of breath?", a: "Assess airway & oxygen", wrong: ["Start IV fluids", "Call family", "Give pain meds"], rationale: "Airway and oxygenation are always the first priority." },
-{ q: "Therapeutic Lithium level?", a: "0.6 - 1.2 mEq/L", wrong: ["1.5 - 2.5", "0.2 - 0.5", "2.0 - 3.0"], rationale: "Lithium has a narrow therapeutic window; above 1.5 is toxic." },
-{ q: "Most important for wound healing?", a: "Protein intake", wrong: ["Calcium", "Vitamin C only", "Water"], rationale: "Protein is essential for tissue repair and immune function." },
-{ q: "Antidote for acetaminophen overdose?", a: "Acetylcysteine", wrong: ["Vitamin K", "Naloxone", "Atropine"], rationale: "Acetylcysteine protects the liver from acetaminophen toxicity." },
-{ q: "Sign of hypokalemia?", a: "Muscle weakness & cramps", wrong: ["Bradycardia & dry skin", "Diarrhea", "Polyuria"], rationale: "Low potassium affects muscle function and cardiac rhythm." },
-{ q: "Normal adult respiratory rate?", a: "12-20 breaths/min", wrong: ["8-10", "20-28", "25-35"], rationale: "12–20 is the standard normal adult respiratory rate." },
-{ q: "Priority for a post-op patient with sudden chest pain?", a: "Assess vitals & oxygen", wrong: ["Give pain meds", "Call family", "Document only"], rationale: "Sudden chest pain can indicate serious complications like PE or MI." },
-{ q: "Normal hemoglobin for adult female?", a: "12-16 g/dL", wrong: ["10-12", "16-20", "8-10"], rationale: "Hemoglobin in this range indicates adequate oxygen-carrying capacity." },
-{ q: "Medication for heart failure?", a: "Furosemide", wrong: ["Metformin", "Ibuprofen", "Acetaminophen"], rationale: "Furosemide is a loop diuretic used to reduce fluid overload." },
-{ q: "How to prevent pressure ulcers?", a: "Reposition patient every 2 hrs", wrong: ["Give antibiotics", "Massage area once", "Apply lotion only"], rationale: "Frequent repositioning relieves pressure and prevents skin breakdown." },
-{ q: "Normal adult pulse rate?", a: "60-100 bpm", wrong: ["40-60", "100-120", "120-140"], rationale: "60–100 bpm is the standard resting heart rate for adults." },
-{ q: "Priority for hypovolemic shock?", a: "IV fluids", wrong: ["Oxygen only", "Give diuretics", "Elevate legs only"], rationale: "Restoring volume quickly is crucial to maintain perfusion." },
-{ q: "Sign of hypercalcemia?", a: "Constipation & confusion", wrong: ["Diarrhea", "Tachycardia", "Pale skin"], rationale: "High calcium levels can cause GI and CNS symptoms." },
-{ q: "Normal newborn heart rate?", a: "120-160 bpm", wrong: ["100-110", "160-180", "80-100"], rationale: "Newborns have a higher heart rate than adults." },
-{ q: "Drug for rapid-sequence intubation?", a: "Succinylcholine", wrong: ["Atropine", "Epinephrine", "Furosemide"], rationale: "Succinylcholine is a fast-acting paralytic used in RSI." },
-{ q: "First step in seizure management?", a: "Ensure safety & protect head", wrong: ["Give meds immediately", "Check glucose last", "Call family"], rationale: "Preventing injury is the priority during a seizure." },
-{ q: "Normal WBC count?", a: "5k - 10k/mm³", wrong: ["1k - 3k", "12k - 15k", "20k - 30k"], rationale: "Leukocytes in this range indicate normal immune function." },
-{ q: "What does autonomy mean?", a: "Patient's right to choose", wrong: ["Doing no harm", "Fairness", "Self-interest"], rationale: "Respecting autonomy means patients make their own healthcare decisions." },
-{ q: "Priority for newborn with low Apgar?", a: "Resuscitation & oxygen", wrong: ["Feed immediately", "Call family", "Weigh baby"], rationale: "Immediate intervention is required for newborns with low Apgar scores." },
-{ q: "Most important when giving IV meds?", a: "Verify dose & patient ID", wrong: ["Give rapidly", "Check color only", "Mix with another drug"], rationale: "Preventing errors requires proper verification before administration." },
-{ q: "Normal adult body temperature?", a: "36-37.5°C (97-99.5°F)", wrong: ["35-36", "38-39", "37.5-39"], rationale: "This is the standard normal adult temperature range." },
-{ q: "Priority for patient with suspected stroke?", a: "Call stroke team & assess ABCs", wrong: ["Give fluids", "Wait for labs", "Document only"], rationale: "Rapid assessment and activation of stroke protocol saves brain tissue." },
-{ q: "Normal blood pH?", a: "7.35 - 7.45", wrong: ["7.0 - 7.2", "7.5 - 7.6", "6.8 - 7.0"], rationale: "Blood pH outside this range indicates acid-base imbalance." },
-{ q: "How to prevent medication errors?", a: "Follow 5 rights (drug, dose, patient, route, time)", wrong: ["Give quickly", "Skip checks", "Ask family"], rationale: "Following the 5 rights is the safest way to administer medications." },
-{ q: "Priority for patient with airway obstruction?", a: "Perform Heimlich or clear airway", wrong: ["Call family", "Give fluids", "Administer meds"], rationale: "Airway is always the top priority in an emergency." },
- // --- ADDITIONAL NCLEX QUESTIONS ---
-{ q: "Priority for patient with shortness of breath?", a: "Assess airway & oxygen", wrong: ["Start IV fluids", "Call family", "Give pain meds"], rationale: "Airway and oxygenation are always the first priority." },
-{ q: "Therapeutic Lithium level?", a: "0.6 - 1.2 mEq/L", wrong: ["1.5 - 2.5", "0.2 - 0.5", "2.0 - 3.0"], rationale: "Lithium has a narrow therapeutic window; above 1.5 is toxic." },
-{ q: "Most important for wound healing?", a: "Protein intake", wrong: ["Calcium", "Vitamin C only", "Water"], rationale: "Protein is essential for tissue repair and immune function." },
-{ q: "Antidote for acetaminophen overdose?", a: "Acetylcysteine", wrong: ["Vitamin K", "Naloxone", "Atropine"], rationale: "Acetylcysteine protects the liver from acetaminophen toxicity." },
-{ q: "Sign of hypokalemia?", a: "Muscle weakness & cramps", wrong: ["Bradycardia & dry skin", "Diarrhea", "Polyuria"], rationale: "Low potassium affects muscle function and cardiac rhythm." },
-{ q: "Normal adult respiratory rate?", a: "12-20 breaths/min", wrong: ["8-10", "20-28", "25-35"], rationale: "12–20 is the standard normal adult respiratory rate." },
-{ q: "Priority for a post-op patient with sudden chest pain?", a: "Assess vitals & oxygen", wrong: ["Give pain meds", "Call family", "Document only"], rationale: "Sudden chest pain can indicate serious complications like PE or MI." },
-{ q: "Normal hemoglobin for adult female?", a: "12-16 g/dL", wrong: ["10-12", "16-20", "8-10"], rationale: "Hemoglobin in this range indicates adequate oxygen-carrying capacity." },
-{ q: "Medication for heart failure?", a: "Furosemide", wrong: ["Metformin", "Ibuprofen", "Acetaminophen"], rationale: "Furosemide is a loop diuretic used to reduce fluid overload." },
-{ q: "How to prevent pressure ulcers?", a: "Reposition patient every 2 hrs", wrong: ["Give antibiotics", "Massage area once", "Apply lotion only"], rationale: "Frequent repositioning relieves pressure and prevents skin breakdown." },
-{ q: "Normal adult pulse rate?", a: "60-100 bpm", wrong: ["40-60", "100-120", "120-140"], rationale: "60–100 bpm is the standard resting heart rate for adults." },
-{ q: "Priority for hypovolemic shock?", a: "IV fluids", wrong: ["Oxygen only", "Give diuretics", "Elevate legs only"], rationale: "Restoring volume quickly is crucial to maintain perfusion." },
-{ q: "Sign of hypercalcemia?", a: "Constipation & confusion", wrong: ["Diarrhea", "Tachycardia", "Pale skin"], rationale: "High calcium levels can cause GI and CNS symptoms." },
-{ q: "Normal newborn heart rate?", a: "120-160 bpm", wrong: ["100-110", "160-180", "80-100"], rationale: "Newborns have a higher heart rate than adults." },
-{ q: "Drug for rapid-sequence intubation?", a: "Succinylcholine", wrong: ["Atropine", "Epinephrine", "Furosemide"], rationale: "Succinylcholine is a fast-acting paralytic used in RSI." },
-{ q: "First step in seizure management?", a: "Ensure safety & protect head", wrong: ["Give meds immediately", "Check glucose last", "Call family"], rationale: "Preventing injury is the priority during a seizure." },
-{ q: "Normal WBC count?", a: "5k - 10k/mm³", wrong: ["1k - 3k", "12k - 15k", "20k - 30k"], rationale: "Leukocytes in this range indicate normal immune function." },
-{ q: "What does autonomy mean?", a: "Patient's right to choose", wrong: ["Doing no harm", "Fairness", "Self-interest"], rationale: "Respecting autonomy means patients make their own healthcare decisions." },
-{ q: "Priority for newborn with low Apgar?", a: "Resuscitation & oxygen", wrong: ["Feed immediately", "Call family", "Weigh baby"], rationale: "Immediate intervention is required for newborns with low Apgar scores." },
-{ q: "Most important when giving IV meds?", a: "Verify dose & patient ID", wrong: ["Give rapidly", "Check color only", "Mix with another drug"], rationale: "Preventing errors requires proper verification before administration." },
-{ q: "Normal adult body temperature?", a: "36-37.5°C (97-99.5°F)", wrong: ["35-36", "38-39", "37.5-39"], rationale: "This is the standard normal adult temperature range." },
-{ q: "Priority for patient with suspected stroke?", a: "Call stroke team & assess ABCs", wrong: ["Give fluids", "Wait for labs", "Document only"], rationale: "Rapid assessment and activation of stroke protocol saves brain tissue." },
-{ q: "Normal blood pH?", a: "7.35 - 7.45", wrong: ["7.0 - 7.2", "7.5 - 7.6", "6.8 - 7.0"], rationale: "Blood pH outside this range indicates acid-base imbalance." },
-{ q: "How to prevent medication errors?", a: "Follow 5 rights (drug, dose, patient, route, time)", wrong: ["Give quickly", "Skip checks", "Ask family"], rationale: "Following the 5 rights is the safest way to administer medications." },
-{ q: "Priority for patient with airway obstruction?", a: "Perform Heimlich or clear airway", wrong: ["Call family", "Give fluids", "Administer meds"], rationale: "Airway is always the top priority in an emergency." },
- // --- FINAL NCLEX QUESTIONS: BATCH 4 (High-Level / Critical Thinking) ---
-{ q: "Patient with chest pain, diaphoresis, and nausea — first action?", a: "Assess ABCs and vitals", wrong: ["Give aspirin only", "Start IV fluids only", "Document & monitor"], rationale: "Always assess airway, breathing, circulation before interventions." },
-{ q: "Which lab indicates kidney injury?", a: "Elevated creatinine", wrong: ["Low potassium", "High sodium", "Elevated glucose"], rationale: "Creatinine is the most sensitive marker for kidney function." },
-{ q: "Post-op patient with sudden shortness of breath — priority?", a: "Assess for pulmonary embolism", wrong: ["Encourage deep breathing only", "Give oxygen only", "Call family"], rationale: "PE is life-threatening; immediate assessment is critical." },
-{ q: "Patient with confusion, dry skin, and poor skin turgor?", a: "Assess for dehydration", wrong: ["Check blood sugar", "Give insulin", "Monitor only"], rationale: "These are classic signs of fluid deficit; hydration is priority." },
-{ q: "Which med reverses warfarin?", a: "Vitamin K", wrong: ["Protamine sulfate", "Naloxone", "Flumazenil"], rationale: "Vitamin K is the antidote for warfarin-induced anticoagulation." },
-{ q: "Priority for patient with stroke symptoms?", a: "Call rapid response & maintain airway", wrong: ["Give aspirin immediately", "Check BP later", "Document only"], rationale: "Airway, breathing, circulation take precedence in stroke." },
-{ q: "Patient with SpO2 85% on room air — next step?", a: "Apply supplemental oxygen and reassess", wrong: ["Sit patient upright only", "Document and wait", "Give IV fluids"], rationale: "Hypoxemia needs immediate correction to prevent tissue damage." },
-{ q: "Early sign of ICP increase?", a: "Confusion and restlessness", wrong: ["Bradycardia only", "Projectile vomiting only", "Seizures only"], rationale: "Cognitive changes are often first signs of rising intracranial pressure." },
-{ q: "Best position for patient after abdominal surgery?", a: "Semi-Fowler's", wrong: ["Supine flat", "Prone", "Trendelenburg"], rationale: "Semi-Fowler's reduces strain on incision and aids breathing." },
-{ q: "Client with tachycardia, hypotension, and weak pulse — priority?", a: "Assess perfusion and give IV fluids", wrong: ["Give oral fluids", "Monitor only", "Call family"], rationale: "This indicates shock; immediate action is required." },
-{ q: "Normal adult WBC?", a: "5,000-10,000/mm³", wrong: ["1,000-2,000", "20,000-30,000", "50,000+"], rationale: "Normal range indicates adequate immune function." },
-{ q: "Which electrolyte imbalance causes peaked T-waves?", a: "Hyperkalemia", wrong: ["Hypokalemia", "Hypernatremia", "Hypocalcemia"], rationale: "High potassium affects cardiac conduction, seen as peaked T-waves." },
-{ q: "Best method to prevent ventilator-associated pneumonia?", a: "Elevate head of bed 30–45°", wrong: ["Deep suctioning only", "Sedate heavily", "Oral care not needed"], rationale: "Proper positioning and oral care reduce VAP risk." },
-{ q: "Patient with hypotension, bradycardia, and cool extremities — likely?", a: "Cardiogenic shock", wrong: ["Hypovolemic shock", "Septic shock", "Anaphylactic shock"], rationale: "Cardiogenic shock shows low BP and low HR with poor perfusion." },
-{ q: "Most important for IV potassium infusion?", a: "Use pump & monitor cardiac rhythm", wrong: ["Push rapidly", "Give without monitoring", "Add to large volume only"], rationale: "Rapid IV potassium can cause fatal arrhythmias." },
-{ q: "Nursing action for suspected DVT?", a: "Avoid massaging limb & notify provider", wrong: ["Apply heat immediately", "Encourage walking immediately", "Elevate only after massage"], rationale: "Massaging could dislodge clot and cause PE." },
-{ q: "Priority for acute asthma attack?", a: "Administer short-acting bronchodilator", wrong: ["Give steroids only", "Sit patient quietly", "Monitor only"], rationale: "Immediate bronchodilation relieves airway obstruction." },
-{ q: "Patient with sudden vision loss and headache?", a: "Assess for possible stroke or retinal detachment", wrong: ["Give pain meds only", "Monitor only", "Call family"], rationale: "Sudden neurological changes require urgent evaluation." },
-{ q: "Sign of magnesium toxicity?", a: "Loss of deep tendon reflexes", wrong: ["Hypertension", "Tachycardia", "Hyperactive reflexes"], rationale: "Magnesium suppresses neuromuscular activity; check reflexes." },
-{ q: "Which PPE is required for airborne precautions?", a: "N95 respirator", wrong: ["Surgical mask", "Gloves only", "Gown only"], rationale: "Airborne pathogens need N95 protection." },
-{ q: "Normal adult hemoglobin?", a: "12-16 g/dL (female) / 14-18 g/dL (male)", wrong: ["8-10", "20-25", "5-8"], rationale: "Hemoglobin reflects oxygen-carrying capacity." },
-{ q: "Client with severe dehydration — first action?", a: "Start IV fluids & monitor vitals", wrong: ["Give oral fluids only", "Wait for labs", "Call family"], rationale: "Severe dehydration can quickly lead to shock." },
-{ q: "Early signs of hypovolemic shock?", a: "Tachycardia, cool clammy skin", wrong: ["Bradycardia, warm skin", "Hypertension, flushed skin", "Fever"], rationale: "Early shock triggers sympathetic response." },
-{ q: "Best way to confirm NG tube placement?", a: "Aspirate & check pH, then X-ray", wrong: ["Inject water and listen", "Check color only", "Document & start feeding"], rationale: "X-ray confirmation ensures safe enteral feeding." },
-{ q: "Client with angina — priority teaching?", a: "Sit/rest & take prescribed nitroglycerin", wrong: ["Exercise to distract", "Skip meds if mild", "Drink water only"], rationale: "Immediate relief & safety are key during angina episodes." },
-{ q: "Highest priority for a patient with chest pain?", a: "Assess vital signs & EKG", wrong: ["Call family", "Give water", "Document pain"], rationale: "Always assess and monitor first to rule out life-threatening cardiac issues." },
-{ q: "Best way to prevent aspiration in dysphagia?", a: "Sit upright 90° while eating", wrong: ["Lie flat", "Use straws", "Offer thin liquids only"], rationale: "Proper positioning reduces risk of aspiration." },
-{ q: "Normal hemoglobin range (female)?", a: "12-16 g/dL", wrong: ["10-12", "14-20", "8-10"], rationale: "Normal adult female hemoglobin is 12-16 g/dL." },
-{ q: "Antidote for benzodiazepine overdose?", a: "Flumazenil", wrong: ["Naloxone", "Vitamin K", "Atropine"], rationale: "Flumazenil reverses benzodiazepine effects." },
-{ q: "Best delegation for an LPN?", a: "Administer oral meds to stable patient", wrong: ["Initial assessment", "Plan care", "IV push meds"], rationale: "LPNs can give meds but cannot perform initial assessments or plan care independently." },
-{ q: "Most important teaching for warfarin?", a: "Avoid vitamin K rich foods", wrong: ["Take with dairy", "Avoid sunlight", "Increase potassium"], rationale: "Vitamin K affects warfarin effectiveness; diet consistency is key." },
-{ q: "Early sign of hypoxia?", a: "Restlessness & anxiety", wrong: ["Bradycardia", "Blue lips", "Low BP"], rationale: "Restlessness is an early compensatory sign of hypoxia." },
-{ q: "Priority action for anaphylaxis?", a: "Administer epinephrine IM", wrong: ["Give antihistamine", "Start IV fluids", "Call family"], rationale: "Epinephrine is life-saving in anaphylaxis and must be administered immediately." },
-{ q: "Normal INR for patient on warfarin?", a: "2.0 - 3.0", wrong: ["0.5 - 1.5", "4.0 - 5.0", "1.0 - 2.0"], rationale: "Therapeutic INR for most conditions is 2-3; monitor to prevent clot or bleed." },
-{ q: "Best position for patient with shock?", a: "Supine with legs elevated", wrong: ["High Fowler", "Prone", "Trendelenburg"], rationale: "Supine with legs elevated promotes perfusion to vital organs." },
-{ q: "Most important teaching for diabetic foot care?", a: "Inspect feet daily", wrong: ["Soak feet daily", "Use heating pad directly", "Walk barefoot"], rationale: "Daily inspection prevents unnoticed injuries and infections." },
-{ q: "Initial action for suspected stroke?", a: "Call stroke team / rapid assessment", wrong: ["Give aspirin", "Check blood sugar", "Wait 30 min"], rationale: "Time-sensitive intervention is critical for stroke outcomes." },
-{ q: "Best indicator of fluid status?", a: "Daily weights", wrong: ["Blood pressure only", "Urine color", "Peripheral pulses"], rationale: "Daily weights track fluid gain/loss accurately." },
-{ q: "Priority nursing action for sepsis?", a: "Obtain blood cultures & start antibiotics", wrong: ["Document vitals", "Administer antipyretic", "Call family"], rationale: "Early antibiotics and culture are critical to treat sepsis." },
-{ q: "Normal fasting glucose range?", a: "70-99 mg/dL", wrong: ["50-69", "100-125", "140-160"], rationale: "Fasting glucose 70-99 mg/dL is normal for adults." },
-{ q: "Best position post-lumbar puncture?", a: "Flat supine for several hours", wrong: ["Sitting upright", "Trendelenburg", "Prone"], rationale: "Flat supine prevents headache and CSF leak." },
-{ q: "Safe pain med for pregnant patient?", a: "Acetaminophen", wrong: ["Ibuprofen", "Aspirin", "Naproxen"], rationale: "Acetaminophen is considered safe in pregnancy; NSAIDs are not recommended." },
-{ q: "Early sign of lithium toxicity?", a: "Nausea, tremor, confusion", wrong: ["Seizure", "Blindness", "Rash"], rationale: "Mild toxicity manifests as GI and CNS symptoms; severe toxicity is life-threatening." },
-{ q: "Best way to reduce pressure ulcers?", a: "Reposition every 2 hours", wrong: ["Apply powder", "Limit fluids", "Massage reddened areas vigorously"], rationale: "Frequent repositioning reduces pressure and tissue damage." },
-{ q: "Normal pediatric heart rate (1-2 yrs)?", a: "80-130 bpm", wrong: ["60-80", "140-180", "50-70"], rationale: "Heart rate norms vary by age; toddlers are 80-130 bpm." },
-{ q: "Most important patient teaching for inhaler use?", a: "Exhale fully before inhaling medication", wrong: ["Shake and swallow", "Take with water", "Breathe rapidly"], rationale: "Proper technique ensures medication reaches lungs effectively." },
-{ q: "Priority for a patient with hypoglycemia?", a: "Give 15-20g fast-acting carb", wrong: ["Administer insulin", "Give water", "Check vitals only"], rationale: "Immediate glucose administration prevents severe hypoglycemia complications." },
-{ q: "Best nursing action for urinary retention?", a: "Assess bladder distention & try catheterization if needed", wrong: ["Restrict fluids", "Encourage caffeine", "Give diuretics"], rationale: "Assessment guides interventions; catheterization relieves retention." },
-{ q: "Most accurate temp measurement?", a: "Rectal in adults", wrong: ["Axillary", "Forehead scan", "Ear tip"], rationale: "Rectal temperature is the gold standard for core body temperature." },
-{ q: "Correct order of donning sterile gloves?", a: "Wash hands, don gown, glove dominant hand first", wrong: ["Glove non-dominant first", "Skip hand washing", "Gown after gloves"], rationale: "Following proper sterile technique prevents contamination." },
-{ q: "Priority action for opioid overdose?", a: "Administer naloxone", wrong: ["Give oxygen only", "Monitor blood sugar", "Apply cold compress"], rationale: "Naloxone rapidly reverses opioid respiratory depression." },
-{ q: "Best position for patient with COPD?", a: "High Fowler", wrong: ["Supine", "Prone", "Trendelenburg"], rationale: "High Fowler maximizes lung expansion and ease of breathing." }
-]        
+        { q: "Sign of hypoglycemia?", a: "Sweating & shakiness", wrong: ["Polyuria", "Weight gain", "Jaundice"], rationale: "Low blood sugar triggers adrenergic symptoms like sweating and tremors." },
+        { q: "Sign of hypokalemia?", a: "Muscle weakness & cramps", wrong: ["Bradycardia & dry skin", "Diarrhea", "Polyuria"], rationale: "Low potassium affects muscle function and cardiac rhythm." },
+        { q: "Sign of hypercalcemia?", a: "Constipation & confusion", wrong: ["Diarrhea", "Tachycardia", "Pale skin"], rationale: "High calcium levels can cause GI and CNS symptoms." },
+        { q: "Sign of digoxin toxicity?", a: "Bradycardia & visual halos", wrong: ["Tachycardia & rash", "Hypertension", "Constipation"], rationale: "Classic digoxin toxicity includes bradycardia and visual disturbances." },
+        { q: "Early signs of hypovolemic shock?", a: "Tachycardia, cool clammy skin", wrong: ["Bradycardia, warm skin", "Hypertension, flushed skin", "Fever"], rationale: "Early shock triggers sympathetic response." },
+        { q: "Early sign of ICP increase?", a: "Confusion and restlessness", wrong: ["Bradycardia only", "Projectile vomiting only", "Seizures only"], rationale: "Cognitive changes are often first signs of rising intracranial pressure." },
+        { q: "Early sign of hypoxia?", a: "Restlessness & anxiety", wrong: ["Bradycardia", "Blue lips", "Low BP"], rationale: "Restlessness is an early compensatory sign of hypoxia." },
+        { q: "Early sign of lithium toxicity?", a: "Nausea, tremor, confusion", wrong: ["Seizure", "Blindness", "Rash"], rationale: "Mild toxicity manifests as GI and CNS symptoms; severe toxicity is life-threatening." },
+        { q: "Position for a patient with shock?", a: "Supine with legs elevated", wrong: ["Trendelenburg", "High Fowler's", "Prone"], rationale: "Supine with legs elevated improves venous return and perfusion." },
+        { q: "Priority for patient with shortness of breath?", a: "Assess airway & oxygen", wrong: ["Start IV fluids", "Call family", "Give pain meds"], rationale: "Airway and oxygenation are always the first priority." },
+        { q: "Priority for suspected stroke?", a: "Assess ABCs & call stroke team", wrong: ["Give fluids", "Take history first", "Check urine output"], rationale: "Airway, breathing, circulation and rapid stroke response are urgent." },
+        { q: "Priority for anaphylaxis?", a: "IM Epinephrine", wrong: ["Oral antihistamine", "IV fluids only", "Oxygen only"], rationale: "Epinephrine is life-saving and works immediately for severe allergic reactions." },
+        { q: "Priority for hypovolemic shock?", a: "IV fluids", wrong: ["Oxygen only", "Give diuretics", "Elevate legs only"], rationale: "Restoring volume quickly is crucial to maintain perfusion." },
+        { q: "Priority for patient with airway obstruction?", a: "Perform Heimlich or clear airway", wrong: ["Call family", "Give fluids", "Administer meds"], rationale: "Airway is always the top priority in an emergency." },
+        { q: "Priority for a patient with hypoglycemia?", a: "Give 15-20g fast-acting carb", wrong: ["Administer insulin", "Give water", "Check vitals only"], rationale: "Immediate glucose administration prevents severe hypoglycemia complications." },
+        { q: "Priority nursing action for sepsis?", a: "Obtain blood cultures & start antibiotics", wrong: ["Document vitals", "Administer antipyretic", "Call family"], rationale: "Early antibiotics and culture are critical to treat sepsis." },
+
+        // --- NURSING SKILLS ---
+        { q: "Most accurate way to take temperature?", a: "Rectal in adults", wrong: ["Axillary", "Forehead scan", "Ear tip"], rationale: "Rectal temperature is the gold standard for core body temperature." },
+        { q: "Best position for NG tube insertion?", a: "High Fowler's", wrong: ["Supine", "Trendelenburg", "Prone"], rationale: "High Fowler's helps prevent aspiration and facilitates insertion." },
+        { q: "Best way to confirm NG tube placement?", a: "Aspirate & check pH, then X-ray", wrong: ["Inject water and listen", "Check color only", "Document & start feeding"], rationale: "X-ray confirmation ensures safe enteral feeding." },
+        { q: "Best position for patient with COPD?", a: "High Fowler", wrong: ["Supine", "Prone", "Trendelenburg"], rationale: "High Fowler maximizes lung expansion and ease of breathing." },
+        { q: "Best position for patient after abdominal surgery?", a: "Semi-Fowler's", wrong: ["Supine flat", "Prone", "Trendelenburg"], rationale: "Semi-Fowler's reduces strain on incision and aids breathing." },
+        { q: "Best position post-lumbar puncture?", a: "Flat supine for several hours", wrong: ["Sitting upright", "Trendelenburg", "Prone"], rationale: "Flat supine prevents headache and CSF leak." },
+        { q: "Best position for patient with shock?", a: "Supine with legs elevated", wrong: ["High Fowler", "Prone", "Trendelenburg"], rationale: "Supine with legs elevated promotes perfusion to vital organs." },
+        { q: "How to prevent catheter-associated UTI?", a: "Maintain closed system & hygiene", wrong: ["Flush with saline daily", "Change tubing hourly", "Give prophylactic antibiotics"], rationale: "Proper technique and hygiene reduce risk of infection." },
+        { q: "How to prevent pressure ulcers?", a: "Reposition patient every 2 hrs", wrong: ["Give antibiotics", "Massage area once", "Apply lotion only"], rationale: "Frequent repositioning relieves pressure and prevents skin breakdown." },
+        { q: "How to prevent medication errors?", a: "Follow 5 rights (drug, dose, patient, route, time)", wrong: ["Give quickly", "Skip checks", "Ask family"], rationale: "Following the 5 rights is the safest way to administer medications." },
+        { q: "Most important when giving a blood transfusion?", a: "Verify patient ID & blood type", wrong: ["Start IV fast", "Warm blood", "Check vitals only"], rationale: "Correct patient and blood type verification prevent transfusion reactions." },
+        { q: "Most important when giving IV meds?", a: "Verify dose & patient ID", wrong: ["Give rapidly", "Check color only", "Mix with another drug"], rationale: "Preventing errors requires proper verification before administration." },
+        { q: "Most important for IV potassium infusion?", a: "Use pump & monitor cardiac rhythm", wrong: ["Push rapidly", "Give without monitoring", "Add to large volume only"], rationale: "Rapid IV potassium can cause fatal arrhythmias." },
+        { q: "Most important for wound healing?", a: "Protein intake", wrong: ["Calcium", "Vitamin C only", "Water"], rationale: "Protein is essential for tissue repair and immune function." },
+        { q: "Correct order of donning sterile gloves?", a: "Wash hands, don gown, glove dominant hand first", wrong: ["Glove non-dominant first", "Skip hand washing", "Gown after gloves"], rationale: "Following proper sterile technique prevents contamination." },
+        { q: "Which PPE is required for airborne precautions?", a: "N95 respirator", wrong: ["Surgical mask", "Gloves only", "Gown only"], rationale: "Airborne pathogens need N95 protection." },
+        { q: "First step in CPR for adult?", a: "Check responsiveness & call for help", wrong: ["Give 2 breaths", "Start compressions", "Check pulse only"], rationale: "Always ensure safety, responsiveness, and activate emergency response first." },
+        { q: "First step in seizure management?", a: "Ensure safety & protect head", wrong: ["Give meds immediately", "Check glucose last", "Call family"], rationale: "Preventing injury is the priority during a seizure." },
+        { q: "Nursing action for suspected DVT?", a: "Avoid massaging limb & notify provider", wrong: ["Apply heat immediately", "Encourage walking immediately", "Elevate only after massage"], rationale: "Massaging could dislodge clot and cause PE." },
+        { q: "Best way to prevent aspiration in dysphagia?", a: "Sit upright 90° while eating", wrong: ["Lie flat", "Use straws", "Offer thin liquids only"], rationale: "Proper positioning reduces risk of aspiration." },
+        { q: "Best way to prevent ventilator-associated pneumonia?", a: "Elevate head of bed 30–45°", wrong: ["Deep suctioning only", "Sedate heavily", "Oral care not needed"], rationale: "Proper positioning and oral care reduce VAP risk." },
+        { q: "Best way to reduce pressure ulcers?", a: "Reposition every 2 hours", wrong: ["Apply powder", "Limit fluids", "Massage reddened areas vigorously"], rationale: "Frequent repositioning reduces pressure and tissue damage." },
+        { q: "Priority action for opioid overdose?", a: "Administer naloxone", wrong: ["Give oxygen only", "Monitor blood sugar", "Apply cold compress"], rationale: "Naloxone rapidly reverses opioid respiratory depression." },
+        { q: "Best nursing action for urinary retention?", a: "Assess bladder distention & try catheterization if needed", wrong: ["Restrict fluids", "Encourage caffeine", "Give diuretics"], rationale: "Assessment guides interventions; catheterization relieves retention." },
+        { q: "Most important patient teaching for inhaler use?", a: "Exhale fully before inhaling medication", wrong: ["Shake and swallow", "Take with water", "Breathe rapidly"], rationale: "Proper technique ensures medication reaches lungs effectively." },
+        { q: "Most important teaching for warfarin?", a: "Avoid vitamin K rich foods", wrong: ["Take with dairy", "Avoid sunlight", "Increase potassium"], rationale: "Vitamin K affects warfarin effectiveness; diet consistency is key." },
+        { q: "Most important teaching for diabetic foot care?", a: "Inspect feet daily", wrong: ["Soak feet daily", "Use heating pad directly", "Walk barefoot"], rationale: "Daily inspection prevents unnoticed injuries and infections." },
+        { q: "What does HIPAA protect?", a: "Patient health information", wrong: ["Staff schedules", "Medication prices", "Hospital profits"], rationale: "HIPAA ensures patient confidentiality and privacy." },
+        { q: "What does autonomy mean?", a: "Patient's right to choose", wrong: ["Doing no harm", "Fairness", "Self-interest"], rationale: "Respecting autonomy means patients make their own healthcare decisions." },
+        { q: "Best indicator of fluid status?", a: "Daily weights", wrong: ["Blood pressure only", "Urine color", "Peripheral pulses"], rationale: "Daily weights track fluid gain/loss accurately." },
+        { q: "Best delegation for an LPN?", a: "Administer oral meds to stable patient", wrong: ["Initial assessment", "Plan care", "IV push meds"], rationale: "LPNs can give meds but cannot perform initial assessments or plan care independently." },
+        { q: "Best method to prevent ventilator-associated pneumonia?", a: "Elevate head of bed 30–45°", wrong: ["Deep suctioning only", "Sedate heavily", "Oral care not needed"], rationale: "Proper positioning and oral care reduce VAP risk." },
+
+        // --- BATCH 3 ---
+        { q: "Priority for patient with sudden hypotension?", a: "Assess airway, breathing, circulation", wrong: ["Call family", "Give oral fluids", "Check labs later"], rationale: "ABC assessment is always first in emergencies." },
+        { q: "Most important for post-op pain?", a: "Monitor vital signs & comfort", wrong: ["Give meds only", "Encourage mobility only", "Call family"], rationale: "Assessment guides safe and effective pain management." },
+        { q: "Normal newborn glucose?", a: "40-60 mg/dL", wrong: ["20-30", "70-90", "100-120"], rationale: "Newborns are at risk of hypoglycemia if levels fall below 40." },
+        { q: "Priority for chest tube with sudden bubbling?", a: "Check for air leak & notify provider", wrong: ["Clamp tube immediately", "Remove tube", "Document only"], rationale: "Sudden bubbling may indicate an air leak that needs assessment." },
+        { q: "Best position for respiratory distress?", a: "High Fowler's", wrong: ["Supine", "Trendelenburg", "Prone"], rationale: "High Fowler's maximizes chest expansion and oxygenation." },
+        { q: "First step in burn management?", a: "Stop burning process & cool area", wrong: ["Apply ointment immediately", "Wrap tightly", "Give antibiotics"], rationale: "Stopping the burn and cooling reduces tissue damage." },
+        { q: "Priority for newborn with low temp?", a: "Warm baby gradually", wrong: ["Give fluids immediately", "Feed right away", "Wrap tightly in blankets"], rationale: "Hypothermia must be corrected gradually to prevent shock." },
+        { q: "Best method to prevent infection?", a: "Hand hygiene", wrong: ["Use antibiotics prophylactically", "Gloves only", "Mask only"], rationale: "Hand hygiene is the single most effective infection prevention step." },
+        { q: "Nursing priority for sudden seizure?", a: "Protect patient from injury", wrong: ["Check glucose first", "Give IV meds immediately", "Call family"], rationale: "Patient safety is always the first priority." },
+        { q: "First step for choking adult?", a: "Perform Heimlich maneuver", wrong: ["Give water", "Call 911 first", "Pat on back only"], rationale: "Clearing the airway immediately saves life." },
+        { q: "Sign of hypocalcemia?", a: "Muscle twitching & tetany", wrong: ["Bradycardia only", "Confusion only", "Constipation"], rationale: "Low calcium causes neuromuscular excitability." },
+        { q: "Action for suspected MI?", a: "Call rapid response & assess vitals", wrong: ["Give fluids only", "Wait for lab results", "Document only"], rationale: "Immediate assessment and intervention saves heart tissue." },
+        { q: "Most important for medication safety?", a: "Check patient ID & 5 rights", wrong: ["Give quickly", "Skip checks if busy", "Ask family"], rationale: "Verifying medication and patient ensures safety." },
+        { q: "Best way to prevent falls?", a: "Keep call light within reach & educate", wrong: ["Restrict movement", "Bed rails only", "Call family"], rationale: "Patient education and accessibility are key for fall prevention." },
+        { q: "Normal serum sodium?", a: "135-145 mEq/L", wrong: ["120-130", "150-160", "110-120"], rationale: "Sodium levels regulate fluid balance and nerve function." },
+
+        // --- CRITICAL THINKING ---
+        { q: "Patient with chest pain, diaphoresis, and nausea — first action?", a: "Assess ABCs and vitals", wrong: ["Give aspirin only", "Start IV fluids only", "Document & monitor"], rationale: "Always assess airway, breathing, circulation before interventions." },
+        { q: "Post-op patient with sudden shortness of breath — priority?", a: "Assess for pulmonary embolism", wrong: ["Encourage deep breathing only", "Give oxygen only", "Call family"], rationale: "PE is life-threatening; immediate assessment is critical." },
+        { q: "Patient with confusion, dry skin, and poor skin turgor?", a: "Assess for dehydration", wrong: ["Check blood sugar", "Give insulin", "Monitor only"], rationale: "These are classic signs of fluid deficit; hydration is priority." },
+        { q: "Patient with SpO2 85% on room air — next step?", a: "Apply supplemental oxygen and reassess", wrong: ["Sit patient upright only", "Document and wait", "Give IV fluids"], rationale: "Hypoxemia needs immediate correction to prevent tissue damage." },
+        { q: "Client with tachycardia, hypotension, and weak pulse — priority?", a: "Assess perfusion and give IV fluids", wrong: ["Give oral fluids", "Monitor only", "Call family"], rationale: "This indicates shock; immediate action is required." },
+        { q: "Patient with hypotension, bradycardia, and cool extremities — likely?", a: "Cardiogenic shock", wrong: ["Hypovolemic shock", "Septic shock", "Anaphylactic shock"], rationale: "Cardiogenic shock shows low BP and low HR with poor perfusion." },
+        { q: "Patient with sudden vision loss and headache?", a: "Assess for possible stroke or retinal detachment", wrong: ["Give pain meds only", "Monitor only", "Call family"], rationale: "Sudden neurological changes require urgent evaluation." },
+        { q: "Priority action for acute asthma attack?", a: "Administer short-acting bronchodilator", wrong: ["Give steroids only", "Sit patient quietly", "Monitor only"], rationale: "Immediate bronchodilation relieves airway obstruction." },
+        { q: "Priority for a post-op patient with sudden chest pain?", a: "Assess vitals & oxygen", wrong: ["Give pain meds", "Call family", "Document only"], rationale: "Sudden chest pain can indicate serious complications like PE or MI." },
+        { q: "Client with severe dehydration — first action?", a: "Start IV fluids & monitor vitals", wrong: ["Give oral fluids only", "Wait for labs", "Call family"], rationale: "Severe dehydration can quickly lead to shock." },
+        { q: "Priority for stroke symptoms?", a: "Call rapid response & maintain airway", wrong: ["Give aspirin immediately", "Check BP later", "Document only"], rationale: "Airway, breathing, circulation take precedence in stroke." },
+        { q: "Priority action for anaphylaxis?", a: "Administer epinephrine IM", wrong: ["Give antihistamine", "Start IV fluids", "Call family"], rationale: "Epinephrine is life-saving in anaphylaxis and must be administered immediately." },
+        { q: "Client with angina — priority teaching?", a: "Sit/rest & take prescribed nitroglycerin", wrong: ["Exercise to distract", "Skip meds if mild", "Drink water only"], rationale: "Immediate relief & safety are key during angina episodes." },
+        { q: "Priority action for opioid overdose?", a: "Administer naloxone", wrong: ["Give oxygen only", "Monitor blood sugar", "Apply cold compress"], rationale: "Naloxone rapidly reverses opioid respiratory depression." },
+        { q: "Priority for patient with chest pain?", a: "Obtain ECG & vitals", wrong: ["Give water", "Call family", "Start antibiotics"], rationale: "Always assess cardiac status first; ECG and vitals are immediate priorities." }
     ];
 
     function initGame() {
+        // FIX: clear victory flicker interval on restart
+        clearInterval(flickerInterval);
         score = 0;
         scoreEl.innerText = `XP: 0/20`;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         nextQuestion();
     }
 
@@ -468,7 +446,7 @@ let hasStarted = false; // prevents repeat start sound
 
         currentQA = nclexData[Math.floor(Math.random() * nclexData.length)];
         questionEl.innerText = currentQA.q;
-        
+
         let choices = [...currentQA.wrong, currentQA.a];
         choices.sort(() => Math.random() - 0.5);
 
@@ -530,70 +508,61 @@ let hasStarted = false; // prevents repeat start sound
         ctx.fillStyle = '#00ffff';
         ctx.fillRect(0, 250, canvas.width, 50);
 
-        // Timer Bar
+        // Timer Bar outline
         ctx.strokeStyle = '#00ffff';
         ctx.lineWidth = 4;
         ctx.strokeRect(50, 20, 500, 30);
-        
+
         let barColor = "#39ff14";
         if (timeLeft < 50) barColor = "#ffff00";
         if (timeLeft < 25) barColor = "#ff0033";
-        
+
         ctx.fillStyle = barColor;
         ctx.fillRect(54, 24, (timeLeft / 100) * 492, 22);
     }
 
     function victory() {
-    winSound.currentTime = 0;
-    winSound.play().catch(() => {});
-    clearInterval(timerInterval);
-    questionEl.innerText = "";
-    optionsEl.innerHTML = "<button class='arcade-btn continue-btn' onclick='initGame()'>RESTART</button>";
+        winSound.currentTime = 0;
+        winSound.play().catch(() => {});
+        clearInterval(timerInterval);
+        questionEl.innerText = "";
+        optionsEl.innerHTML = "<button class='arcade-btn continue-btn' onclick='initGame()'>RESTART</button>";
 
-    ctx.fillStyle = "#39ff14";
-    ctx.font = "bold 50px Courier New";
-    ctx.textAlign = "center";
-    
-    // Neon glow
-    ctx.shadowColor = "#00ffff";
-    ctx.shadowBlur = 20;
+        ctx.fillStyle = "#39ff14";
+        ctx.font = "bold 50px Courier New";
+        ctx.textAlign = "center";
+        ctx.shadowColor = "#00ffff";
+        ctx.shadowBlur = 20;
 
-    ctx.fillText("LEVEL", canvas.width / 2, 130);
-    ctx.fillText("COMPLETE", canvas.width / 2, 190);
-    ctx.fillText("INSERT COIN", canvas.width / 2, 260); // <-- add this on the screen
+        ctx.fillText("LEVEL", canvas.width / 2, 130);
+        ctx.fillText("COMPLETE", canvas.width / 2, 190);
+        ctx.fillText("INSERT COIN", canvas.width / 2, 260);
 
-    // Optional: flicker effect
-    setInterval(() => {
-        ctx.clearRect(0, 240, canvas.width, 60);
-        if (Math.random() > 0.5) {
-            ctx.fillText("INSERT COIN", canvas.width / 2, 260);
-        }
-    }, 300);
-}
+        // FIX: store interval ref so it can be cleared on restart
+        flickerInterval = setInterval(() => {
+            ctx.clearRect(0, 240, canvas.width, 60);
+            if (Math.random() > 0.5) {
+                ctx.fillText("INSERT COIN", canvas.width / 2, 260);
+            }
+        }, 300);
+    }
+
     initGame();
+
     document.addEventListener("click", () => {
-    if (!hasStarted) {
-    startSound.currentTime = 0;
-    startSound.play().catch(()=>{});
-    hasStarted = true;
-}
-},
-                              { once: true });
+        if (!hasStarted) {
+            startSound.currentTime = 0;
+            startSound.play().catch(() => {});
+            hasStarted = true;
+        }
+    }, { once: true });
+
     function playExit(e, url) {
-    e.preventDefault();
-
-    exitSound.currentTime = 0;
-    exitSound.play().catch(()=>{});
-
-    // small delay so sound plays before navigation
-    setTimeout(() => {
-        window.location.href = url;
-    }, 300);
-}
+        e.preventDefault();
+        exitSound.currentTime = 0;
+        exitSound.play().catch(() => {});
+        setTimeout(() => { window.location.href = url; }, 300);
+    }
 </script>
-  <div id="footer-nav">
-    <a href="https://maximumreality.github.io/games" class="nav-btn" onclick="playExit(event, this.href)">⬅ EXIT ARCADE</a>
-    <a href="https://maximumreality.xyz" class="nav-btn" onclick="playExit(event, this.href)">🏙️RETURN TO REALITY</a>
-</div>
 </body>
 </html>
