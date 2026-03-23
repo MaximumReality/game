@@ -16,9 +16,8 @@ body {
   font-family: 'Share Tech Mono', monospace; overflow: hidden; height: 100vh;
 }
 
-/* The Clinical Grid */
 #ekg-viewport {
-  width: 100%; height: 50vh; background-color: #000; position: relative;
+  width: 100%; height: 45vh; background-color: #000; position: relative;
   background-image: 
     linear-gradient(var(--grid-red) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-red) 1px, transparent 1px),
@@ -29,54 +28,79 @@ body {
 }
 
 #trace-svg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-.trace-line { fill: none; stroke: var(--trace-green); stroke-width: 3; stroke-linecap: round; filter: drop-shadow(0 0 5px var(--trace-green)); }
+.trace-line { 
+  fill: none; stroke: var(--trace-green); stroke-width: 3; 
+  stroke-linecap: round; filter: drop-shadow(0 0 5px var(--trace-green)); 
+}
 
-.info-panel { padding: 20px; height: 50vh; overflow-y: auto; background: linear-gradient(180deg, #0a1520, #050a0f); }
-.header { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--primary); margin-bottom: 15px; border-left: 4px solid var(--primary); padding-left: 10px; }
+.info-panel { padding: 15px; height: 55vh; overflow-y: auto; background: linear-gradient(180deg, #0a1520, #050a0f); }
+.header { font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: var(--primary); margin-bottom: 12px; border-left: 4px solid var(--primary); padding-left: 10px; }
 
-.finding-card { background: rgba(0,0,0,0.4); border: 1px solid #1a2a3a; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
-.label { color: var(--primary); font-size: 0.7rem; letter-spacing: 0.1em; display: block; margin-bottom: 5px; }
-.value { font-size: 1.1rem; color: #fff; }
+.finding-card { background: rgba(0,0,0,0.4); border: 1px solid #1a2a3a; padding: 12px; border-radius: 4px; margin-bottom: 12px; }
+.label { color: var(--primary); font-size: 0.65rem; letter-spacing: 0.1em; display: block; margin-bottom: 4px; text-transform: uppercase; }
+.value { font-size: 1rem; color: #fff; font-weight: bold; }
 
-.educational-note { font-size: 0.85rem; line-height: 1.6; color: #a0b0c0; border-top: 1px solid #1a2a3a; pt: 10px; margin-top: 10px; }
-.btn { width: 100%; padding: 15px; background: transparent; border: 2px solid var(--primary); color: var(--primary); font-family: 'Orbitron'; cursor: pointer; margin-top: 10px; }
-.btn:hover { background: var(--primary); color: #000; }
+.educational-note { font-size: 0.8rem; line-height: 1.5; color: #a0b0c0; border-top: 1px solid #1a2a3a; padding-top: 8px; margin-top: 8px; }
+.btn { width: 100%; padding: 16px; background: transparent; border: 2px solid var(--primary); color: var(--primary); font-family: 'Orbitron'; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em; transition: 0.2s; }
+.btn:active { background: var(--primary); color: #000; }
 
-/* Animation for the "Scanning" effect */
-@keyframes scan { from { stroke-dashoffset: 2000; } to { stroke-dashoffset: 0; } }
-.animate-trace { stroke-dasharray: 2000; animation: scan 4s linear infinite; }
+@keyframes scan { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+.animate-trace { stroke-dasharray: 1000; animation: scan 3s linear infinite; }
 </style>
 </head>
 <body>
 
 <div id="ekg-viewport">
   <svg id="trace-svg" viewBox="0 0 1000 200" preserveAspectRatio="none">
-    <path class="trace-line animate-trace" d="M0,100 L50,100 L60,90 L70,100 L90,100 L100,120 L110,40 L120,130 L130,100 L160,70 L200,70 L230,100 L300,100 L310,90 L320,100 L340,100 L350,120 L360,40 L370,130 L380,100 L410,70 L450,70 L480,100" />
+    <path class="trace-line animate-trace" d="M0,120 L40,120 Q50,110 60,120 L80,120 L90,140 L110,20 L130,80 L180,80 Q200,80 220,120 L300,120 L340,120 Q350,110 360,120 L380,120 L390,140 L410,20 L430,80 L480,80 Q500,80 520,120" />
   </svg>
 </div>
 
 <div class="info-panel">
-  <div class="header">EKG ANALYSIS — LEAD II</div>
+  <div class="header">DIAGNOSTIC: 12-LEAD ECG ANALYSIS</div>
   
   <div class="finding-card">
     <span class="label">RHYTHM TYPE</span>
-    <div class="value" id="rhythm-name">ST-ELEVATION MI (STEMI)</div>
+    <div class="value" id="rhythm-display">ST-ELEVATION MI (STEMI)</div>
     <div class="educational-note">
-      <strong>Pro-Tip:</strong> Notice the "Fireman's Hat" appearance. The ST segment (the line after the tall spike) does not return to the baseline. It stays elevated.
+      <strong>Observation:</strong> ST segment elevation is noted in Lead II. This is the classic "Fireman's Hat" sign of acute myocardial injury.
     </div>
   </div>
 
   <div class="finding-card">
-    <span class="label">CLINICAL SIGNIFICANCE</span>
-    <div class="value" style="color: var(--danger);">⚠ CRITICAL — MYOCARDIAL INFARCTION</div>
+    <span class="label">STATUS</span>
+    <div class="value" style="color: var(--danger);">⚠ CRITICAL FINDING</div>
     <div class="educational-note">
-      This indicates an acute blockage of a coronary artery. Tissue is actively dying. 
-      <strong>Action:</strong> Check troponin, give Aspirin, and notify cardiology for immediate cath lab activation.
+      Myocardial tissue is currently ischemic. Immediate cardiology consultation and cardiac catheterization are required.
     </div>
   </div>
 
-  <button class="btn" onclick="window.close()">CONFIRM & RETURN TO CHART</button>
+  <button class="btn" onclick="syncAndClose()"><span>◎ SYNC TO CHART</span></button>
 </div>
+
+<script>
+function syncAndClose() {
+    const btn = document.querySelector('.btn');
+    const display = document.getElementById('rhythm-display');
+    
+    // UI Feedback
+    btn.innerHTML = "<span>✓ SYNCED</span>";
+    btn.style.borderColor = "var(--trace-green)";
+    btn.style.color = "var(--trace-green)";
+    display.style.color = "var(--trace-green)";
+
+    // Communicate back to the main Night Shift dashboard
+    if (window.opener && !window.opener.closed) {
+        // (Tool Name, Success, Points)
+        window.opener.handleMiniGameResult('12-Lead ECG', true, 50);
+    }
+
+    // Auto-close after a short delay
+    setTimeout(() => {
+        window.close();
+    }, 1000);
+}
+</script>
 
 </body>
 </html>
