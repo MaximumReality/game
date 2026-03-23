@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCLEX ARCADE: MAXIMUM REALITY</title>
+    <style>
+        :root {
+            --neon-green: #39ff14;
+            --neon-pink: #ff00ff;
+            --neon-blue: #00ffff;
+            --retro-purple: #2b0040;
+            --dark-bg: #1a1a1a;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Arcade Cabinet Container */
+        #arcade-cabinet {
+            position: relative;
+            width: 90vw;
+            max-width: 600px;
+            height: 95vh;
+            background: #111;
+            border: 8px solid #333;
+            border-radius: 20px;
+            box-shadow: 0 0 40px var(--neon-pink);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Screen Area */
+        #screen-container {
+            position: relative;
+            flex: 2;
+            background: var(--retro-purple);
+            margin: 15px;
+            border: 4px solid #222;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* CRT Scanline Effect */
+        #screen-container::after {
+            content: " ";
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* UI Styling */
+        #ui-layer {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        #question-display {
+            font-size: 1.1rem;
+            color: var(--neon-green);
+            text-shadow: 2px 2px #000;
+            margin-bottom: 15px;
+            min-height: 60px;
+        }
+
+        #options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .arcade-btn {
+            background: #333;
+            color: white;
+            border: 3px solid #555;
+            padding: 12px 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 3px 3px 0px #000;
+            transition: 0.1s;
+        }
+
+        .arcade-btn:hover { background: #444; border-color: var(--neon-blue); }
+        .arcade-btn:active { transform: translate(2px, 2px); box-shadow: none; background: var(--neon-green); color: black; }
+
+        /* Rationale Overlay */
+        #rationale-overlay {
+            display: none;
+            position: absolute;
+            top: 10%; left: 5%;
+            width: 80%;
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid var(--neon-pink);
+            padding: 20px;
+            z-index: 100;
+            color: white;
+        }
+
+        .continue-btn {
+            width: 100%;
+            margin-top: 15px;
+            background: var(--neon-green) !important;
+            color: black !important;
+        }
+
+        #score-counter {
+            position: absolute;
+            top: 45px; right: 10px;
+            color: var(--neon-blue);
+            font-weight: bold;
+            z-index: 20;
+        }
+    </style>
+</head>
+<body>
+
+<div id="arcade-cabinet">
+    <div id="screen-container">
+        <div id="score-counter">XP: 0/20</div>
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="rationale-overlay">
+            <h2 id="result-text"></h2>
+            <p id="rationale-text"></p>
+            <button class="arcade-btn continue-btn" onclick="closeRationale()">PRESS START TO CONTINUE</button>
+        </div>
+
+        <div id="ui-layer">
+            <div id="question-display">INITIALIZING...</div>
+            <div id="options"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const questionEl = document.getElementById('question-display');
+    const optionsEl = document.getElementById('options');
+    const scoreEl = document.getElementById('score-counter');
+    const overlay = document.getElementById('rationale-overlay');
+
+    canvas.width = 600;
+    canvas.height = 300;
+
+    let score = 0;
+    let currentQA = {};
+    let timeLeft = 100;
+    let timerInterval;
+    const TIME_LIMIT = 20; // 20 seconds
+
+    const nclexData = [
+        // --- PHARMACOLOGY ---
+        { q: "Antidote for Magnesium Sulfate?", a: "Calcium Gluconate", wrong: ["Vitamin K", "Protamine Sulfate", "Atropine"], rationale: "Mag-Sulfate is for pre-eclampsia. If they lose Deep Tendon Reflexes, reach for the Calcium Glue-conate!" },
+        { q: "Antidote for Heparin?", a: "Protamine Sulfate", wrong: ["Vitamin K", "Acetylcysteine", "Flumazenil"], rationale: "Heparin works fast, Protamine Sulfate stops it fast. (He-Pro duo!)" },
+        { q: "Side effect of ACE Inhibitors?", a: "Dry Cough", wrong: ["Tinnitus", "Orange Urine", "Constipation"], rationale: "ACE Inhibitors (the -prils) can cause a dry, hacking cough due to bradykinin." },
+        { q: "Therapeutic Lithium Level?", a: "0.6 - 1.2 mEq/L", wrong: ["2.0 - 3.5", "0.1 - 0.5", "5.0 - 10.0"], rationale: "Lithium has a narrow window. >1.5 is toxic. Keep 'em hydrated!" },
+        { q: "Naloxone (Narcan) reverses what?", a: "Opioids", wrong: ["Benzos", "Alcohol", "Warfarin"], rationale: "Narcan is the 'wake up' call for respiratory depression caused by Opioids." },
+        { q: "Digoxin toxicity sign?", a: "Yellow-Green Halos", wrong: ["Dry Mouth", "Hearing loss", "Hyperactivity"], rationale: "Visual changes and Nausea/Vomiting are classic signs of 'Dig' toxicity." },
+        { q: "Antidote for Warfarin?", a: "Vitamin K", wrong: ["Protamine", "Narcan", "Glucagon"], rationale: "Warfarin (Coumadin) takes days to work; Vit K is the brake pedal." },
+        
+        // --- LABS ---
+        { q: "Normal Potassium (K+) range?", a: "3.5 - 5.0 mEq/L", wrong: ["1.5 - 2.5", "7.0 - 9.0", "135 - 145"], rationale: "K+ affects the heart. High or Low = EKG changes!" },
+        { q: "Normal Sodium (Na+) range?", a: "135 - 145 mEq/L", wrong: ["110 - 120", "150 - 160", "3.5 - 5.0"], rationale: "Sodium = Neuro. Think Seizures if this is out of whack!" },
+        { q: "Normal pH of Blood?", a: "7.35 - 7.45", wrong: ["7.00 - 7.15", "7.50 - 7.65", "6.80 - 7.00"], rationale: "Lower than 7.35 is Acidic; Higher than 7.45 is Alkalotic." },
+        { q: "Normal Creatinine level?", a: "0.6 - 1.2 mg/dL", wrong: ["3.0 - 5.0", "0.1 - 0.3", "10 - 20"], rationale: "Creatinine is the best indicator of Kidney function." },
+        { q: "Normal WBC count?", a: "5k - 10k", wrong: ["1k - 2k", "20k - 30k", "100 - 500"], rationale: "Leukocytosis (high WBC) usually means infection." },
+        { q: "Normal Calcium level?", a: "9.0 - 10.5 mg/dL", wrong: ["1.0 - 2.0", "15 - 20", "4.0 - 5.0"], rationale: "Think: 'Call 9-11' (9 to 10.5) for Calcium!" },
+        
+        // --- MATERNITY ---
+        { q: "Priority for Ruptured Membranes?", a: "Check Fetal Heart Rate", wrong: ["Check BP", "Start IV", "Call family"], rationale: "Check the baby first to rule out prolapsed cord!" },
+        { q: "Position for Cord Prolapse?", a: "Knee-Chest", wrong: ["High Fowlers", "Left Lateral", "Supine"], rationale: "Knee-Chest uses gravity to keep the baby off the cord." },
+        { q: "Nagele's Rule for EDD?", a: "-3 months +7 days", wrong: ["+3 months -7 days", "+9 months +10 days", "-1 month +1 day"], rationale: "Subtract 3 months, add 7 days to the first day of LMP." },
+        { q: "Location of Fundus at 20 weeks?", a: "At the Umbilicus", wrong: ["At Pubic Bone", "At Xiphoid", "In Pelvis"], rationale: "20 weeks = Umbilicus (The halfway mark!)." },
+        { q: "VEAL CHOP: 'V' (Variable) means?", a: "Cord Compression", wrong: ["Head Compression", "Placental Issue", "Oxygen"], rationale: "Variable Decels are bad! Turn the mom, give O2." },
+        
+        // --- MED SURG / TRIAGE ---
+        { q: "Rule of Nines: Entire Left Arm?", a: "9%", wrong: ["18%", "4.5%", "1%"], rationale: "Front is 4.5%, back is 4.5%. Total = 9%." },
+        { q: "Sign of Hip Fracture?", a: "Shortened & External Rotation", wrong: ["Lengthened", "Cyanosis", "Internal Rotation"], rationale: "Affected leg looks shorter and toes point outward." },
+        { q: "GCS score for Coma?", a: "8 or less", wrong: ["15", "10", "12"], rationale: "8, Intubate! A score of 3 is the lowest possible." },
+        { q: "Cushing's Triad (High ICP)?", a: "Wide Pulse Pressure / Bradycardia", wrong: ["Tachycardia", "Narrow Pulse", "Rapid Breathing"], rationale: "Opposite of Shock: High BP, Slow Pulse, Slow Respirations." },
+        { q: "Airborne Precautions require?", a: "N95 & Negative Pressure", wrong: ["Surgical Mask", "Door Open", "No Mask"], rationale: "MTV (Measles, TB, Varicella) need the N95." },
+        { q: "Maslow's Priority?", a: "Oxygen/Physiological", wrong: ["Safety", "Love", "Self-Esteem"], rationale: "ABC's and Physiological needs (Air/Water) always come first." },
+        { q: "Phlebitis Sign?", a: "Erythema & Warmth", wrong: ["Cool skin", "Pallor", "Numbness"], rationale: "Red, warm streaks mean vein inflammation." },
+        { q: "Target Therapeutic Digoxin Level?", a: "0.5 - 2.0 ng/mL", wrong: ["3.5 - 5.0", "10 - 20", "0.1 - 0.4"], rationale: "Dig has a narrow window. Watch for yellow halos!" },
+        { q: "Priority for Anaphylaxis?", a: "Epinephrine IM", wrong: ["Albuterol", "Normal Saline", "Benadryl"], rationale: "Epi is the only thing that stops the throat from closing!" },
+        { q: "Donning PPE order?", a: "Gown, Mask, Goggles, Gloves", wrong: ["Gloves first", "Mask last", "Goggles first"], rationale: "Go from bottom up (Gown first) and end with Gloves." },
+        { q: "Doffing PPE order?", a: "Gloves, Goggles, Gown, Mask", wrong: ["Mask first", "Gown last", "Goggles last"], rationale: "Remove dirtiest first (Gloves) and Mask last outside the room." },
+        { q: "Restraint tie type?", a: "Quick-release knot", wrong: ["Square knot", "Double knot", "No knot"], rationale: "Must be able to untie quickly! Tie to bed frame, not rails." },
+        { q: "Autonomy means?", a: "Patient's right to choose", wrong: ["Doing no harm", "Truth", "Fairness"], rationale: "Autonomy = Self-determination." },
+        { q: "Non-maleficence means?", a: "Do no harm", wrong: ["Doing good", "Equality", "Right to choose"], rationale: "Non-maleficence = Do no harm." },
+        { q: "Sign of NMS?", a: "Muscle Rigidity & High Fever", wrong: ["Low BP", "Hypothermia", "Hyperactivity"], rationale: "Neuroleptic Malignant Syndrome is a psych/pharma emergency!" },
+        { q: "Primary prevention example?", a: "Immunizations", wrong: ["Screenings", "Rehab", "Physical Therapy"], rationale: "Primary = Prevention. Secondary = Screening." },
+        { q: "Normal Platelet count?", a: "150k - 400k", wrong: ["5k - 10k", "500k - 1M", "50k - 100k"], rationale: "Below 150k is Thrombocytopenia (Bleeding risk!)." },
+        { q: "Normal HbA1c?", a: "4% - 6%", wrong: ["8% - 10%", "1% - 2%", "12% - 15%"], rationale: "Shows 3-month average of blood sugar." },
+        { q: "Status Epilepticus drug?", a: "Lorazepam (Ativan)", wrong: ["Phenytoin", "Valproic Acid", "Gabapentin"], rationale: "Benzos first to stop the seizing now!" },
+        { q: "Rifampin side effect?", a: "Orange body fluids", wrong: ["Hearing loss", "Neuropathy", "Diarrhea"], rationale: "Tears/Urine turn orange. Harmless but scary!" },
+        { q: "When to give Rapid Insulin?", a: "15 min before meal", wrong: ["Bedtime", "2 hrs after", "Fast"], rationale: "Don't shoot if the food isn't there!" },
+        { q: "Normal PT (Non-Warfarin)?", a: "11 - 12.5 seconds", wrong: ["30-45s", "5-8s", "60-90s"], rationale: "PT/INR is for Warfarin." },
+        { q: "Cardiac Tamponade sign?", a: "Muffled Heart Sounds", wrong: ["Loud Bruit", "Flat Veins", "Bradypnea"], rationale: "Beck's Triad: Muffled sounds, JVD, and Hypotension." },
+        { q: "Position after Appendectomy?", a: "Semi-Fowlers", wrong: ["Prone", "Supine", "Lateral"], rationale: "Reduces strain and helps breathing." },
+        { q: "Droplet Precautions need?", a: "Surgical Mask", wrong: ["N95", "Negative Pressure", "Gown only"], rationale: "Flu/Pertussis needs a mask within 3 feet." },
+        { q: "Normal Phosphorus?", a: "3.0 - 4.5 mg/dL", wrong: ["1.0", "5.0", "0.5"], rationale: "Inverse to Calcium." },
+        { q: "Triage: Red Tag?", a: "Immediate / Life-Threatening", wrong: ["Dead", "Minor", "Delayed"], rationale: "Red = Can survive if treated right now." },
+        { q: "Hypovolemic Shock priority?", a: "IV Fluids", wrong: ["Antibiotics", "Diet", "Bed rest"], rationale: "Fill the tank to fix the BP!" },
+        { q: "Sign of Preeclampsia?", a: "Proteinuria & HTN", wrong: ["Hypotension", "Low Reflexes", "Weight Loss"], rationale: "High BP + Protein in urine." },
+        { q: "Antidote for Acetaminophen?", a: "Acetylcysteine", wrong: ["Vitamin K", "Narcan", "Atropine"], rationale: "Mucomyst saves the liver from Tylenol." },
+        { q: "Positive sign of pregnancy?", a: "Fetal Heart Tones", wrong: ["Missed Period", "Morning Sickness", "Positive Test"], rationale: "Objective proof only (Heartbeat/Ultrasound)." },
+        { q: "VEAL CHOP: 'L' (Late Decel) means?", a: "Placental Insufficiency", wrong: ["Head Compression", "Cord Compression", "Good Baby"], rationale: "Lates are bad. Give O2, Turn Mom, Stop Oxytocin!" }
+    ];
+
+    function initGame() {
+        score = 0;
+        scoreEl.innerText = `XP: 0/20`;
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        if (score >= 20) {
+            victory();
+            return;
+        }
+
+        currentQA = nclexData[Math.floor(Math.random() * nclexData.length)];
+        questionEl.innerText = currentQA.q;
+        
+        let choices = [...currentQA.wrong, currentQA.a];
+        choices.sort(() => Math.random() - 0.5);
+
+        optionsEl.innerHTML = '';
+        choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.innerText = choice;
+            btn.className = "arcade-btn";
+            btn.onclick = () => checkAnswer(choice);
+            optionsEl.appendChild(btn);
+        });
+
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 100;
+        timerInterval = setInterval(() => {
+            timeLeft -= (100 / (TIME_LIMIT * 10));
+            drawGame();
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                checkAnswer("TIMEOUT");
+            }
+        }, 100);
+    }
+
+    function checkAnswer(choice) {
+        clearInterval(timerInterval);
+        const isCorrect = (choice === currentQA.a);
+        const resText = document.getElementById('result-text');
+        const ratText = document.getElementById('rationale-text');
+
+        if (isCorrect) {
+            score++;
+            scoreEl.innerText = `XP: ${score}/20`;
+            resText.innerText = "CRITICAL HIT! +1 XP";
+            resText.style.color = "var(--neon-green)";
+        } else {
+            resText.innerText = choice === "TIMEOUT" ? "TIME EXPIRED!" : "SYSTEM ERROR!";
+            resText.style.color = "#ff0033";
+        }
+
+        ratText.innerText = currentQA.rationale;
+        overlay.style.display = "block";
+    }
+
+    function closeRationale() {
+        overlay.style.display = "none";
+        nextQuestion();
+    }
+
+    function drawGame() {
+        ctx.fillStyle = '#2b0040';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Floor
+        ctx.fillStyle = '#00ffff';
+        ctx.fillRect(0, 250, canvas.width, 50);
+
+        // Timer Bar
+        ctx.strokeStyle = '#00ffff';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(50, 20, 500, 30);
+        
+        let barColor = "#39ff14";
+        if (timeLeft < 50) barColor = "#ffff00";
+        if (timeLeft < 25) barColor = "#ff0033";
+        
+        ctx.fillStyle = barColor;
+        ctx.fillRect(54, 24, (timeLeft / 100) * 492, 22);
+    }
+
+    function victory() {
+        clearInterval(timerInterval);
+        questionEl.innerText = "";
+        optionsEl.innerHTML = "<button class='arcade-btn continue-btn' onclick='initGame()'>INSERT COIN (RESTART)</button>";
+        
+        ctx.fillStyle = "#39ff14";
+        ctx.font = "bold 50px Courier New";
+        ctx.textAlign = "center";
+        ctx.fillText("LEVEL", canvas.width/2, 130);
+        ctx.fillText("COMPLETE", canvas.width/2, 190);
+    }
+
+    initGame();
+</script>
+</body>
+</html>
