@@ -1,110 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 – Lost in the Layers</title>
-  <link rel="icon" type="image/png" href="https://maximumreality.xyz/gamehub-appcard.jpeg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Maximum Reality</title>
 
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { 
-      background:#000; 
-      color:#fff; 
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; 
-      display:flex; 
-      flex-direction:column; 
-      align-items:center; 
-      justify-content:center; 
-      min-height:100vh; 
-      text-align:center;
-      padding:20px;
-    }
-
-    h1 { font-size:3rem; color:#ff00ff; text-shadow:0 0 10px #ff00ff; margin-bottom:10px; }
-    p { opacity:0.7; margin-bottom:30px; font-size:1rem; }
-    
-    a { text-decoration:none; }
-
-    .app-card {
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:12px 14px;
-      border-radius:16px;
-      text-decoration:none;
-      color:#fff;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      margin-bottom:12px;
-      min-height:82px;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-    .app-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.1); }
-
-    .app-icon {
-      width:60px;
-      height:60px;
-      border-radius:14px;
-      flex-shrink:0;
-      background:#111;
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow:0 4px 12px rgba(0,0,0,0.5);
-    }
-    .app-icon img { width:100%; height:100%; object-fit:cover; }
-
-    .app-info { flex:1; min-width:0; text-align:left; }
-    .app-name { font-weight:700; font-size:1rem; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .app-desc { font-size:0.75rem; opacity:0.6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-    .get-btn {
-      flex-shrink:0;
-      background: rgba(255,255,255,0.08);
-      padding:7px 0;
-      border-radius:20px;
-      font-weight:800;
-      font-size:0.7rem;
-      text-transform:uppercase;
-      width:76px;
-      text-align:center;
-      border:1px solid rgba(255,255,255,0.2);
-    }
-
-    .glow { 
-      animation: glowPulse 2s infinite alternate;
-    }
-
-    @keyframes glowPulse {
-      0% { box-shadow:0 0 5px #00ffff; }
-      100% { box-shadow:0 0 20px #00ffff; }
-    }
-
-    .external-link { margin-top:20px; font-size:0.8rem; opacity:0.7; color:#a286ef; }
-    .external-link:hover { text-decoration:underline; }
-  </style>
+<style>
+  body {
+    background: #000;
+    color: #fff;
+    font-family: monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+  }
+  h1 {
+    font-size: 3rem;
+    color: #ff00ff;
+    text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+    margin-bottom: 10px;
+  }
+  p {
+    opacity: 0.7;
+    margin-bottom: 30px;
+  }
+  .portal-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #00ffff;
+    border: 2px solid #00ffff;
+    padding: 15px;
+    border-radius: 16px;
+    width: 220px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 0 10px #00ffff;
+  }
+  .portal-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #00ffff;
+  }
+  .portal-card img {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+  .get-btn {
+    margin-top: 8px;
+    background: rgba(0,255,255,0.1);
+    padding: 6px 0;
+    width: 100%;
+    border-radius: 16px;
+    border: 1px solid #00ffff;
+    font-weight: 700;
+  }
+  a.void-link {
+    color: #a286ef;
+    text-decoration: none;
+    margin-top: 20px;
+    font-size: 0.85rem;
+    opacity: 0.8;
+    display: inline-block;
+    transition: opacity 0.2s ease;
+  }
+  a.void-link:hover {
+    opacity: 1;
+  }
+  @keyframes flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+    20%, 22%, 24%, 55% { opacity: 0.3; }
+  }
+  .flicker {
+    animation: flicker 1.5s infinite;
+  }
+</style>
 </head>
 <body>
 
-  <h1>404 – Lost in the Layers</h1>
-  <p>You’ve wandered too far into the Maximum Reality onion… but sometimes getting lost leads somewhere interesting.</p>
+<h1 class="flicker">ACCESS DENIED</h1>
+<p>[REALITY COMPROMISED] — Ticket #404-POO</p>
 
-  <!-- Portal to Game Hub -->
-  <a href="https://maximumreality.github.io/game" target="_blank" class="app-card glow">
-    <div class="app-icon">
-      <img src="https://maximumreality.xyz/gamehub-appcard.jpeg" alt="Game Hub Portal">
-    </div>
-    <div class="app-info">
-      <div class="app-name">Game Hub</div>
-      <div class="app-desc">Enter the Layered Arcade • All New Adventures</div>
-    </div>
-    <div class="get-btn" style="color:#00ffff; border-color:#00ffff;">ENTER</div>
-  </a>
+<a id="portalCard" class="portal-card" href="https://maximumreality.github.io/gamehub/">
+  <img src="https://maximumreality.xyz/gamehub-appcard.jpeg" alt="Portal to Game Hub">
+  <div>ENTER THE GAME HUB</div>
+  <div class="get-btn">UPLINK</div>
+</a>
 
-  <!-- Link to Void Bloom -->
-  <a href="https://maximumreality.github.io/art/" target="_blank" class="external-link">Or explore the Void Bloom art world</a>
+<a class="void-link" href="https://maximumreality.github.io/art/" target="_blank">
+  ✨ Explore Void Bloom
+</a>
+
+<script>
+  const portalCard = document.getElementById('portalCard');
+  let secretIndex = 1;
+
+  // Normal click goes to game hub
+  portalCard.addEventListener('click', (e) => {
+    // Allow normal click to work, don't preventDefault
+  });
+
+  // Double-click cycles through secret pages
+  portalCard.addEventListener('dblclick', (e) => {
+    e.preventDefault(); // Prevent normal click
+    if (secretIndex <= 4) {
+      window.location.href = `secret${secretIndex}.html`;
+      secretIndex++;
+    } else {
+      secretIndex = 1; // Reset after secret4
+    }
+  });
+</script>
 
 </body>
 </html>
