@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>NEURAL SIGNAL // Maximum Reality</title>
+<title>NEURAL SIGNAL v2 // Maximum Reality</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap');
 
@@ -13,8 +13,8 @@
     --green: #00ff88;
     --red: #ff2244;
     --orange: #ff8800;
+    --yellow: #ffee00;
     --bg: #000008;
-    --node-size: 48px;
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -28,278 +28,207 @@
     display: flex;
     flex-direction: column;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  /* SCANLINES */
   body::before {
     content: '';
     position: fixed; inset: 0;
     background: repeating-linear-gradient(
       0deg, transparent, transparent 2px,
-      rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px
+      rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
     );
     pointer-events: none; z-index: 9999;
   }
 
-  /* HEADER */
+  /* ── HEADER ── */
   #header {
-    padding: 10px 16px 6px;
+    padding: 8px 14px 6px;
     border-bottom: 1px solid rgba(255,0,255,0.25);
     display: flex; align-items: center; justify-content: space-between;
     flex-shrink: 0;
   }
+  #title { font-family:'Orbitron',monospace; font-size:13px; font-weight:900; color:var(--pink); text-shadow:0 0 12px var(--pink); letter-spacing:2px; }
+  #subtitle { font-size:8px; color:rgba(0,229,255,0.5); letter-spacing:1px; margin-top:1px; }
+  #stats { display:flex; gap:12px; }
+  .stat { display:flex; flex-direction:column; align-items:flex-end; }
+  .stat-label { color:rgba(255,255,255,0.3); font-size:7px; letter-spacing:1px; }
+  .stat-val { color:var(--cyan); font-size:14px; font-family:'VT323',monospace; }
 
-  #title {
-    font-family: 'Orbitron', monospace;
-    font-size: 13px; font-weight: 900;
-    color: var(--pink);
-    text-shadow: 0 0 12px var(--pink);
-    letter-spacing: 2px;
-  }
-
-  #subtitle { font-size: 9px; color: rgba(0,229,255,0.6); letter-spacing: 1px; margin-top: 1px; }
-
-  #stats {
-    display: flex; gap: 14px; font-size: 10px;
-  }
-
-  .stat { display: flex; flex-direction: column; align-items: flex-end; }
-  .stat-label { color: rgba(255,255,255,0.3); font-size: 8px; letter-spacing: 1px; }
-  .stat-val { color: var(--cyan); font-size: 13px; font-family: 'VT323', monospace; }
-
-  /* LEVEL BANNER */
+  /* ── LEVEL BANNER ── */
   #level-banner {
-    padding: 6px 16px;
-    background: rgba(255,0,255,0.05);
-    border-bottom: 1px solid rgba(255,0,255,0.12);
-    font-size: 9px;
-    color: rgba(255,255,255,0.5);
+    padding: 5px 14px;
+    background: rgba(255,0,255,0.04);
+    border-bottom: 1px solid rgba(255,0,255,0.1);
     display: flex; align-items: center; justify-content: space-between;
     flex-shrink: 0;
   }
+  #level-name { color:var(--pink); font-size:10px; font-family:'Orbitron',monospace; font-weight:700; }
+  #level-desc { font-size:8px; color:rgba(255,255,255,0.4); margin-top:1px; }
+  #level-dots { display:flex; gap:5px; align-items:center; flex-wrap:wrap; justify-content:flex-end; max-width:120px; }
+  .ldot { width:7px; height:7px; border-radius:50%; border:1px solid rgba(255,0,255,0.35); background:transparent; flex-shrink:0; }
+  .ldot.done { background:var(--green); border-color:var(--green); }
+  .ldot.active { background:var(--pink); border-color:var(--pink); box-shadow:0 0 5px var(--pink); }
 
-  #level-name { color: var(--pink); font-size: 11px; font-family: 'Orbitron', monospace; font-weight: 700; }
+  /* ── DECAY TIMER BAR ── */
+  #decay-wrap {
+    position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    width: 55%; height: 5px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(0,229,255,0.25);
+    display: none; z-index: 10; border-radius: 2px;
+  }
+  #decay-fill {
+    height: 100%; width: 100%;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+    transition: width 0.1s linear, background 0.3s;
+    border-radius: 2px;
+  }
+  #decay-label {
+    position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    font-size: 8px; color: rgba(0,229,255,0.6);
+    letter-spacing: 1px; white-space: nowrap;
+    margin-top: 7px;
+  }
 
-  /* CANVAS AREA */
+  /* ── MEMORY FLASH OVERLAY ── */
+  #flash-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,229,255,0.06);
+    z-index: 8; pointer-events: none;
+    display: none;
+    align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    color: var(--cyan);
+    text-shadow: 0 0 10px var(--cyan);
+    letter-spacing: 3px;
+  }
+  #flash-overlay.active { display: flex; }
+
+  /* ── GAME AREA ── */
   #game-area {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
+    flex: 1; position: relative; overflow: hidden;
   }
+  #game-canvas { width:100%; height:100%; display:block; }
 
-  #game-canvas {
-    width: 100%; height: 100%;
-    display: block;
+  /* ── GLITCH ── */
+  @keyframes intenseGlitch {
+    0%   { filter:hue-rotate(90deg) contrast(2) blur(1px);  transform:translate(2px,-2px); }
+    25%  { filter:hue-rotate(180deg) brightness(1.5);       transform:translate(-3px,3px); }
+    50%  { filter:hue-rotate(270deg) contrast(3) blur(2px); transform:translate(4px,-1px); }
+    75%  { filter:hue-rotate(360deg) brightness(2);         transform:translate(-2px,2px); }
+    100% { filter:none;                                      transform:translate(0,0); }
   }
+  .glitch-active { animation: intenseGlitch 0.18s ease-out; }
 
-  /* BOTTOM PANEL */
+  /* ── BOTTOM PANEL ── */
   #bottom-panel {
-    padding: 8px 16px;
-    border-top: 1px solid rgba(0,229,255,0.2);
-    background: rgba(0,0,8,0.95);
+    padding: 7px 14px 9px;
+    border-top: 1px solid rgba(0,229,255,0.18);
+    background: rgba(0,0,8,0.96);
     flex-shrink: 0;
   }
-
-  #info-text {
-    font-size: 10px;
-    color: rgba(0,229,255,0.7);
-    line-height: 1.5;
-    min-height: 30px;
-    margin-bottom: 8px;
-  }
-
-  #info-text .highlight { color: var(--green); }
-  #info-text .warn { color: var(--orange); }
-
-  #btn-row {
-    display: flex; gap: 8px;
-  }
-
+  #info-text { font-size:10px; color:rgba(0,229,255,0.7); line-height:1.5; min-height:28px; margin-bottom:7px; }
+  #info-text .highlight { color:var(--green); }
+  #info-text .warn { color:var(--orange); }
+  #info-text .danger { color:var(--red); }
+  #info-text .memory { color:var(--yellow); }
+  #btn-row { display:flex; gap:7px; }
   .btn {
-    flex: 1;
-    border: 1px solid;
-    background: transparent;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 1px;
-    padding: 8px 4px;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: all 0.2s;
+    flex:1; border:1px solid; background:transparent;
+    font-family:'Share Tech Mono',monospace; font-size:9px;
+    letter-spacing:1px; padding:7px 3px; cursor:pointer;
+    text-transform:uppercase; transition:all 0.2s;
   }
+  .btn-pink  { border-color:var(--pink);  color:var(--pink);  }
+  .btn-pink:active  { background:rgba(255,0,255,0.15);  box-shadow:0 0 10px rgba(255,0,255,0.3); }
+  .btn-cyan  { border-color:var(--cyan);  color:var(--cyan);  }
+  .btn-cyan:active  { background:rgba(0,229,255,0.1); }
+  .btn-green { border-color:var(--green); color:var(--green); }
+  .btn-green:active { background:rgba(0,255,136,0.1); }
 
-  .btn-pink { border-color: var(--pink); color: var(--pink); }
-  .btn-pink:hover, .btn-pink:active { background: rgba(255,0,255,0.15); box-shadow: 0 0 10px rgba(255,0,255,0.3); }
-
-  .btn-cyan { border-color: var(--cyan); color: var(--cyan); }
-  .btn-cyan:hover, .btn-cyan:active { background: rgba(0,229,255,0.1); }
-
-  .btn-green { border-color: var(--green); color: var(--green); }
-  .btn-green:hover, .btn-green:active { background: rgba(0,255,136,0.1); }
-
-  /* OVERLAY PANELS */
+  /* ── OVERLAYS ── */
   .overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,8,0.92);
-    z-index: 100;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,8,0.93); z-index:100;
+    flex-direction:column; align-items:center; justify-content:center;
+    padding:18px; overflow-y:auto;
   }
-
-  .overlay.active { display: flex; }
-
+  .overlay.active { display:flex; }
   .panel {
-    width: 100%; max-width: 340px;
-    border: 1px solid var(--pink);
-    box-shadow: 0 0 30px rgba(255,0,255,0.3);
-    padding: 20px;
-    background: rgba(0,0,8,0.98);
+    width:100%; max-width:340px;
+    border:1px solid var(--pink);
+    box-shadow:0 0 28px rgba(255,0,255,0.28);
+    padding:18px; background:rgba(0,0,8,0.99);
   }
-
   .panel h2 {
-    font-family: 'Orbitron', monospace;
-    color: var(--pink);
-    font-size: 14px;
-    letter-spacing: 2px;
-    margin-bottom: 14px;
-    text-shadow: 0 0 10px var(--pink);
+    font-family:'Orbitron',monospace; color:var(--pink);
+    font-size:13px; letter-spacing:2px; margin-bottom:12px;
+    text-shadow:0 0 10px var(--pink);
   }
-
-  .panel p {
-    font-size: 11px;
-    line-height: 1.7;
-    color: rgba(255,255,255,0.75);
-    margin-bottom: 10px;
-  }
-
-  .panel .term {
-    color: var(--cyan);
-    font-family: 'VT323', monospace;
-    font-size: 14px;
-  }
-
+  .panel p { font-size:11px; line-height:1.7; color:rgba(255,255,255,0.75); margin-bottom:9px; }
+  .panel .term { color:var(--cyan); font-family:'VT323',monospace; font-size:15px; }
   .panel .science {
-    border-left: 2px solid var(--green);
-    padding-left: 10px;
-    color: rgba(0,255,136,0.8);
-    font-size: 10px;
-    line-height: 1.6;
-    margin: 10px 0;
+    border-left:2px solid var(--green); padding-left:10px;
+    color:rgba(0,255,136,0.82); font-size:10px; line-height:1.65; margin:10px 0;
   }
+  #win-screen .panel { border-color:var(--green); box-shadow:0 0 28px rgba(0,255,136,0.28); }
+  #win-screen .panel h2 { color:var(--green); text-shadow:0 0 10px var(--green); }
+  #win-btn-row { display:flex; gap:8px; margin-top:13px; }
 
-  /* WIN SCREEN */
-  #win-screen .panel { border-color: var(--green); box-shadow: 0 0 30px rgba(0,255,136,0.3); }
-  #win-screen .panel h2 { color: var(--green); text-shadow: 0 0 10px var(--green); }
-
-  /* PROGRESS BAR */
-  .progress-bar {
-    height: 3px;
-    background: rgba(255,255,255,0.1);
-    margin: 8px 0;
-    position: relative;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--pink), var(--cyan));
-    transition: width 0.5s ease;
-    box-shadow: 0 0 6px var(--cyan);
-  }
-
-  /* LEVEL SELECT dots */
-  #level-dots {
-    display: flex; gap: 6px; align-items: center;
-  }
-
-  .ldot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,0,255,0.4);
-    background: transparent;
-  }
-
-  .ldot.done { background: var(--green); border-color: var(--green); }
-  .ldot.active { background: var(--pink); border-color: var(--pink); box-shadow: 0 0 6px var(--pink); }
-
-  /* SIGNAL PARTICLE */
-  @keyframes signalTravel {
-    0% { opacity: 1; transform: scale(1); }
-    100% { opacity: 0; transform: scale(0.2); }
-  }
-
-  /* NODE PULSE */
-  @keyframes nodePulse {
-    0%,100% { opacity: 0.6; }
-    50% { opacity: 1; }
-  }
-
-  @keyframes damageFlicker {
-    0%,100% { opacity: 0.8; }
-    25% { opacity: 0.3; }
-    75% { opacity: 0.5; }
-  }
-
-  @keyframes successGlow {
-    0% { box-shadow: 0 0 10px var(--green); }
-    50% { box-shadow: 0 0 30px var(--green), 0 0 60px var(--green); }
-    100% { box-shadow: 0 0 10px var(--green); }
-  }
-
+  /* RESERVE METER */
+  #reserve-bar-wrap { margin: 6px 0 10px; }
+  #reserve-label { font-size:8px; color:rgba(255,255,255,0.35); letter-spacing:1px; margin-bottom:3px; }
+  #reserve-bar { height:4px; background:rgba(255,255,255,0.08); border-radius:2px; }
+  #reserve-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--pink),var(--cyan)); box-shadow:0 0 6px var(--cyan); transition:width 0.6s ease; }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div id="header">
   <div>
     <div id="title">NEURAL SIGNAL</div>
-    <div id="subtitle">COGNITIVE REROUTING SYSTEM // MR</div>
+    <div id="subtitle">COGNITIVE REROUTING SYSTEM v2 // MR</div>
   </div>
   <div id="stats">
-    <div class="stat">
-      <span class="stat-label">SCORE</span>
-      <span class="stat-val" id="score-val">000</span>
-    </div>
-    <div class="stat">
-      <span class="stat-label">LEVEL</span>
-      <span class="stat-val" id="level-val">1</span>
-    </div>
+    <div class="stat"><span class="stat-label">RESERVE</span><span class="stat-val" id="reserve-val">0%</span></div>
+    <div class="stat"><span class="stat-label">SCORE</span><span class="stat-val" id="score-val">000</span></div>
+    <div class="stat"><span class="stat-label">LVL</span><span class="stat-val" id="level-val">1</span></div>
   </div>
 </div>
 
-<!-- LEVEL BANNER -->
 <div id="level-banner">
   <div>
-    <div id="level-name">HEALTHY PATHWAY</div>
-    <div id="level-desc">Establish a clean signal route</div>
+    <div id="level-name">INIT</div>
+    <div id="level-desc">...</div>
   </div>
   <div id="level-dots"></div>
 </div>
 
-<!-- GAME CANVAS -->
 <div id="game-area">
   <canvas id="game-canvas"></canvas>
+  <div id="decay-wrap"><div id="decay-fill"></div></div>
+  <div id="decay-label" style="display:none">SIGNAL DECAY</div>
+  <div id="flash-overlay" class="active">MEMORIZE HIDDEN NODES...</div>
 </div>
 
-<!-- BOTTOM PANEL -->
 <div id="bottom-panel">
-  <div id="info-text">Tap a <span class="highlight">node</span> to activate it, then tap a connected node to route the signal. Get it from <span class="highlight">SOURCE</span> to <span class="highlight">TARGET</span>.</div>
+  <div id="info-text">Initializing neural link...</div>
   <div id="btn-row">
-    <button class="btn btn-pink" onclick="showLearnPanel()">⚡ LEARN</button>
-    <button class="btn btn-cyan" onclick="resetLevel()">↺ RESET</button>
-    <button class="btn btn-green" id="hint-btn" onclick="showHint()">? HINT</button>
+    <button class="btn btn-pink"  onclick="showLearnPanel()">⚡ LEARN</button>
+    <button class="btn btn-cyan"  onclick="resetLevel()">↺ RESET</button>
+    <button class="btn btn-green" onclick="showHint()">? HINT</button>
   </div>
 </div>
 
 <!-- LEARN OVERLAY -->
 <div class="overlay" id="learn-overlay">
   <div class="panel">
-    <h2 id="learn-title">SYNAPSE</h2>
+    <h2 id="learn-title">—</h2>
     <div id="learn-content"></div>
-    <button class="btn btn-cyan" style="width:100%;margin-top:14px" onclick="closeLearn()">← BACK TO GAME</button>
+    <button class="btn btn-cyan" style="width:100%;margin-top:13px" onclick="closeLearn()">← BACK TO GAME</button>
   </div>
 </div>
 
@@ -307,11 +236,15 @@
 <div class="overlay" id="win-screen">
   <div class="panel">
     <h2 id="win-title">PATHWAY ESTABLISHED</h2>
+    <div id="reserve-bar-wrap">
+      <div id="reserve-label">COGNITIVE RESERVE</div>
+      <div id="reserve-bar"><div id="reserve-fill" style="width:0%"></div></div>
+    </div>
     <p id="win-text"></p>
     <div class="science" id="win-science"></div>
-    <div id="win-btn-row" style="display:flex;gap:8px;margin-top:14px">
+    <div id="win-btn-row">
       <button class="btn btn-pink" style="flex:1" onclick="showLearnPanel()">⚡ LEARN MORE</button>
-      <button class="btn btn-green" style="flex:1" onclick="nextLevel()">NEXT LEVEL →</button>
+      <button class="btn btn-green" style="flex:1" id="next-btn" onclick="nextLevel()">NEXT →</button>
     </div>
   </div>
 </div>
@@ -319,156 +252,333 @@
 <!-- INTRO SCREEN -->
 <div class="overlay active" id="intro-screen">
   <div class="panel">
-    <h2>NEURAL SIGNAL</h2>
-    <p>Your brain sends electrical signals along neural <span class="term">PATHWAYS</span> to control every thought, memory, and movement.</p>
-    <p>When pathways are <span class="term">DAMAGED</span> — by disease, injury, or time — the brain can forge <span class="term">NEW ROUTES</span>. This is called <span class="term">NEUROPLASTICITY</span>.</p>
-    <div class="science">Route signals from SOURCE → TARGET. Avoid damaged nodes. Build new connections. Each level reveals real neuroscience.</div>
-    <button class="btn btn-pink" style="width:100%;margin-top:16px" onclick="startGame()">INITIALIZE NEURAL LINK →</button>
+    <h2>NEURAL SIGNAL v2</h2>
+    <p>Your brain transmits electrical signals along <span class="term">NEURAL PATHWAYS</span>. When pathways fail, the brain rewires — building detours around damaged areas.</p>
+    <p>This is <span class="term">NEUROPLASTICITY</span>. Every puzzle you solve here mirrors what your brain does every day to stay functional.</p>
+    <div class="science">New: Signal Decay timer · Neuro-Feedback audio · Memory Bridge dormant nodes · 7 levels of escalating complexity.</div>
+    <p style="font-size:10px;color:rgba(255,255,255,0.4)">Sound recommended. Allow audio on first tap.</p>
+    <button class="btn btn-pink" style="width:100%;margin-top:15px" onclick="startGame()">INITIALIZE NEURAL LINK →</button>
   </div>
 </div>
 
 <script>
-// ============================================================
-// GAME DATA
-// ============================================================
+// ═══════════════════════════════════════════════════════════════
+// AUDIO ENGINE
+// ═══════════════════════════════════════════════════════════════
+let audioCtx = null, masterGain = null, ambientOsc = null, ambientGain = null;
+let pulseTimer = null;
+
+function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain();
+  masterGain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+  masterGain.connect(audioCtx.destination);
+
+  ambientOsc = audioCtx.createOscillator();
+  ambientGain = audioCtx.createGain();
+  ambientOsc.type = 'sine';
+  ambientOsc.frequency.setValueAtTime(55, audioCtx.currentTime);
+  ambientGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+  ambientOsc.connect(ambientGain);
+  ambientGain.connect(masterGain);
+  ambientOsc.start();
+}
+
+function setAmbientPitch(freq) {
+  if (!audioCtx || !ambientOsc) return;
+  ambientOsc.frequency.linearRampToValueAtTime(freq, audioCtx.currentTime + 0.3);
+}
+
+const SFX = {
+  ping(freq = 440) {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(freq * 0.5, audioCtx.currentTime + 0.12);
+    g.gain.setValueAtTime(0.18, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
+    o.connect(g); g.connect(masterGain);
+    o.start(); o.stop(audioCtx.currentTime + 0.28);
+  },
+
+  static() {
+    if (!audioCtx) return;
+    const sz = audioCtx.sampleRate * 0.12;
+    const buf = audioCtx.createBuffer(1, sz, audioCtx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < sz; i++) data[i] = (Math.random() * 2 - 1) * (i < sz * 0.3 ? 1 : Math.random());
+    const n = audioCtx.createBufferSource(), g = audioCtx.createGain();
+    n.buffer = buf;
+    g.gain.setValueAtTime(0.12, audioCtx.currentTime);
+    g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.12);
+    n.connect(g); g.connect(masterGain); n.start();
+  },
+
+  success() {
+    if (!audioCtx) return;
+    [440, 554, 659, 880].forEach((f, i) => setTimeout(() => this.ping(f), i * 90));
+  },
+
+  flashBeep() {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = 'square'; o.frequency.setValueAtTime(880, audioCtx.currentTime);
+    g.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+    o.connect(g); g.connect(masterGain); o.start(); o.stop(audioCtx.currentTime + 0.08);
+  },
+
+  decayWarn() {
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(120, audioCtx.currentTime);
+    o.frequency.linearRampToValueAtTime(60, audioCtx.currentTime + 0.15);
+    g.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.15);
+    o.connect(g); g.connect(masterGain); o.start(); o.stop(audioCtx.currentTime + 0.15);
+  },
+
+  heartbeat() {
+    if (!audioCtx) return;
+    const play = (freq, vol, t) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(freq, audioCtx.currentTime + t);
+      g.gain.setValueAtTime(vol, audioCtx.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + t + 0.1);
+      o.connect(g); g.connect(masterGain);
+      o.start(audioCtx.currentTime + t); o.stop(audioCtx.currentTime + t + 0.1);
+    };
+    play(60, 0.13, 0); play(40, 0.08, 0.1);
+
+    // Speed based on path progress toward target
+    const lastId = state.activePath[state.activePath.length - 1];
+    const tgt = nodes.find(n => n.type === 'target');
+    const last = nodes.find(n => n.id === lastId);
+    let delay = 900;
+    if (last && tgt) {
+      const dx = tgt.x - last.x, dy = tgt.y - last.y;
+      delay = Math.max(220, Math.sqrt(dx*dx+dy*dy) * 900);
+    }
+    pulseTimer = setTimeout(() => SFX.heartbeat(), delay);
+  },
+
+  stopHeartbeat() { clearTimeout(pulseTimer); pulseTimer = null; }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// LEVEL DATA  (7 levels)
+// ═══════════════════════════════════════════════════════════════
 const LEVELS = [
+  // ── 1: HEALTHY PATHWAY ──────────────────────────────────────
   {
     name: "HEALTHY PATHWAY",
     desc: "Establish a clean signal route",
-    learnTitle: "HOW SIGNALS WORK",
-    learnContent: `
-      <p>Your brain contains roughly <span class="term">86 BILLION neurons</span>. Each one is a tiny electrical node that fires signals to its neighbors.</p>
-      <p>A signal jumps across a gap called a <span class="term">SYNAPSE</span> using chemical messengers called <span class="term">neurotransmitters</span>.</p>
-      <div class="science">In a healthy brain, signals travel these pathways in milliseconds — faster than conscious thought.</div>
-      <p>The more a pathway is used, the stronger it gets. This is called <span class="term">LONG-TERM POTENTIATION</span> — the biological basis of learning and memory.</p>
-    `,
-    winText: "Clean signal delivered. Your first neural pathway is established.",
-    winScience: "Every time you learn something new, your neurons physically grow new connections. Repetition thickens the myelin sheath around these pathways, making signals faster and more reliable.",
-    // Node layout: [id, x%, y%, type, connections]
-    // types: source, target, relay, damaged
+    decayTime: 0, // no timer on tutorial
+    hasDormant: false,
+    learnTitle: "HOW SIGNALS TRAVEL",
+    learnContent: `<p>Your brain holds roughly <span class="term">86 BILLION neurons</span>. Each fires electrical pulses to its neighbors across gaps called <span class="term">SYNAPSES</span>.</p>
+    <p>Chemical messengers called <span class="term">neurotransmitters</span> ferry the signal across each gap in milliseconds.</p>
+    <div class="science">The more a pathway fires, the stronger it becomes. This is called LONG-TERM POTENTIATION — the physical mechanism of learning and memory formation.</div>`,
+    winText: "Clean signal delivered. First neural pathway established.",
+    winScience: "Every time you learn something new, neurons physically sprout new dendritic spines — microscopic branches that reach toward neighboring cells to form new connections.",
     nodes: [
-      { id: 0, x: 0.15, y: 0.45, type: 'source', label: 'MOTOR\nCORTEX', connects: [1,2] },
-      { id: 1, x: 0.38, y: 0.25, type: 'relay', label: 'RELAY\nA', connects: [0,3] },
-      { id: 2, x: 0.38, y: 0.65, type: 'relay', label: 'RELAY\nB', connects: [0,3] },
-      { id: 3, x: 0.62, y: 0.45, type: 'relay', label: 'SYNAPSE\nHUB', connects: [1,2,4] },
-      { id: 4, x: 0.85, y: 0.45, type: 'target', label: 'MUSCLE\nSIGNAL', connects: [3] },
+      { id:0, x:.13, y:.48, type:'source',  label:'MOTOR\nCORTEX',  connects:[1,2] },
+      { id:1, x:.36, y:.24, type:'relay',   label:'RELAY\nA',       connects:[0,3] },
+      { id:2, x:.36, y:.72, type:'relay',   label:'RELAY\nB',       connects:[0,3] },
+      { id:3, x:.62, y:.48, type:'relay',   label:'SYNAPSE\nHUB',   connects:[1,2,4] },
+      { id:4, x:.86, y:.48, type:'target',  label:'MUSCLE\nSIGNAL', connects:[3] },
     ],
-    solution: [0,1,3,4],
-    hint: "Try the upper route through RELAY A"
+    solution:[0,1,3,4], hint:"Route through RELAY A then the SYNAPSE HUB."
   },
+
+  // ── 2: EARLY DISRUPTION ─────────────────────────────────────
   {
     name: "EARLY DISRUPTION",
-    desc: "A pathway is degraded — find an alternate route",
-    learnTitle: "COGNITIVE DECLINE",
-    learnContent: `
-      <p>In <span class="term">ALZHEIMER'S DISEASE</span>, abnormal proteins called <span class="term">amyloid plaques</span> and <span class="term">tau tangles</span> disrupt neural pathways — especially in the <span class="term">HIPPOCAMPUS</span>, the brain's memory center.</p>
-      <p>Signals that once traveled smooth highways now hit roadblocks. The brain can sometimes <span class="term">REROUTE</span> around damaged areas if alternative pathways exist.</p>
-      <div class="science">This is why building Cognitive Reserve matters. More connections = more detour options when pathways fail.</div>
-    `,
+    desc: "A pathway is degraded — reroute",
+    decayTime: 14,
+    hasDormant: false,
+    learnTitle: "ALZHEIMER'S: FIRST BLOCKAGES",
+    learnContent: `<p>In <span class="term">ALZHEIMER'S DISEASE</span>, abnormal proteins — <span class="term">amyloid plaques</span> and <span class="term">tau tangles</span> — clog the pathways neurons depend on, especially in the <span class="term">HIPPOCAMPUS</span>.</p>
+    <p>A signal that once traveled a smooth highway now hits a wall. The brain must find a detour — if one exists.</p>
+    <div class="science">Early intervention matters because detour pathways still exist at this stage. Cognitive engagement keeps them viable longer.</div>`,
     winText: "Reroute successful. Signal reached target via alternate pathway.",
-    winScience: "The brain's ability to compensate for damage using alternate routes is called Cognitive Reserve. People who engage in complex mental activity throughout life build more of these backup pathways.",
+    winScience: "Cognitive Reserve — built by complex mental activity — directly increases the number of available detour routes. More connections means more options when primary routes fail.",
     nodes: [
-      { id: 0, x: 0.12, y: 0.50, type: 'source', label: 'MEMORY\nINPUT', connects: [1,2] },
-      { id: 1, x: 0.33, y: 0.25, type: 'relay', label: 'HIPPO-\nCAMPUS', connects: [0,3] },
-      { id: 2, x: 0.33, y: 0.72, type: 'relay', label: 'DETOUR\nPATH', connects: [0,4] },
-      { id: 3, x: 0.57, y: 0.25, type: 'damaged', label: '⚠ PLAQUE\nBLOCK', connects: [1,4] },
-      { id: 4, x: 0.57, y: 0.72, type: 'relay', label: 'ALTERNATE\nROUTE', connects: [2,3,5] },
-      { id: 5, x: 0.85, y: 0.50, type: 'target', label: 'MEMORY\nSTORED', connects: [3,4] },
+      { id:0, x:.11, y:.50, type:'source',  label:'MEMORY\nINPUT',   connects:[1,2] },
+      { id:1, x:.33, y:.24, type:'relay',   label:'HIPPO-\nCAMPUS',  connects:[0,3] },
+      { id:2, x:.33, y:.74, type:'relay',   label:'DETOUR\nPATH',    connects:[0,4] },
+      { id:3, x:.57, y:.24, type:'damaged', label:'⚠ PLAQUE\nBLOCK', connects:[1,4] },
+      { id:4, x:.57, y:.74, type:'relay',   label:'ALT\nROUTE',      connects:[2,3,5] },
+      { id:5, x:.86, y:.50, type:'target',  label:'MEMORY\nSTORED',  connects:[3,4] },
     ],
-    solution: [0,2,4,5],
-    hint: "The upper path is blocked by plaque. Take the lower detour."
+    solution:[0,2,4,5], hint:"The upper path is plaque-blocked. Take the lower detour to ALT ROUTE."
   },
+
+  // ── 3: NEUROPLASTICITY ──────────────────────────────────────
   {
     name: "NEUROPLASTICITY",
-    desc: "Build new connections to bypass multiple damaged nodes",
+    desc: "Multiple blocks — forge new connections",
+    decayTime: 12,
+    hasDormant: false,
     learnTitle: "THE BRAIN REWIRES ITSELF",
-    learnContent: `
-      <p><span class="term">NEUROPLASTICITY</span> is the brain's ability to reorganize itself by forming new neural connections throughout life.</p>
-      <p>Complex mental activity — coding, puzzles, learning new skills — triggers the release of <span class="term">BDNF</span> (Brain-Derived Neurotrophic Factor), a protein that literally grows new neurons and strengthens synaptic connections.</p>
-      <div class="science">Building new connections isn't just a metaphor. Neurons that fire together, wire together. Every complex task you complete physically changes your brain structure.</div>
-      <p>This is your brain fighting back. The harder the route, the stronger the new pathway becomes.</p>
-    `,
+    learnContent: `<p><span class="term">NEUROPLASTICITY</span> is the brain's ability to reorganize by forming new connections throughout your entire life — not just in childhood.</p>
+    <p>Complex activity triggers release of <span class="term">BDNF</span> (Brain-Derived Neurotrophic Factor) — a protein that literally grows new neurons and strengthens synaptic bonds.</p>
+    <div class="science">Neurons that fire together, wire together. Every hard problem you solve physically changes your brain's architecture.</div>`,
     winText: "New pathway forged. Cognitive reserve increased.",
-    winScience: "Studies show that people who engage in cognitively stimulating activities have measurably more synaptic density in the prefrontal cortex — real physical armor against neurodegeneration.",
+    winScience: "Studies show people who engage in cognitively stimulating work have measurably higher synaptic density — real physical armor against neurodegeneration.",
     nodes: [
-      { id: 0, x: 0.10, y: 0.50, type: 'source', label: 'SIGNAL\nORIGIN', connects: [1,2] },
-      { id: 1, x: 0.28, y: 0.22, type: 'damaged', label: '⚠ TAU\nTANGLE', connects: [0,3] },
-      { id: 2, x: 0.28, y: 0.78, type: 'relay', label: 'NEW\nGROWTH', connects: [0,4] },
-      { id: 3, x: 0.50, y: 0.22, type: 'damaged', label: '⚠ PLAQUE\nBLOCK', connects: [1,5] },
-      { id: 4, x: 0.50, y: 0.78, type: 'relay', label: 'PLASTIC\nROUTE', connects: [2,5,6] },
-      { id: 5, x: 0.72, y: 0.35, type: 'relay', label: 'CORTEX\nBRIDGE', connects: [3,4,6] },
-      { id: 6, x: 0.88, y: 0.55, type: 'target', label: 'FUNCTION\nRESTORED', connects: [4,5] },
+      { id:0, x:.10, y:.50, type:'source',  label:'SIGNAL\nORIGIN',  connects:[1,2] },
+      { id:1, x:.28, y:.22, type:'damaged', label:'⚠ TAU\nTANGLE',   connects:[0,3] },
+      { id:2, x:.28, y:.78, type:'relay',   label:'NEW\nGROWTH',     connects:[0,4] },
+      { id:3, x:.52, y:.22, type:'damaged', label:'⚠ PLAQUE\nBLOCK', connects:[1,5] },
+      { id:4, x:.52, y:.78, type:'relay',   label:'PLASTIC\nROUTE',  connects:[2,5,6] },
+      { id:5, x:.74, y:.38, type:'relay',   label:'CORTEX\nBRIDGE',  connects:[3,4,6] },
+      { id:6, x:.88, y:.58, type:'target',  label:'FUNCTION\nRESTORED',connects:[4,5] },
     ],
-    solution: [0,2,4,6],
-    hint: "Both upper nodes are damaged. Find a path using only the lower and middle nodes."
+    solution:[0,2,4,6], hint:"Both top nodes are damaged. The entire lower path is viable — use it."
   },
+
+  // ── 4: MEMORY BRIDGE (dormant nodes) ────────────────────────
+  {
+    name: "MEMORY BRIDGE",
+    desc: "Remember the hidden nodes — then route",
+    decayTime: 11,
+    hasDormant: true,
+    learnTitle: "WORKING MEMORY",
+    learnContent: `<p><span class="term">WORKING MEMORY</span> is the brain's mental whiteboard — temporary storage that lets you hold and manipulate information for seconds at a time.</p>
+    <p>It's processed primarily in the <span class="term">PREFRONTAL CORTEX</span> and is one of the first functions affected by cognitive decline.</p>
+    <div class="science">Exercises that force you to act on remembered rather than visible information directly strengthen prefrontal-parietal working memory circuits. This level is that exercise.</div>`,
+    winText: "Memory bridge activated. Working memory circuits reinforced.",
+    winScience: "Spatial recall tasks — remembering where something was, then acting on that memory — activate a network spanning the hippocampus, parietal cortex, and prefrontal cortex simultaneously.",
+    nodes: [
+      { id:0, x:.11, y:.50, type:'source',  label:'ENCODE',          connects:[1,2] },
+      { id:1, x:.32, y:.26, type:'relay',   label:'RELAY\nA',        connects:[0,3] },
+      { id:2, x:.32, y:.74, type:'damaged', label:'⚠ LOST\nPATH',    connects:[0,4] },
+      { id:3, x:.54, y:.26, type:'dormant', label:'HIDDEN\nNODE',    connects:[1,5] },
+      { id:4, x:.54, y:.74, type:'relay',   label:'RELAY\nB',        connects:[2,5] },
+      { id:5, x:.76, y:.50, type:'relay',   label:'RECALL\nHUB',     connects:[3,4,6] },
+      { id:6, x:.90, y:.50, type:'target',  label:'MEMORY\nRECALL',  connects:[5] },
+    ],
+    solution:[0,1,3,5,6], hint:"The hidden node was in the upper-middle area. Route through RELAY A to reach it."
+  },
+
+  // ── 5: COGNITIVE RESERVE ────────────────────────────────────
   {
     name: "COGNITIVE RESERVE",
-    desc: "Multiple paths exist — find the most efficient route",
+    desc: "Multiple paths — find the most efficient",
+    decayTime: 10,
+    hasDormant: false,
     learnTitle: "BUILDING YOUR RESERVE",
-    learnContent: `
-      <p><span class="term">COGNITIVE RESERVE</span> is the brain's resilience — the surplus of neural connections that allows it to keep functioning even as some pathways fail.</p>
-      <p>It's built by: <span class="term">education</span>, <span class="term">complex work</span>, <span class="term">social engagement</span>, <span class="term">physical exercise</span>, and <span class="term">creative activity</span>.</p>
-      <div class="science">Research shows that people with high cognitive reserve can have significant Alzheimer's pathology in the brain and yet show minimal symptoms — because they have more backup routes.</div>
-      <p>You can't stop all damage. But you can build so many pathways that losing some doesn't stop the signal.</p>
-    `,
+    learnContent: `<p><span class="term">COGNITIVE RESERVE</span> is the brain's surplus resilience — the extra network density that lets it keep functioning even as some pathways fail.</p>
+    <p>It's built by: <span class="term">education</span>, <span class="term">complex work</span>, <span class="term">social engagement</span>, <span class="term">physical exercise</span>, and <span class="term">creative activity</span>.</p>
+    <div class="science">People with high cognitive reserve can have significant Alzheimer's pathology and show minimal symptoms — because they have more backup routes available.</div>`,
     winText: "Maximum efficiency achieved. Reserve pathways secured.",
-    winScience: "Every complex activity you engage in — including building this game — is literally depositing into your cognitive reserve account. The neurons you grow today may be the detours that matter most tomorrow.",
+    winScience: "Every complex activity you engage in — including building this game — is depositing into your cognitive reserve account. The connections you grow today may be the detours that matter most tomorrow.",
     nodes: [
-      { id: 0, x: 0.10, y: 0.50, type: 'source', label: 'LIFE\nEXP.', connects: [1,2,3] },
-      { id: 1, x: 0.30, y: 0.18, type: 'relay', label: 'CREATIVE\nCORTEX', connects: [0,4] },
-      { id: 2, x: 0.30, y: 0.50, type: 'relay', label: 'SOCIAL\nHUB', connects: [0,4,5] },
-      { id: 3, x: 0.30, y: 0.82, type: 'damaged', label: '⚠ LOST\nPATH', connects: [0,5] },
-      { id: 4, x: 0.55, y: 0.28, type: 'relay', label: 'RESERVE\nNODE A', connects: [1,2,6] },
-      { id: 5, x: 0.55, y: 0.68, type: 'relay', label: 'RESERVE\nNODE B', connects: [2,3,6] },
-      { id: 6, x: 0.80, y: 0.48, type: 'target', label: 'RESILIENT\nMIND', connects: [4,5] },
+      { id:0, x:.10, y:.50, type:'source',  label:'LIFE\nEXP.',       connects:[1,2,3] },
+      { id:1, x:.30, y:.18, type:'relay',   label:'CREATIVE\nCORTEX', connects:[0,4] },
+      { id:2, x:.30, y:.50, type:'relay',   label:'SOCIAL\nHUB',      connects:[0,4,5] },
+      { id:3, x:.30, y:.82, type:'damaged', label:'⚠ LOST\nPATH',     connects:[0,5] },
+      { id:4, x:.55, y:.28, type:'relay',   label:'RESERVE\nNODE A',  connects:[1,2,6] },
+      { id:5, x:.55, y:.68, type:'relay',   label:'RESERVE\nNODE B',  connects:[2,3,6] },
+      { id:6, x:.82, y:.48, type:'target',  label:'RESILIENT\nMIND',  connects:[4,5] },
     ],
-    solution: [0,1,4,6],
-    hint: "The bottom path is damaged. Two efficient routes remain — find the shortest."
-  }
+    solution:[0,1,4,6], hint:"Bottom path is damaged. Two routes remain — the shortest goes through CREATIVE CORTEX."
+  },
+
+  // ── 6: SYNAPTIC PRUNING (two dormant) ───────────────────────
+  {
+    name: "SYNAPTIC PRUNING",
+    desc: "The brain deletes unused paths — remember what remains",
+    decayTime: 9,
+    hasDormant: true,
+    learnTitle: "PRUNING & CONSOLIDATION",
+    learnContent: `<p>The brain doesn't just grow — it also <span class="term">PRUNES</span>. During sleep and development, synapses that aren't used regularly are eliminated to make the remaining pathways stronger and faster.</p>
+    <p>This is called <span class="term">SYNAPTIC PRUNING</span>. It's how your brain consolidates learning and removes clutter.</p>
+    <div class="science">Disrupted sleep directly impairs pruning — one reason sleep deprivation causes such dramatic cognitive decline. Deep sleep is when memories migrate from short-term to long-term storage.</div>`,
+    winText: "Pruned network navigated. Signal efficiency maximized.",
+    winScience: "The overnight 'memory consolidation' process moves important experiences from hippocampal short-term storage to cortical long-term storage — essentially backing up your RAM to the hard drive.",
+    nodes: [
+      { id:0, x:.10, y:.50, type:'source',  label:'SLEEP\nSTATE',    connects:[1,2] },
+      { id:1, x:.28, y:.24, type:'relay',   label:'SLOW\nWAVE',      connects:[0,3,4] },
+      { id:2, x:.28, y:.76, type:'damaged', label:'⚠ PRUNED\nPATH',  connects:[0,5] },
+      { id:3, x:.48, y:.14, type:'dormant', label:'REM\nBRIDGE',     connects:[1,5] },
+      { id:4, x:.48, y:.44, type:'relay',   label:'CORTEX\nRELAY',   connects:[1,5,6] },
+      { id:5, x:.68, y:.60, type:'dormant', label:'CONSOL.\nNODE',   connects:[2,3,4,6] },
+      { id:6, x:.88, y:.40, type:'target',  label:'LONG-TERM\nMEM',  connects:[4,5] },
+    ],
+    solution:[0,1,4,6], hint:"Two hidden nodes were visible at the start. The direct path avoids both — route through SLOW WAVE to CORTEX RELAY."
+  },
+
+  // ── 7: THE RESILIENT BRAIN ──────────────────────────────────
+  {
+    name: "THE RESILIENT BRAIN",
+    desc: "Maximum damage — maximum rerouting",
+    decayTime: 8,
+    hasDormant: true,
+    learnTitle: "RESILIENCE IN ACTION",
+    learnContent: `<p>The brain at its most challenged — multiple pathways lost, detours collapsing, the signal barely getting through — is still <span class="term">FIGHTING</span>.</p>
+    <p>This is the reality of <span class="term">LATE-STAGE NEUROPLASTICITY</span>: the brain searching for any viable route, any connection that still fires, to maintain function.</p>
+    <div class="science">Research shows that even in advanced neurodegeneration, targeted cognitive engagement can slow symptom progression — not by stopping damage, but by maximizing what remains. Every new connection is a victory.</div>`,
+    winText: "Against the odds — signal delivered. The brain fights back.",
+    winScience: "You didn't just solve a puzzle. You modeled what your own brain does every day — finding new routes around obstacles, building connections under pressure, refusing to let the signal die. That's not a metaphor. That's literally what's happening right now.",
+    nodes: [
+      { id:0, x:.10, y:.50, type:'source',  label:'WILL\nTO FIGHT',  connects:[1,2,3] },
+      { id:1, x:.27, y:.20, type:'damaged', label:'⚠ BLOCK\n#1',     connects:[0,4] },
+      { id:2, x:.27, y:.50, type:'relay',   label:'DETOUR\nα',       connects:[0,4,5] },
+      { id:3, x:.27, y:.80, type:'damaged', label:'⚠ BLOCK\n#2',     connects:[0,5] },
+      { id:4, x:.48, y:.30, type:'dormant', label:'HIDDEN\nBRIDGE',  connects:[1,2,6] },
+      { id:5, x:.48, y:.70, type:'relay',   label:'DETOUR\nβ',       connects:[2,3,6] },
+      { id:6, x:.68, y:.50, type:'relay',   label:'RESERVE\nHUB',    connects:[4,5,7] },
+      { id:7, x:.88, y:.50, type:'target',  label:'SIGNAL\nSURVIVES',connects:[6] },
+    ],
+    solution:[0,2,5,6,7], hint:"Top and bottom routes are damaged. The middle path — DETOUR α through DETOUR β — will get you there."
+  },
 ];
 
-// ============================================================
+// ═══════════════════════════════════════════════════════════════
 // GAME STATE
-// ============================================================
+// ═══════════════════════════════════════════════════════════════
 let currentLevel = 0;
 let state = {
   selectedNode: null,
   activePath: [],
-  completedLevels: [],
   score: 0,
-  signalParticles: [],
-  pulseAnims: {},
+  reserve: 0,
 };
-
-let canvas, ctx, W, H;
 let nodes = [];
+let canvas, ctx, W, H;
 let animFrame;
-let signalAnim = null; // active signal traveling animation
+let signalAnim = null;
+let decayValue = 100, decayInterval = null, decayActive = false;
+let flashTimeout = null;
 
-// ============================================================
+// ═══════════════════════════════════════════════════════════════
 // INIT
-// ============================================================
+// ═══════════════════════════════════════════════════════════════
 function startGame() {
+  initAudio();
   document.getElementById('intro-screen').classList.remove('active');
-  initCanvas();
-  loadLevel(0);
-}
-
-function initCanvas() {
+  document.getElementById('flash-overlay').classList.remove('active');
   canvas = document.getElementById('game-canvas');
   ctx = canvas.getContext('2d');
   resizeCanvas();
-  window.addEventListener('resize', () => { resizeCanvas(); drawFrame(); });
-  canvas.addEventListener('click', onCanvasClick);
+  window.addEventListener('resize', () => { resizeCanvas(); rebuildNodePositions(); });
+  canvas.addEventListener('click', e => {
+    const r = canvas.getBoundingClientRect();
+    handleTap(e.clientX - r.left, e.clientY - r.top);
+  });
   canvas.addEventListener('touchend', e => {
     e.preventDefault();
+    initAudio();
     const t = e.changedTouches[0];
     const r = canvas.getBoundingClientRect();
-    onCanvasClick({ clientX: t.clientX - r.left + r.left, clientY: t.clientY - r.top + r.top, fromTouch: true, _x: t.clientX - r.left, _y: t.clientY - r.top });
+    handleTap(t.clientX - r.left, t.clientY - r.top);
   }, { passive: false });
-
   requestAnimationFrame(loop);
+  loadLevel(0);
 }
 
 function resizeCanvas() {
@@ -477,30 +587,69 @@ function resizeCanvas() {
   H = canvas.height = area.clientHeight;
 }
 
+function rebuildNodePositions() {
+  nodes.forEach(n => { n.px = n.x * W; n.py = n.y * H; });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LEVEL LOADING
+// ═══════════════════════════════════════════════════════════════
 function loadLevel(idx) {
   currentLevel = idx;
   const lv = LEVELS[idx];
+
+  stopDecay();
+  SFX.stopHeartbeat();
+
   state.selectedNode = null;
   state.activePath = [];
   signalAnim = null;
+  decayActive = false;
 
-  // Build nodes with pixel positions
+  // Build nodes
   nodes = lv.nodes.map(n => ({
     ...n,
-    px: n.x * W,
-    py: n.y * H,
-    active: false,
-    inPath: false,
-    animT: Math.random() * Math.PI * 2
+    px: n.x * W, py: n.y * H,
+    animT: Math.random() * Math.PI * 2,
+    visible: n.type !== 'dormant', // dormant starts hidden
+    revealed: false,
   }));
 
-  // Update UI
   document.getElementById('level-name').textContent = lv.name;
   document.getElementById('level-desc').textContent = lv.desc;
   document.getElementById('level-val').textContent = idx + 1;
-  updateLevelDots();
-  setInfo('Tap <span class="highlight">SOURCE</span> to begin routing the signal to <span class="highlight">TARGET</span>. Avoid <span class="warn">damaged nodes</span>.');
   document.getElementById('win-screen').classList.remove('active');
+  updateLevelDots();
+  setAmbientPitch(55);
+
+  if (lv.hasDormant) {
+    runMemoryFlash();
+  } else {
+    document.getElementById('flash-overlay').classList.remove('active');
+    setInfo('Tap <span class="highlight">SOURCE</span> to start routing. Reach <span class="highlight">TARGET</span> before signal decays.');
+  }
+}
+
+function runMemoryFlash() {
+  const fl = document.getElementById('flash-overlay');
+  fl.textContent = 'MEMORIZE HIDDEN NODES...';
+  fl.classList.add('active');
+
+  // Show dormant nodes briefly
+  nodes.forEach(n => { if (n.type === 'dormant') n.visible = true; });
+  SFX.flashBeep();
+
+  flashTimeout = setTimeout(() => {
+    nodes.forEach(n => { if (n.type === 'dormant') n.visible = false; });
+    SFX.flashBeep();
+
+    fl.textContent = '3'; setTimeout(() => { fl.textContent = '2'; SFX.flashBeep(); }, 400);
+    setTimeout(() => { fl.textContent = '1'; SFX.flashBeep(); }, 800);
+    setTimeout(() => {
+      fl.classList.remove('active');
+      setInfo('<span class="memory">⬡ MEMORY BRIDGE</span> — Hidden nodes are now invisible. Route from memory. Signal decay active.');
+    }, 1200);
+  }, 1000);
 }
 
 function updateLevelDots() {
@@ -513,35 +662,72 @@ function updateLevelDots() {
   });
 }
 
-// ============================================================
+// ═══════════════════════════════════════════════════════════════
+// DECAY TIMER
+// ═══════════════════════════════════════════════════════════════
+function startDecay() {
+  const lv = LEVELS[currentLevel];
+  if (!lv.decayTime || decayActive) return;
+  decayActive = true;
+  decayValue = 100;
+
+  const wrap = document.getElementById('decay-wrap');
+  const lbl = document.getElementById('decay-label');
+  const fill = document.getElementById('decay-fill');
+  wrap.style.display = 'block'; lbl.style.display = 'block';
+  fill.style.width = '100%'; fill.style.background = 'var(--cyan)';
+
+  const tickRate = 100;
+  const dropPerTick = 100 / (lv.decayTime * 1000 / tickRate);
+
+  decayInterval = setInterval(() => {
+    decayValue -= dropPerTick;
+    const fill = document.getElementById('decay-fill');
+    fill.style.width = Math.max(0, decayValue) + '%';
+    if (decayValue < 30) { fill.style.background = 'var(--red)'; }
+    else if (decayValue < 55) { fill.style.background = 'var(--orange)'; }
+
+    if (decayValue <= 30 && decayValue > 29.9) SFX.decayWarn();
+    if (decayValue <= 0) signalLost();
+  }, tickRate);
+}
+
+function stopDecay() {
+  clearInterval(decayInterval); decayInterval = null; decayActive = false;
+  const wrap = document.getElementById('decay-wrap');
+  const lbl = document.getElementById('decay-label');
+  if (wrap) wrap.style.display = 'none';
+  if (lbl) lbl.style.display = 'none';
+}
+
+function signalLost() {
+  stopDecay(); SFX.stopHeartbeat(); SFX.static();
+  glitch();
+  setInfo('<span class="danger">⚠ SIGNAL LOST</span> — Connection timed out. Neural path collapsed. <span class="highlight">RESETTING...</span>');
+  setTimeout(() => { resetLevel(); }, 1100);
+}
+
+// ═══════════════════════════════════════════════════════════════
 // MAIN LOOP
-// ============================================================
+// ═══════════════════════════════════════════════════════════════
 let lastT = 0;
 function loop(t) {
   const dt = t - lastT; lastT = t;
-  updateAnims(dt);
+  nodes.forEach(n => { n.animT += dt * 0.001 * (n.type === 'damaged' ? 2.2 : 0.75); });
+  if (signalAnim) {
+    signalAnim.t += dt * 0.0028;
+    if (signalAnim.t >= 1) {
+      signalAnim.t = 0; signalAnim.seg++;
+      if (signalAnim.seg >= signalAnim.path.length - 1) { signalAnim = null; checkWin(); }
+    }
+  }
   drawFrame();
   animFrame = requestAnimationFrame(loop);
 }
 
-function updateAnims(dt) {
-  nodes.forEach(n => { n.animT += dt * 0.001 * (n.type === 'damaged' ? 2.5 : 0.8); });
-  if (signalAnim) {
-    signalAnim.t += dt * 0.0025;
-    if (signalAnim.t >= 1) {
-      signalAnim.t = 0;
-      signalAnim.seg++;
-      if (signalAnim.seg >= signalAnim.path.length - 1) {
-        signalAnim = null;
-        checkWin();
-      }
-    }
-  }
-}
-
-// ============================================================
+// ═══════════════════════════════════════════════════════════════
 // DRAWING
-// ============================================================
+// ═══════════════════════════════════════════════════════════════
 function drawFrame() {
   ctx.clearRect(0, 0, W, H);
   drawGrid();
@@ -551,118 +737,98 @@ function drawFrame() {
 }
 
 function drawGrid() {
-  ctx.strokeStyle = 'rgba(0,229,255,0.04)';
+  ctx.strokeStyle = 'rgba(0,229,255,0.035)';
   ctx.lineWidth = 1;
-  const step = 40;
-  for (let x = 0; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-  for (let y = 0; y < H; y += step) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  const s = 38;
+  for (let x = 0; x < W; x += s) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = 0; y < H; y += s) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
 }
 
 function drawEdges() {
-  const lv = LEVELS[currentLevel];
   const drawn = new Set();
-
   nodes.forEach(n => {
+    if (!n.visible) return;
     n.connects.forEach(tid => {
-      const key = [Math.min(n.id,tid), Math.max(n.id,tid)].join('-');
-      if (drawn.has(key)) return;
-      drawn.add(key);
       const t = nodes[tid];
-      const inActivePath = isEdgeInPath(n.id, tid);
+      if (!t || !t.visible) return;
+      const key = [Math.min(n.id,tid),Math.max(n.id,tid)].join('-');
+      if (drawn.has(key)) return; drawn.add(key);
 
-      ctx.beginPath();
-      ctx.moveTo(n.px, n.py);
-      ctx.lineTo(t.px, t.py);
+      const inPath = isEdgeInPath(n.id, tid);
+      ctx.beginPath(); ctx.moveTo(n.px, n.py); ctx.lineTo(t.px, t.py);
 
-      if (inActivePath) {
-        ctx.strokeStyle = 'rgba(0,255,136,0.8)';
-        ctx.lineWidth = 3;
-        ctx.setLineDash([]);
-        ctx.shadowColor = '#00ff88';
-        ctx.shadowBlur = 8;
+      if (inPath) {
+        ctx.strokeStyle = 'rgba(0,255,136,0.85)'; ctx.lineWidth = 2.5;
+        ctx.setLineDash([]); ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 7;
       } else if (n.type === 'damaged' || t.type === 'damaged') {
-        ctx.strokeStyle = 'rgba(255,34,68,0.3)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 6]);
-        ctx.shadowBlur = 0;
+        ctx.strokeStyle = 'rgba(255,34,68,0.28)'; ctx.lineWidth = 1;
+        ctx.setLineDash([4,6]); ctx.shadowBlur = 0;
       } else {
-        ctx.strokeStyle = 'rgba(0,229,255,0.15)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([2, 4]);
-        ctx.shadowBlur = 0;
+        ctx.strokeStyle = 'rgba(0,229,255,0.13)'; ctx.lineWidth = 1;
+        ctx.setLineDash([2,5]); ctx.shadowBlur = 0;
       }
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.shadowBlur = 0;
+      ctx.stroke(); ctx.setLineDash([]); ctx.shadowBlur = 0;
     });
   });
 }
 
 function isEdgeInPath(a, b) {
-  const path = state.activePath;
-  for (let i = 0; i < path.length - 1; i++) {
-    if ((path[i] === a && path[i+1] === b) || (path[i] === b && path[i+1] === a)) return true;
+  for (let i = 0; i < state.activePath.length - 1; i++) {
+    if ((state.activePath[i]===a && state.activePath[i+1]===b) ||
+        (state.activePath[i]===b && state.activePath[i+1]===a)) return true;
   }
   return false;
 }
 
 function drawNodes() {
   nodes.forEach(n => {
-    const r = 24;
+    if (!n.visible && n.type === 'dormant') return;
+    const r = 23;
     const inPath = state.activePath.includes(n.id);
-    const isSelected = state.selectedNode === n.id;
+    const isSel = state.selectedNode === n.id;
     const pulse = Math.sin(n.animT) * 0.5 + 0.5;
 
-    // Outer glow ring
-    let glowColor, fillColor, borderColor;
-    if (n.type === 'source') { glowColor = '#ff00ff'; borderColor = '#ff00ff'; fillColor = 'rgba(255,0,255,0.12)'; }
-    else if (n.type === 'target') { glowColor = '#00ff88'; borderColor = '#00ff88'; fillColor = 'rgba(0,255,136,0.12)'; }
-    else if (n.type === 'damaged') { glowColor = '#ff2244'; borderColor = '#ff2244'; fillColor = 'rgba(255,34,68,0.08)'; }
-    else { glowColor = '#00e5ff'; borderColor = '#00e5ff'; fillColor = 'rgba(0,229,255,0.08)'; }
+    let gc, bc, fc;
+    if      (n.type==='source')  { gc='#ff00ff'; bc='#ff00ff'; fc='rgba(255,0,255,0.11)'; }
+    else if (n.type==='target')  { gc='#00ff88'; bc='#00ff88'; fc='rgba(0,255,136,0.11)'; }
+    else if (n.type==='damaged') { gc='#ff2244'; bc='#ff2244'; fc='rgba(255,34,68,0.07)'; }
+    else if (n.type==='dormant') { gc='#ffee00'; bc='#ffee00'; fc='rgba(255,238,0,0.08)'; }
+    else                         { gc='#00e5ff'; bc='#00e5ff'; fc='rgba(0,229,255,0.07)'; }
 
-    if (inPath) { glowColor = '#00ff88'; borderColor = '#00ff88'; fillColor = 'rgba(0,255,136,0.2)'; }
-    if (isSelected) { glowColor = '#ffffff'; borderColor = '#ffffff'; }
+    if (inPath) { gc='#00ff88'; bc='#00ff88'; fc='rgba(0,255,136,0.19)'; }
+    if (isSel)  { gc='#ffffff'; bc='#ffffff'; }
 
-    // Shadow
-    ctx.shadowColor = glowColor;
-    ctx.shadowBlur = isSelected ? 20 : (inPath ? 15 : 8 + pulse * 6);
+    ctx.shadowColor = gc;
+    ctx.shadowBlur = isSel ? 22 : (inPath ? 14 : 7 + pulse * 6);
 
-    // Fill
-    ctx.beginPath();
-    ctx.arc(n.px, n.py, r, 0, Math.PI * 2);
-    ctx.fillStyle = fillColor;
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(n.px, n.py, r, 0, Math.PI*2);
+    ctx.fillStyle = fc; ctx.fill();
 
-    // Border
-    ctx.beginPath();
-    ctx.arc(n.px, n.py, r, 0, Math.PI * 2);
-    ctx.strokeStyle = borderColor;
-    ctx.lineWidth = isSelected ? 2.5 : 1.5;
-    ctx.stroke();
+    ctx.beginPath(); ctx.arc(n.px, n.py, r, 0, Math.PI*2);
+    ctx.strokeStyle = bc; ctx.lineWidth = isSel ? 2.5 : 1.5; ctx.stroke();
     ctx.shadowBlur = 0;
 
-    // Damaged flicker overlay
     if (n.type === 'damaged') {
-      const flicker = Math.abs(Math.sin(n.animT * 3)) * 0.4;
-      ctx.beginPath();
-      ctx.arc(n.px, n.py, r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,34,68,${flicker})`;
-      ctx.fill();
+      const flicker = Math.abs(Math.sin(n.animT * 3)) * 0.38;
+      ctx.beginPath(); ctx.arc(n.px, n.py, r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,34,68,${flicker})`; ctx.fill();
     }
 
-    // Label
     const lines = n.label.split('\n');
-    ctx.font = '7px Share Tech Mono';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = n.type === 'damaged' ? 'rgba(255,100,120,0.9)' : (inPath ? '#00ff88' : (n.type === 'source' ? '#ff00ff' : (n.type === 'target' ? '#00ff88' : 'rgba(0,229,255,0.9)')));
-    lines.forEach((line, i) => {
-      ctx.fillText(line, n.px, n.py + (i - (lines.length-1)/2) * 9 + 1);
-    });
+    ctx.font = '7px Share Tech Mono'; ctx.textAlign = 'center';
+    let lc;
+    if (n.type==='damaged') lc='rgba(255,100,120,0.9)';
+    else if (n.type==='dormant') lc='rgba(255,238,0,0.9)';
+    else if (inPath) lc='#00ff88';
+    else if (n.type==='source') lc='#ff00ff';
+    else if (n.type==='target') lc='#00ff88';
+    else lc='rgba(0,229,255,0.9)';
+    ctx.fillStyle = lc;
+    lines.forEach((line, i) => ctx.fillText(line, n.px, n.py + (i - (lines.length-1)/2)*9 + 1));
 
-    // Type badge
-    if (n.type === 'source' || n.type === 'target') {
-      ctx.font = 'bold 6px Orbitron, monospace';
-      ctx.fillStyle = n.type === 'source' ? '#ff00ff' : '#00ff88';
+    if (n.type==='source'||n.type==='target') {
+      ctx.font='bold 6px Orbitron,monospace';
+      ctx.fillStyle = n.type==='source' ? '#ff00ff' : '#00ff88';
       ctx.fillText(n.type.toUpperCase(), n.px, n.py + r + 11);
     }
   });
@@ -673,139 +839,169 @@ function drawSignalParticle() {
   const path = signalAnim.path;
   const seg = signalAnim.seg;
   if (seg >= path.length - 1) return;
-
-  const a = nodes[path[seg]];
-  const b = nodes[path[seg+1]];
+  const a = nodes[path[seg]], b = nodes[path[seg+1]];
   const t = signalAnim.t;
-  const x = a.px + (b.px - a.px) * t;
-  const y = a.py + (b.py - a.py) * t;
+  const x = a.px + (b.px - a.px)*t, y = a.py + (b.py - a.py)*t;
 
-  // Trail
   for (let i = 0; i < 5; i++) {
-    const tt = Math.max(0, t - i * 0.06);
-    const tx = a.px + (b.px - a.px) * tt;
-    const ty = a.py + (b.py - a.py) * tt;
-    ctx.beginPath();
-    ctx.arc(tx, ty, (5-i)*1.2, 0, Math.PI*2);
-    ctx.fillStyle = `rgba(0,255,136,${0.6 - i*0.1})`;
-    ctx.shadowColor = '#00ff88';
-    ctx.shadowBlur = 10;
-    ctx.fill();
+    const tt = Math.max(0, t - i*0.055);
+    const tx = a.px+(b.px-a.px)*tt, ty = a.py+(b.py-a.py)*tt;
+    ctx.beginPath(); ctx.arc(tx, ty, (5-i)*1.1, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(0,255,136,${0.55-i*0.09})`;
+    ctx.shadowColor='#00ff88'; ctx.shadowBlur=8; ctx.fill();
   }
-
-  // Main particle
-  ctx.beginPath();
-  ctx.arc(x, y, 7, 0, Math.PI*2);
-  ctx.fillStyle = '#00ff88';
-  ctx.shadowColor = '#00ff88';
-  ctx.shadowBlur = 20;
-  ctx.fill();
-  ctx.shadowBlur = 0;
+  ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI*2);
+  ctx.fillStyle='#00ff88'; ctx.shadowColor='#00ff88'; ctx.shadowBlur=20; ctx.fill();
+  ctx.shadowBlur=0;
 }
 
-// ============================================================
+// ═══════════════════════════════════════════════════════════════
 // INTERACTION
-// ============================================================
-function onCanvasClick(e) {
-  let mx, my;
-  if (e.fromTouch) { mx = e._x; my = e._y; }
-  else { const r = canvas.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; }
+// ═══════════════════════════════════════════════════════════════
+function handleTap(mx, my) {
+  if (!canvas) return;
+  if (signalAnim) return;
+  if (document.getElementById('flash-overlay').classList.contains('active')) return;
 
-  // Hit test
+  initAudio();
+
+  const hitRadius = Math.max(32, W * 0.075);
   const hit = nodes.find(n => {
+    if (!n.visible && n.type === 'dormant') return false;
     const dx = n.px - mx, dy = n.py - my;
-    return Math.sqrt(dx*dx+dy*dy) < 32;
+    return Math.sqrt(dx*dx+dy*dy) < hitRadius;
   });
 
   if (!hit) { state.selectedNode = null; return; }
 
+  // ── DAMAGED ──
+  if (hit.type === 'damaged') {
+    setInfo('<span class="warn">⚠ PATHWAY BLOCKED</span> — Amyloid plaque detected. Non-viable. Find an alternate route.');
+    SFX.static(); glitch(); return;
+  }
+
+  // ── DORMANT (invisible, being tapped from memory) ──
+  if (hit.type === 'dormant') {
+    hit.visible = true; // reveal it
+  }
+
+  // ── NOTHING SELECTED YET ──
   if (state.selectedNode === null) {
-    // Must start from source or last path node
-    if (hit.type === 'damaged') {
-      setInfo('<span class="warn">⚠ PATHWAY BLOCKED</span> — This node has amyloid plaque buildup. Signal cannot pass. Find an alternate route.');
-      return;
-    }
     if (state.activePath.length === 0 && hit.type !== 'source') {
-      setInfo('Start at the <span class="highlight">SOURCE</span> node to initiate the signal.');
+      setInfo('Begin at the <span class="highlight">SOURCE</span> node.');
       return;
     }
     if (state.activePath.length > 0 && hit.id !== state.activePath[state.activePath.length-1]) {
-      // Allow re-selecting any node in path to backtrack
-      const pathIdx = state.activePath.indexOf(hit.id);
-      if (pathIdx >= 0) {
-        state.activePath = state.activePath.slice(0, pathIdx+1);
+      const idx = state.activePath.indexOf(hit.id);
+      if (idx >= 0) {
+        state.activePath = state.activePath.slice(0, idx+1);
         state.selectedNode = hit.id;
-        setInfo('Path trimmed back to <span class="highlight">' + hit.label.replace('\n',' ') + '</span>. Continue routing forward.');
+        setInfo('Backtracked to <span class="highlight">' + hit.label.replace('\n',' ') + '</span>.');
         return;
       }
-      setInfo('Continue from your last node, or tap a node in your path to backtrack.');
+      setInfo('Continue from the last node, or tap a node in your current path to backtrack.');
       return;
     }
     if (state.activePath.length === 0) {
       state.activePath = [hit.id];
+      startDecay(); // timer starts on SOURCE tap
+      SFX.heartbeat();
     }
     state.selectedNode = hit.id;
-    setInfo('Node <span class="highlight">' + hit.label.replace('\n',' ') + '</span> selected. Tap a connected node to extend the pathway.');
-  } else {
-    if (hit.id === state.selectedNode) {
-      state.selectedNode = null; return;
-    }
-    if (hit.type === 'damaged') {
-      setInfo('<span class="warn">⚠ SIGNAL DEGRADED</span> — Tau tangles detected. This pathway is non-viable. Route around it.');
-      return;
-    }
-    const current = nodes[state.selectedNode];
-    if (!current.connects.includes(hit.id)) {
-      setInfo('No direct connection to <span class="warn">' + hit.label.replace('\n',' ') + '</span>. Neurons must be adjacent to communicate.');
-      return;
-    }
-    if (state.activePath.includes(hit.id)) {
-      setInfo('Signal loop detected. <span class="warn">Neural loops cause seizures</span> — select a new node.');
-      return;
-    }
-    state.activePath.push(hit.id);
-    state.selectedNode = hit.id;
+    setInfo('Node <span class="highlight">' + hit.label.replace('\n',' ') + '</span> — tap a connected node to extend the pathway.');
+    SFX.ping(330);
 
-    if (hit.type === 'target') {
-      // Launch signal animation
-      signalAnim = { path: [...state.activePath], seg: 0, t: 0 };
-      state.selectedNode = null;
-      setInfo('<span class="highlight">SIGNAL ROUTING...</span> Transmitting along established pathway.');
-    } else {
-      setInfo('Pathway extended to <span class="highlight">' + hit.label.replace('\n',' ') + '</span>. Continue toward TARGET.');
+    // Ambient pitch rises toward target
+    const tgt = nodes.find(n => n.type === 'target');
+    if (tgt) {
+      const dx = tgt.x - hit.x, dy = tgt.y - hit.y;
+      const dist = Math.sqrt(dx*dx+dy*dy);
+      setAmbientPitch(55 + (1 - dist) * 200);
     }
+    return;
+  }
+
+  // ── SOMETHING ALREADY SELECTED ──
+  if (hit.id === state.selectedNode) { state.selectedNode = null; return; }
+
+  const cur = nodes[state.selectedNode];
+  if (!cur.connects.includes(hit.id)) {
+    setInfo('No direct connection. Neurons must be adjacent to communicate.');
+    SFX.static();
+    return;
+  }
+  if (state.activePath.includes(hit.id)) {
+    setInfo('Loop detected. <span class="warn">Neural loops = seizures.</span> Choose a new node.');
+    SFX.static();
+    return;
+  }
+
+  state.activePath.push(hit.id);
+  state.selectedNode = hit.id;
+  SFX.ping(440 + state.activePath.length * 60);
+
+  // Update ambient to reflect proximity
+  const tgt2 = nodes.find(n => n.type === 'target');
+  if (tgt2) {
+    const dx = tgt2.x - hit.x, dy = tgt2.y - hit.y;
+    setAmbientPitch(55 + (1 - Math.sqrt(dx*dx+dy*dy)) * 220);
+  }
+
+  if (hit.type === 'target') {
+    stopDecay();
+    SFX.stopHeartbeat();
+    SFX.success();
+    setAmbientPitch(220);
+    signalAnim = { path: [...state.activePath], seg: 0, t: 0 };
+    state.selectedNode = null;
+    setInfo('<span class="highlight">SIGNAL ROUTING...</span> Transmitting along established pathway.');
+  } else {
+    setInfo('Extended to <span class="highlight">' + hit.label.replace('\n',' ') + '</span>. Continue toward TARGET.');
   }
 }
 
+// ═══════════════════════════════════════════════════════════════
+// WIN
+// ═══════════════════════════════════════════════════════════════
 function checkWin() {
   const lv = LEVELS[currentLevel];
-  state.score += (5 - currentLevel) * 100 + 200;
+  const timeBonus = Math.floor(decayValue * 2);
+  const levelPoints = 300 + timeBonus;
+  state.score += levelPoints;
+  state.reserve = Math.min(100, Math.round(((currentLevel + 1) / LEVELS.length) * 100));
+
   document.getElementById('score-val').textContent = String(state.score).padStart(3,'0');
+  document.getElementById('reserve-val').textContent = state.reserve + '%';
+  document.getElementById('reserve-fill').style.width = state.reserve + '%';
 
   document.getElementById('win-title').textContent = lv.name + ' — COMPLETE';
   document.getElementById('win-text').textContent = lv.winText;
   document.getElementById('win-science').textContent = lv.winScience;
 
-  const nextBtn = document.getElementById('win-btn-row').querySelector('.btn-green');
+  const nb = document.getElementById('next-btn');
   if (currentLevel >= LEVELS.length - 1) {
-    nextBtn.textContent = '⟳ PLAY AGAIN';
-    nextBtn.onclick = () => { state.score = 0; document.getElementById('score-val').textContent = '000'; loadLevel(0); document.getElementById('win-screen').classList.remove('active'); };
+    nb.textContent = '⟳ RESTART';
+    nb.onclick = () => { state.score=0; state.reserve=0; document.getElementById('score-val').textContent='000'; document.getElementById('reserve-val').textContent='0%'; document.getElementById('reserve-fill').style.width='0%'; loadLevel(0); document.getElementById('win-screen').classList.remove('active'); };
   } else {
-    nextBtn.textContent = 'NEXT LEVEL →';
-    nextBtn.onclick = nextLevel;
+    nb.textContent = 'NEXT LEVEL →';
+    nb.onclick = nextLevel;
   }
-
   document.getElementById('win-screen').classList.add('active');
 }
 
-// ============================================================
-// UI HELPERS
-// ============================================================
-function setInfo(html) {
-  document.getElementById('info-text').innerHTML = html;
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function glitch() {
+  const ga = document.getElementById('game-area');
+  ga.classList.add('glitch-active');
+  setTimeout(() => ga.classList.remove('glitch-active'), 200);
 }
 
+function setInfo(html) { document.getElementById('info-text').innerHTML = html; }
+
 function resetLevel() {
+  stopDecay(); SFX.stopHeartbeat(); clearTimeout(flashTimeout);
   loadLevel(currentLevel);
 }
 
@@ -815,8 +1011,7 @@ function nextLevel() {
 }
 
 function showHint() {
-  const lv = LEVELS[currentLevel];
-  setInfo('<span class="highlight">💡 HINT:</span> ' + lv.hint);
+  setInfo('<span class="highlight">💡 HINT:</span> ' + LEVELS[currentLevel].hint);
 }
 
 function showLearnPanel() {
@@ -826,17 +1021,7 @@ function showLearnPanel() {
   document.getElementById('learn-overlay').classList.add('active');
 }
 
-function closeLearn() {
-  document.getElementById('learn-overlay').classList.remove('active');
-}
-
-// Handle resize: recompute node positions
-window.addEventListener('resize', () => {
-  nodes.forEach(n => {
-    n.px = n.x * W;
-    n.py = n.y * H;
-  });
-});
+function closeLearn() { document.getElementById('learn-overlay').classList.remove('active'); }
 </script>
 </body>
 </html>
