@@ -1,106 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>404 — Maximum Reality Distorted</title>
-<style>
-  body {
-    background: radial-gradient(circle at center, #000 0%, #111 100%);
-    color: #0ff;
-    font-family: monospace;
-    overflow: hidden;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    text-align: center;
-    cursor: crosshair;
-  }
-  h1 {
-    font-size: 6rem;
-    color: #0ff;
-    text-shadow: 0 0 20px #0ff, 0 0 40px #0ff, 0 0 60px #ff0;
-    animation: glitch 1.5s infinite;
-  }
-  p {
-    max-width: 400px;
-    opacity: 0.7;
-    margin: 20px 0;
-    line-height: 1.4;
-  }
-  a {
-    color: #ff0;
-    text-decoration: none;
-    font-weight: bold;
-    border: 1px solid #ff0;
-    padding: 10px 20px;
-    border-radius: 12px;
-    transition: 0.2s;
-    position: relative;
-    z-index: 2;
-  }
-  a:hover {
-    background: #ff0;
-    color: #000;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 – Lost in the Layers</title>
+  <link rel="icon" type="image/png" href="https://maximumreality.xyz/gamehub-appcard.jpeg">
 
-  @keyframes glitch {
-    0% { transform: translate(0); text-shadow: 2px 0 #f0f, -2px 2px #0ff; }
-    25% { transform: translate(-2px,2px); text-shadow: -2px -2px #f0f, 2px 2px #0ff; }
-    50% { transform: translate(2px,-2px); text-shadow: 2px 2px #f0f, -2px -2px #0ff; }
-    75% { transform: translate(-2px,-1px); text-shadow: -2px 0 #f0f, 2px -2px #0ff; }
-    100% { transform: translate(1px,2px); text-shadow: 2px -2px #f0f, -2px 0 #0ff; }
-  }
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { 
+      background:#000; 
+      color:#fff; 
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; 
+      display:flex; 
+      flex-direction:column; 
+      align-items:center; 
+      justify-content:center; 
+      min-height:100vh; 
+      text-align:center;
+      padding:20px;
+    }
 
-  .portal {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #f0f 0%, #0ff 70%, transparent 100%);
-    animation: float 6s ease-in-out infinite;
-    pointer-events: auto;
-    cursor: pointer;
-    opacity: 0.8;
-  }
+    h1 { font-size:3rem; color:#ff00ff; text-shadow:0 0 10px #ff00ff; margin-bottom:10px; }
+    p { opacity:0.7; margin-bottom:30px; font-size:1rem; }
+    
+    a { text-decoration:none; }
 
-  @keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-40px) rotate(180deg); }
-  }
+    .app-card {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 14px;
+      border-radius:16px;
+      text-decoration:none;
+      color:#fff;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      margin-bottom:12px;
+      min-height:82px;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .app-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.1); }
 
-</style>
+    .app-icon {
+      width:60px;
+      height:60px;
+      border-radius:14px;
+      flex-shrink:0;
+      background:#111;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 4px 12px rgba(0,0,0,0.5);
+    }
+    .app-icon img { width:100%; height:100%; object-fit:cover; }
+
+    .app-info { flex:1; min-width:0; text-align:left; }
+    .app-name { font-weight:700; font-size:1rem; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .app-desc { font-size:0.75rem; opacity:0.6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    .get-btn {
+      flex-shrink:0;
+      background: rgba(255,255,255,0.08);
+      padding:7px 0;
+      border-radius:20px;
+      font-weight:800;
+      font-size:0.7rem;
+      text-transform:uppercase;
+      width:76px;
+      text-align:center;
+      border:1px solid rgba(255,255,255,0.2);
+    }
+
+    .glow { 
+      animation: glowPulse 2s infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      0% { box-shadow:0 0 5px #00ffff; }
+      100% { box-shadow:0 0 20px #00ffff; }
+    }
+
+    .external-link { margin-top:20px; font-size:0.8rem; opacity:0.7; color:#a286ef; }
+    .external-link:hover { text-decoration:underline; }
+  </style>
 </head>
 <body>
 
-<h1>404</h1>
-<p>You’ve stumbled into the unknown… Maximum Reality has scattered portals around. Click one and see where it takes you.</p>
-<a href="https://maximumreality.github.io/game/">Return to the Hub</a>
+  <h1>404 – Lost in the Layers</h1>
+  <p>You’ve wandered too far into the Maximum Reality onion… but sometimes getting lost leads somewhere interesting.</p>
 
-<script>
-  const secrets = [
-    'secret1.html',
-    'secret2.html',
-    'secret3.html',
-    'secret4.html',
-    'secret5.html'
-  ];
+  <!-- Portal to Game Hub -->
+  <a href="https://maximumreality.github.io/game" target="_blank" class="app-card glow">
+    <div class="app-icon">
+      <img src="https://maximumreality.xyz/gamehub-appcard.jpeg" alt="Game Hub Portal">
+    </div>
+    <div class="app-info">
+      <div class="app-name">Game Hub</div>
+      <div class="app-desc">Enter the Layered Arcade • All New Adventures</div>
+    </div>
+    <div class="get-btn" style="color:#00ffff; border-color:#00ffff;">ENTER</div>
+  </a>
 
-  for(let i=0; i<5; i++){
-    const portal = document.createElement('div');
-    portal.className = 'portal';
-    portal.style.left = Math.random()*90 + 'vw';
-    portal.style.top = Math.random()*80 + 'vh';
-    portal.addEventListener('click', ()=>{
-      const target = secrets[Math.floor(Math.random() * secrets.length)];
-      window.location.href = target;
-    });
-    document.body.appendChild(portal);
-  }
-</script>
+  <!-- Link to Void Bloom -->
+  <a href="https://maximumreality.github.io/art/" target="_blank" class="external-link">Or explore the Void Bloom art world</a>
 
 </body>
 </html>
