@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Maximum Reality Distorted</title>
+<style>
+  body {
+    background: radial-gradient(circle at center, #000 0%, #111 100%);
+    color: #0ff;
+    font-family: monospace;
+    overflow: hidden;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    cursor: crosshair;
+  }
+  h1 {
+    font-size: 6rem;
+    color: #0ff;
+    text-shadow: 0 0 20px #0ff, 0 0 40px #0ff, 0 0 60px #ff0;
+    animation: glitch 1.5s infinite;
+  }
+  p {
+    max-width: 400px;
+    opacity: 0.7;
+    margin: 20px 0;
+    line-height: 1.4;
+  }
+  a {
+    color: #ff0;
+    text-decoration: none;
+    font-weight: bold;
+    border: 1px solid #ff0;
+    padding: 10px 20px;
+    border-radius: 12px;
+    transition: 0.2s;
+    position: relative;
+    z-index: 2;
+  }
+  a:hover {
+    background: #ff0;
+    color: #000;
+  }
+
+  @keyframes glitch {
+    0% { transform: translate(0); text-shadow: 2px 0 #f0f, -2px 2px #0ff; }
+    25% { transform: translate(-2px,2px); text-shadow: -2px -2px #f0f, 2px 2px #0ff; }
+    50% { transform: translate(2px,-2px); text-shadow: 2px 2px #f0f, -2px -2px #0ff; }
+    75% { transform: translate(-2px,-1px); text-shadow: -2px 0 #f0f, 2px -2px #0ff; }
+    100% { transform: translate(1px,2px); text-shadow: 2px -2px #f0f, -2px 0 #0ff; }
+  }
+
+  .portal {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f0f 0%, #0ff 70%, transparent 100%);
+    animation: float 6s ease-in-out infinite;
+    pointer-events: auto;
+    cursor: pointer;
+    opacity: 0.8;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-40px) rotate(180deg); }
+  }
+
+</style>
+</head>
+<body>
+
+<h1>404</h1>
+<p>You’ve wandered into the unknown… a glitchy corner of Maximum Reality. Click the portals to explore—or return to the hub if you dare.</p>
+<a href="https://maximumreality.github.io/game/">Return to the Hub</a>
+
+<script>
+  // Create floating portals
+  for(let i=0; i<5; i++){
+    const portal = document.createElement('div');
+    portal.className = 'portal';
+    portal.style.left = Math.random()*90 + 'vw';
+    portal.style.top = Math.random()*80 + 'vh';
+    portal.addEventListener('click', ()=>{
+      alert('Portal jumps you to… somewhere unexpected!');
+    });
+    document.body.appendChild(portal);
+  }
+</script>
+
+</body>
+</html>
