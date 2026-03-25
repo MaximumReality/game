@@ -916,13 +916,13 @@ function handleTap(mx, my) {
   initAudio();
 
   const hitRadius = Math.max(32, W * 0.075);
-  const hit = nodes.find(n => {
-    if (!n.visible && n.type === 'dormant') return false;
-    const dx = n.px - mx, dy = n.py - my;
+        const hit = nodes.find(n => {
+        const dx = n.px - mx, dy = n.py - my;
     return Math.sqrt(dx*dx+dy*dy) < hitRadius;
   });
 
-  if (!hit) { state.selectedNode = null; return; }
+  if (!hit) { state.selectedNode = null; return; } 
+
 
   // ── DAMAGED ──
   if (hit.type === 'damaged') {
