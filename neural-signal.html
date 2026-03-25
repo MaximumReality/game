@@ -4,6 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>NEURAL SIGNAL v2 // Maximum Reality</title>
+  <!-- SEO META -->
+<meta name="description" content="Neural Signal v2 is an interactive neuroplasticity puzzle game where you reroute brain pathways, overcome damage, and build cognitive reserve. Inspired by real neuroscience and memory resilience.">
+
+<meta name="keywords" content="neuroplasticity game, brain puzzle, Alzheimer’s awareness, cognitive training, neural pathways, memory game, brain rewiring, educational game, Maximum Reality, indie web game">
+
+<meta name="author" content="Maximum Reality">
+
+<!-- Open Graph (social sharing) -->
+<meta property="og:title" content="Neural Signal v2 // Cognitive Rerouting System">
+<meta property="og:description" content="Reroute neural pathways. Build cognitive reserve. Fight signal decay. A neuroplasticity game inspired by real brain science.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://maximumreality.github.io/game/neural-signal.html">
+<meta property="og:image" content="https://maximumreality.github.io/game/neural-signal-favicon.jpeg">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Neural Signal v2">
+<meta name="twitter:description" content="A neuroplasticity puzzle game about memory, damage, and rerouting the brain.">
+<meta name="twitter:image" content="https://maximumreality.github.io/game/neural-signal-favicon.jpeg">
+
+<!-- Favicon -->
+<link rel="icon" href="https://maximumreality.github.io/game/neural-signal-favicon.jpeg">
+
+<!-- Theme color (mobile browser glow) -->
+<meta name="theme-color" content="#000008">
+  <meta name="robots" content="index, follow">
+  <meta name="application-name" content="Neural Signal // Maximum Reality">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap');
 
@@ -149,6 +176,24 @@
   .btn-green { border-color:var(--green); color:var(--green); }
   .btn-green:active { background:rgba(0,255,136,0.1); }
 
+  #nav-links {
+  margin-top: 6px;
+  font-size: 8px;
+  text-align: center;
+  color: rgba(0,229,255,0.5);
+}
+
+#nav-links a {
+  color: rgba(0,229,255,0.7);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+#nav-links a:hover {
+  color: #00ff88;
+  text-shadow: 0 0 6px #00ff88;
+}
+
   /* ── OVERLAYS ── */
   .overlay {
     display:none; position:fixed; inset:0;
@@ -221,6 +266,11 @@
     <button class="btn btn-cyan"  onclick="resetLevel()">↺ RESET</button>
     <button class="btn btn-green" onclick="showHint()">? HINT</button>
   </div>
+</div>
+  <div id="nav-links">
+  <a href="https://maximumreality.github.io/game/">◁ HUB</a>
+  <span> · </span>
+  <a href="https://maximumreality.xyz">ORIGIN</a>
 </div>
 
 <!-- LEARN OVERLAY -->
