@@ -77,18 +77,26 @@
 <body>
 
 <h1>404</h1>
-<p>You’ve wandered into the unknown… a glitchy corner of Maximum Reality. Click the portals to explore—or return to the hub if you dare.</p>
+<p>You’ve stumbled into the unknown… Maximum Reality has scattered portals around. Click one and see where it takes you.</p>
 <a href="https://maximumreality.github.io/game/">Return to the Hub</a>
 
 <script>
-  // Create floating portals
+  const secrets = [
+    'secret1.html',
+    'secret2.html',
+    'secret3.html',
+    'secret4.html',
+    'secret5.html'
+  ];
+
   for(let i=0; i<5; i++){
     const portal = document.createElement('div');
     portal.className = 'portal';
     portal.style.left = Math.random()*90 + 'vw';
     portal.style.top = Math.random()*80 + 'vh';
     portal.addEventListener('click', ()=>{
-      alert('Portal jumps you to… somewhere unexpected!');
+      const target = secrets[Math.floor(Math.random() * secrets.length)];
+      window.location.href = target;
     });
     document.body.appendChild(portal);
   }
