@@ -947,7 +947,17 @@ function drawGem(ctx, x, y, size, type, glow = 0, sel = false) {
   } else if (shape === 'circle') {
     ctx.arc(0, 0, r, 0, Math.PI * 2);
   } else if (shape === 'square') {
-    ctx.roundRect(-r * 0.7, -r * 0.7, r * 1.4, r * 1.4, r * 0.2);
+    const sq = r * 0.7, rad = r * 0.2;
+    ctx.moveTo(-sq + rad, -sq);
+    ctx.lineTo(sq - rad, -sq);
+    ctx.arcTo(sq, -sq, sq, -sq + rad, rad);
+    ctx.lineTo(sq, sq - rad);
+    ctx.arcTo(sq, sq, sq - rad, sq, rad);
+    ctx.lineTo(-sq + rad, sq);
+    ctx.arcTo(-sq, sq, -sq, sq - rad, rad);
+    ctx.lineTo(-sq, -sq + rad);
+    ctx.arcTo(-sq, -sq, -sq + rad, -sq, rad);
+    ctx.closePath();
   } else if (shape === 'triangle') {
     ctx.moveTo(0, -r);
     ctx.lineTo(r * 0.87, r * 0.5);
@@ -1115,6 +1125,14 @@ function delay(ms) {
 loadStorage();
 setupCanvas();
 renderScoreHistory();
+// Populate board so render has gems to show behind the start overlay
+initBoard();
+syncGemTargets();
+for (let r = 0; r < ROWS; r++)
+  for (let c = 0; c < COLS; c++) {
+    gems[r][c].x = gems[r][c].targetX;
+    gems[r][c].y = gems[r][c].targetY;
+  }
 render();
 </script>
 </body>
