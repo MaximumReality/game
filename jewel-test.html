@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>JEWEL BLAST</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #05030f;
+    --panel: #0d0920;
+    --border: #2a1a5e;
+    --neon-blue: #00f0ff;
+    --neon-pink: #ff00aa;
+    --neon-green: #00ff88;
+    --neon-gold: #ffcc00;
+    --neon-purple: #cc00ff;
+    --text: #c0b8e8;
+    --dim: #4a3a7a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Exo 2', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(80,0,120,0.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 100%, rgba(0,60,120,0.2) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    width: 100%;
+  }
+
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.4rem;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink), var(--neon-gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(0 0 20px rgba(0,240,255,0.5));
+    animation: titlePulse 3s ease-in-out infinite;
+  }
+
+  @keyframes titlePulse {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(0,240,255,0.5)); }
+    50% { filter: drop-shadow(0 0 40px rgba(255,0,170,0.7)); }
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .stat-box {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+    animation: scanLine 2s linear infinite;
+  }
+
+  @keyframes scanLine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .stat-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 2px;
+  }
+
+  .stat-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--neon-blue);
+  }
+
+  #score-val { color: var(--neon-gold); }
+  #best-val { color: var(--neon-green); }
+  #moves-val { color: var(--neon-pink); }
+  #level-val { color: var(--neon-purple); }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  #level-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    width: 0%;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 10px var(--neon-blue);
+    border-radius: 3px;
+  }
+
+  /* POWER-UPS */
+  .powerup-bar {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pu-btn {
+    flex: 1;
+    max-width: 90px;
+    padding: 8px 6px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pu-btn:hover:not(:disabled), .pu-btn:active:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,240,255,0.3);
+    border-color: var(--neon-blue);
+  }
+
+  .pu-btn.active {
+    border-color: var(--neon-gold);
+    box-shadow: 0 0 15px rgba(255,204,0,0.5);
+    animation: pulseBorder 0.5s ease infinite alternate;
+  }
+
+  @keyframes pulseBorder {
+    from { box-shadow: 0 0 10px rgba(255,204,0,0.4); }
+    to { box-shadow: 0 0 25px rgba(255,204,0,0.8); }
+  }
+
+  .pu-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .pu-icon { font-size: 1.4rem; }
+  .pu-name { font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+  .pu-count {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    color: var(--neon-gold);
+  }
+
+  /* GAME BOARD */
+  #game-canvas {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow:
+      0 0 40px rgba(0,240,255,0.1),
+      inset 0 0 40px rgba(0,0,0,0.5);
+    cursor: pointer;
+    touch-action: none;
+    max-width: 100%;
+  }
+
+  /* MESSAGE OVERLAY */
+  #message {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5,3,15,0.92);
+    z-index: 100;
+    gap: 16px;
+    backdrop-filter: blur(4px);
+  }
+
+  #message.hidden { display: none; }
+
+  .msg-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+  }
+
+  .msg-body {
+    font-size: 1rem;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .msg-scores {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 24px;
+    text-align: center;
+    min-width: 260px;
+  }
+
+  .score-history {
+    max-height: 160px;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
+
+  .score-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.8rem;
+  }
+
+  .score-row:first-child { color: var(--neon-gold); font-weight: 600; }
+  .score-row span:last-child { font-family: 'Orbitron', monospace; color: var(--neon-blue); }
+
+  .btn {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 12px 32px;
+    border: 1px solid var(--neon-blue);
+    background: rgba(0,240,255,0.08);
+    color: var(--neon-blue);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn:hover, .btn:active {
+    background: rgba(0,240,255,0.2);
+    box-shadow: 0 0 20px rgba(0,240,255,0.4);
+  }
+
+  /* Floating score pop */
+  .score-pop {
+    position: fixed;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1.2rem;
+    pointer-events: none;
+    z-index: 200;
+    animation: popUp 1s ease forwards;
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  @keyframes popUp {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-60px) scale(1.4); }
+  }
+
+  /* Combo indicator */
+  #combo-display {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--neon-gold);
+    text-shadow: 0 0 20px var(--neon-gold);
+    height: 36px;
+    display: flex;
+    align-items: center;
+    transition: opacity 0.3s;
+    letter-spacing: 0.1em;
+  }
+
+  #combo-display.hidden { opacity: 0; }
+
+  .footer {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    text-align: center;
+    padding-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div id="message">
+  <div class="msg-title" id="msg-title">JEWEL BLAST</div>
+  <div class="msg-body" id="msg-body">Match 3 or more gems to score.<br>Chain combos for massive points!</div>
+  <div class="msg-scores">
+    <div style="font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Your Best Scores</div>
+    <div class="score-history" id="score-history"></div>
+  </div>
+  <button class="btn" id="start-btn" onclick="startGame()">▶ PLAY</button>
+</div>
+
+<div id="app">
+  <header>
+    <h1>JEWEL BLAST</h1>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-box">
+      <div class="stat-label">Score</div>
+      <div class="stat-value" id="score-val">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Best</div>
+      <div class="stat-value" id="best-val">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Moves</div>
+      <div class="stat-value" id="moves-val">30</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Level</div>
+      <div class="stat-value" id="level-val">1</div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div id="level-bar"></div>
+  </div>
+
+  <div id="combo-display" class="hidden"></div>
+
+  <div class="powerup-bar">
+    <button class="pu-btn" id="pu-bomb" onclick="activatePowerup('bomb')" title="Bomb: Destroys 3x3 area">
+      <span class="pu-icon">💣</span>
+      <span class="pu-name">Bomb</span>
+      <span class="pu-count" id="pu-bomb-count">3</span>
+    </button>
+    <button class="pu-btn" id="pu-lightning" onclick="activatePowerup('lightning')" title="Lightning: Clears a row">
+      <span class="pu-icon">⚡</span>
+      <span class="pu-name">Row Zap</span>
+      <span class="pu-count" id="pu-lightning-count">3</span>
+    </button>
+    <button class="pu-btn" id="pu-rainbow" onclick="activatePowerup('rainbow')" title="Rainbow: Clears all of one color">
+      <span class="pu-icon">🌈</span>
+      <span class="pu-name">Rainbow</span>
+      <span class="pu-count" id="pu-rainbow-count">2</span>
+    </button>
+    <button class="pu-btn" id="pu-shuffle" onclick="activatePowerup('shuffle')" title="Shuffle: Reshuffles the board">
+      <span class="pu-icon">🔀</span>
+      <span class="pu-name">Shuffle</span>
+      <span class="pu-count" id="pu-shuffle-count">2</span>
+    </button>
+    <button class="pu-btn" id="pu-freeze" onclick="activatePowerup('freeze')" title="Freeze: +5 free moves">
+      <span class="pu-icon">❄️</span>
+      <span class="pu-name">+5 Moves</span>
+      <span class="pu-count" id="pu-freeze-count">2</span>
+    </button>
+  </div>
+
+  <canvas id="game-canvas"></canvas>
+
+  <div class="footer">SLIDE TO SWAP · MATCH 3+ TO BLAST · CHAIN COMBOS</div>
+</div>
+
+<script>
+ const sfx = {
+  pop: new Audio('https://maximumreality.github.io/game/audio/pop.mp3'),
+  swap: new Audio('https://maximumreality.github.io/game/audio/swap.mp3'),
+  win: new Audio('https://maximumreality.github.io/game/audio/won.mp3'),
+  powerup: new Audio('https://maximumreality.github.io/game/audio/powerup.mp3')
+};
+
+// Function to play without overlapping issues
+function play(sound) {
+  sound.currentTime = 0; 
+  sound.play().catch(() => {}); 
+}
+ 
+// ===================== CONSTANTS =====================
+const COLS = 8, ROWS = 8;
+const GEM_TYPES = 6;
+const MOVES_PER_LEVEL = 30;
+
+const GEM_COLORS = [
+  { fill: '#00f0ff', glow: '#00f0ff', label: 'cyan' },
+  { fill: '#ff00aa', glow: '#ff2200', label: 'pink' },
+  { fill: '#00ff88', glow: '#00ff00', label: 'green' },
+  { fill: '#ffcc00', glow: '#ffaa00', label: 'gold' },
+  { fill: '#cc00ff', glow: '#aa00ff', label: 'purple' },
+  { fill: '#ff6600', glow: '#ff3300', label: 'orange' },
+];
+
+const GEM_SHAPES = ['diamond', 'hex', 'star', 'circle', 'square', 'triangle'];
+
+// ===================== STATE =====================
+let canvas, ctx, cellSize, boardOffX, boardOffY;
+let board = [];
+let selected = null;
+let score = 0, moves = 0, level = 1, levelTarget = 500;
+let bestScore = 0;
+let scoreHistory = [];
+let powerups = { bomb: 3, lightning: 3, rainbow: 2, shuffle: 2, freeze: 2 };
+let activePowerup = null;
+let animating = false;
+let comboCount = 0;
+let particles = [];
+let gems = []; // gem render objects with animated positions
+
+// ===================== STORAGE =====================
+function loadStorage() {
+  try {
+    const saved = localStorage.getItem('jewelblast_v1');
+    if (saved) {
+      const d = JSON.parse(saved);
+      bestScore = d.best || 0;
+      scoreHistory = d.history || [];
+    }
+  } catch(e) {}
+}
+
+function saveStorage() {
+  try {
+    localStorage.setItem('jewelblast_v1', JSON.stringify({
+      best: bestScore,
+      history: scoreHistory.slice(0, 10)
+    }));
+  } catch(e) {}
+}
+
+// ===================== CANVAS SETUP =====================
+function setupCanvas() {
+  canvas = document.getElementById('game-canvas');
+  ctx = canvas.getContext('2d');
+
+  const maxW = Math.min(window.innerWidth - 24, 460);
+  cellSize = Math.floor(maxW / COLS);
+  const cw = cellSize * COLS;
+  const ch = cellSize * ROWS;
+  canvas.width = cw;
+  canvas.height = ch;
+  boardOffX = 0;
+  boardOffY = 0;
+
+  // Drag/swipe to swap
+  let dragStart = null;
+
+  function getCell(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    return [Math.floor(y / cellSize), Math.floor(x / cellSize)];
+  }
+
+  function onDragStart(clientX, clientY) {
+    if (animating) return;
+    const [r, c] = getCell(clientX, clientY);
+    if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return;
+    dragStart = { r, c, x: clientX, y: clientY };
+    selected = [r, c];
+  }
+
+  function onDragEnd(clientX, clientY) {
+    if (!dragStart) return;
+    const { r: sr, c: sc, x: sx, y: sy } = dragStart;
+    dragStart = null;
+
+    if (activePowerup) {
+      selected = null;
+      applyPowerupAt(sr, sc);
+      return;
+    }
+
+    const dx = clientX - sx;
+    const dy = clientY - sy;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if (dist < cellSize * 0.25) {
+      // tiny drag = visual select only, no swap
+      return;
+    }
+
+    selected = null;
+
+    let tr = sr, tc = sc;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      tc = dx > 0 ? sc + 1 : sc - 1;
+    } else {
+      tr = dy > 0 ? sr + 1 : sr - 1;
+    }
+
+    if (tr < 0 || tr >= ROWS || tc < 0 || tc >= COLS) return;
+
+    animating = true;
+    trySwap(sr, sc, tr, tc);
+  }
+
+  // Mouse
+  canvas.addEventListener('mousedown', e => onDragStart(e.clientX, e.clientY));
+  canvas.addEventListener('mouseup',   e => onDragEnd(e.clientX, e.clientY));
+
+  // Touch
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    onDragStart(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', e => {
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    onDragEnd(t.clientX, t.clientY);
+  }, { passive: false });
+}
+
+// ===================== BOARD LOGIC =====================
+function initBoard() {
+  board = [];
+  gems = [];
+  for (let r = 0; r < ROWS; r++) {
+    board[r] = [];
+    gems[r] = [];
+    for (let c = 0; c < COLS; c++) {
+      board[r][c] = randomGem(r, c);
+      gems[r][c] = {
+        x: c * cellSize,
+        y: r * cellSize,
+        targetX: c * cellSize,
+        targetY: r * cellSize,
+        scale: 1,
+        alpha: 1,
+        glow: 0,
+      };
+    }
+  }
+  // ensure no immediate matches
+  while (findMatches().length > 0) {
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++)
+        board[r][c] = Math.floor(Math.random() * GEM_TYPES);
+  }
+}
+
+function randomGem(r, c) {
+  let type;
+  do {
+    type = Math.floor(Math.random() * GEM_TYPES);
+  } while (
+    (c >= 2 && board[r][c-1] === type && board[r][c-2] === type) ||
+    (r >= 2 && board[r-1] && board[r-1][c] === type && board[r-2] && board[r-2][c] === type)
+  );
+  return type;
+}
+
+function findMatches() {
+  const matched = new Set();
+
+  // Horizontal
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS - 2; c++) {
+      const t = board[r][c];
+      if (t === null) continue;
+      if (board[r][c+1] === t && board[r][c+2] === t) {
+        let end = c + 2;
+        while (end + 1 < COLS && board[r][end+1] === t) end++;
+        for (let k = c; k <= end; k++) matched.add(`${r},${k}`);
+      }
+    }
+  }
+
+  // Vertical
+  for (let c = 0; c < COLS; c++) {
+    for (let r = 0; r < ROWS - 2; r++) {
+      const t = board[r][c];
+      if (t === null) continue;
+      if (board[r+1][c] === t && board[r+2][c] === t) {
+        let end = r + 2;
+        while (end + 1 < ROWS && board[end+1][c] === t) end++;
+        for (let k = r; k <= end; k++) matched.add(`${k},${c}`);
+      }
+    }
+  }
+
+  return [...matched].map(s => { const [r,c] = s.split(','); return [+r,+c]; });
+}
+
+function clearMatches(matches) {
+  const pts = matches.length * 10 * (1 + comboCount * 0.5);
+  score += Math.round(pts);
+  comboCount++;
+
+  // Particles
+  matches.forEach(([r,c]) => {
+    spawnParticles(c * cellSize + cellSize/2, r * cellSize + cellSize/2, board[r][c]);
+    board[r][c] = null;
+  });
+
+  // Bonus gems
+  if (matches.length >= 5) {
+    // Place a bomb gem (type = 6 = special) at center
+  }
+
+  updateUI();
+  showCombo();
+  showScorePop(Math.round(pts), matches);
+}
+
+function dropGems() {
+  for (let c = 0; c < COLS; c++) {
+    let empty = ROWS - 1;
+    for (let r = ROWS - 1; r >= 0; r--) {
+      if (board[r][c] !== null) {
+        if (r !== empty) {
+          board[empty][c] = board[r][c];
+          gems[empty][c].y = gems[r][c].y;
+          board[r][c] = null;
+        }
+        empty--;
+      }
+    }
+    // Fill top
+    for (let r = empty; r >= 0; r--) {
+      board[r][c] = Math.floor(Math.random() * GEM_TYPES);
+      gems[r][c].y = (r - (empty + 1)) * cellSize;
+    }
+  }
+  syncGemTargets();
+}
+
+function syncGemTargets() {
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++) {
+      gems[r][c].targetX = c * cellSize;
+      gems[r][c].targetY = r * cellSize;
+    }
+}
+
+async function processBoard() {
+  animating = true;
+  let chain = false;
+
+  do {
+    chain = false;
+    const matches = findMatches();
+    if (matches.length > 0) {
+      chain = true;
+      clearMatches(matches);
+      play(sfx.pop);
+      await delay(300);
+      dropGems();
+      await delay(400);
+    }
+  } while (chain);
+
+  comboCount = 0;
+  hideCombo();
+  animating = false;
+
+  if (moves <= 0) endGame();
+}
+
+// ===================== SWAP =====================
+async function trySwap(r1, c1, r2, c2) {
+  play(sfx.swap);
+  // swap
+  [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+  [gems[r1][c1], gems[r2][c2]] = [gems[r2][c2], gems[r1][c1]];
+  syncGemTargets();
+
+  await delay(200);
+  const matches = findMatches();
+
+  if (matches.length === 0) {
+    // swap back
+    [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+    [gems[r1][c1], gems[r2][c2]] = [gems[r2][c2], gems[r1][c1]];
+    syncGemTargets();
+    await delay(200);
+    animating = false;
+  } else {
+    moves--;
+    updateUI();
+    await processBoard();
+    checkLevelUp();
+  }
+}
+
+// ===================== POWER-UPS =====================
+function activatePowerup(type) {
+  if (!powerups[type] || powerups[type] <= 0) return;
+  if (animating) return;
+
+  if (activePowerup === type) {
+    activePowerup = null;
+    updatePowerupUI();
+    return;
+  }
+
+  activePowerup = type;
+  selected = null;
+  updatePowerupUI();
+}
+
+function applyPowerupAt(r, c) {
+  play(sfx.powerup);
+  const type = activePowerup;
+  activePowerup = null;
+  powerups[type]--;
+  updatePowerupUI();
+  animating = true;
+
+  let toDestroy = [];
+
+  if (type === 'bomb') {
+    for (let dr = -1; dr <= 1; dr++)
+      for (let dc = -1; dc <= 1; dc++) {
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS)
+          toDestroy.push([nr, nc]);
+      }
+  } else if (type === 'lightning') {
+    for (let nc = 0; nc < COLS; nc++) toDestroy.push([r, nc]);
+  } else if (type === 'rainbow') {
+    const targetColor = board[r][c];
+    for (let rr = 0; rr < ROWS; rr++)
+      for (let cc = 0; cc < COLS; cc++)
+        if (board[rr][cc] === targetColor) toDestroy.push([rr, cc]);
+  } else if (type === 'shuffle') {
+    shuffleBoard();
+    animating = false;
+    return;
+  } else if (type === 'freeze') {
+    moves += 5;
+    updateUI();
+    animating = false;
+    showFloatingText('+5 MOVES', canvas.width/2, canvas.height/2, '#00f0ff');
+    return;
+  }
+
+  if (toDestroy.length > 0) {
+    comboCount = 0;
+    clearMatches(toDestroy);
+    toDestroy.forEach(([rr,cc]) => { board[rr][cc] = null; });
+    setTimeout(() => {
+      dropGems();
+      setTimeout(() => processBoard(), 400);
+    }, 300);
+  } else {
+    animating = false;
+  }
+}
+
+function shuffleBoard() {
+  const flat = [];
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      flat.push(board[r][c]);
+
+  for (let i = flat.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [flat[i], flat[j]] = [flat[j], flat[i]];
+  }
+
+  let k = 0;
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
+      board[r][c] = flat[k++];
+
+  showFloatingText('SHUFFLED!', canvas.width/2, canvas.height/2, '#cc00ff');
+}
+
+// ===================== LEVEL =====================
+function checkLevelUp() {
+  if (score >= level * levelTarget) {
+    level++;
+    moves += 5;
+    powerups.bomb = Math.min(powerups.bomb + 1, 5);
+    updateUI();
+    showFloatingText(`LEVEL ${level}!`, canvas.width/2, canvas.height/2, '#ffcc00');
+  }
+}
+
+// ===================== UI =====================
+function updateUI() {
+  document.getElementById('score-val').textContent = score.toLocaleString();
+  document.getElementById('best-val').textContent = bestScore.toLocaleString();
+  document.getElementById('moves-val').textContent = moves;
+  document.getElementById('level-val').textContent = level;
+
+  const progress = Math.min((score / (level * levelTarget)) * 100, 100);
+  document.getElementById('level-bar').style.width = progress + '%';
+
+  if (score > bestScore) {
+    bestScore = score;
+    saveStorage();
+  }
+}
+
+function updatePowerupUI() {
+  const types = ['bomb', 'lightning', 'rainbow', 'shuffle', 'freeze'];
+  types.forEach(t => {
+    const btn = document.getElementById(`pu-${t}`);
+    const cnt = document.getElementById(`pu-${t}-count`);
+    cnt.textContent = powerups[t];
+    btn.disabled = powerups[t] <= 0;
+    btn.classList.toggle('active', activePowerup === t);
+  });
+}
+
+function showCombo() {
+  if (comboCount <= 1) return;
+  const el = document.getElementById('combo-display');
+  const msgs = ['', '', '2x COMBO!', '3x MEGA!', '4x ULTRA!', '5x INSANE!', '6x GODLIKE!'];
+  el.textContent = msgs[Math.min(comboCount, msgs.length - 1)] || `${comboCount}x COMBO!`;
+  el.classList.remove('hidden');
+}
+
+function hideCombo() {
+  document.getElementById('combo-display').classList.add('hidden');
+}
+
+function showScorePop(pts, matches) {
+  if (matches.length === 0) return;
+  const [r, c] = matches[Math.floor(matches.length/2)];
+  const rect = canvas.getBoundingClientRect();
+  const x = rect.left + c * cellSize + cellSize/2;
+  const y = rect.top + r * cellSize;
+  showFloatingText(`+${pts}`, x, y, GEM_COLORS[board[r]?.[c] ?? 0]?.glow || '#ffcc00');
+}
+
+function showFloatingText(text, x, y, color) {
+  const el = document.createElement('div');
+  el.className = 'score-pop';
+  el.textContent = text;
+  el.style.left = (x - 30) + 'px';
+  el.style.top = (y - 20) + 'px';
+  el.style.color = color;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+// ===================== PARTICLES =====================
+function spawnParticles(x, y, colorIdx) {
+  const c = GEM_COLORS[colorIdx] || GEM_COLORS[0];
+  for (let i = 0; i < 8; i++) {
+    const angle = (Math.PI * 2 / 8) * i + Math.random() * 0.5;
+    const speed = 2 + Math.random() * 3;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      alpha: 1,
+      size: 3 + Math.random() * 3,
+      color: c.glow,
+      decay: 0.03 + Math.random() * 0.02,
+    });
+  }
+}
+
+// ===================== RENDER =====================
+function drawGem(ctx, x, y, size, type, glow = 0, sel = false) {
+  const c = GEM_COLORS[type];
+  const pad = size * 0.1;
+  const s = size - pad * 2;
+  const cx = x + size / 2, cy = y + size / 2;
+  const r = s / 2;
+  const shape = GEM_SHAPES[type];
+
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  // Glow
+  if (glow > 0 || sel) {
+    ctx.shadowBlur = sel ? 20 : glow * 15;
+    ctx.shadowColor = sel ? '#ffcc00' : c.glow;
+  }
+
+  // Selection ring
+  if (sel) {
+    ctx.strokeStyle = '#ffcc00';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, 0, r + 4, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  ctx.shadowBlur = 15;
+  ctx.shadowColor = c.glow;
+
+  // Gradient fill
+  const grad = ctx.createRadialGradient(-r*0.3, -r*0.3, 0, 0, 0, r);
+  grad.addColorStop(0, lighten(c.fill, 60));
+  grad.addColorStop(0.5, c.fill);
+  grad.addColorStop(1, darken(c.fill, 40));
+
+  ctx.fillStyle = grad;
+  ctx.strokeStyle = c.glow;
+  ctx.lineWidth = 1.5;
+
+  ctx.beginPath();
+
+  if (shape === 'diamond') {
+    ctx.moveTo(0, -r);
+    ctx.lineTo(r * 0.65, 0);
+    ctx.lineTo(0, r);
+    ctx.lineTo(-r * 0.65, 0);
+    ctx.closePath();
+  } else if (shape === 'hex') {
+    for (let i = 0; i < 6; i++) {
+      const a = (Math.PI / 3) * i - Math.PI / 6;
+      i === 0 ? ctx.moveTo(Math.cos(a)*r, Math.sin(a)*r)
+               : ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+    }
+    ctx.closePath();
+  } else if (shape === 'star') {
+    for (let i = 0; i < 10; i++) {
+      const a = (Math.PI / 5) * i - Math.PI / 2;
+      const ri = i % 2 === 0 ? r : r * 0.45;
+      i === 0 ? ctx.moveTo(Math.cos(a)*ri, Math.sin(a)*ri)
+               : ctx.lineTo(Math.cos(a)*ri, Math.sin(a)*ri);
+    }
+    ctx.closePath();
+  } else if (shape === 'circle') {
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+  } else if (shape === 'square') {
+    const sq = r * 0.7, rad = r * 0.2;
+    ctx.moveTo(-sq + rad, -sq);
+    ctx.lineTo(sq - rad, -sq);
+    ctx.arcTo(sq, -sq, sq, -sq + rad, rad);
+    ctx.lineTo(sq, sq - rad);
+    ctx.arcTo(sq, sq, sq - rad, sq, rad);
+    ctx.lineTo(-sq + rad, sq);
+    ctx.arcTo(-sq, sq, -sq, sq - rad, rad);
+    ctx.lineTo(-sq, -sq + rad);
+    ctx.arcTo(-sq, -sq, -sq + rad, -sq, rad);
+    ctx.closePath();
+  } else if (shape === 'triangle') {
+    ctx.moveTo(0, -r);
+    ctx.lineTo(r * 0.87, r * 0.5);
+    ctx.lineTo(-r * 0.87, r * 0.5);
+    ctx.closePath();
+  }
+
+  ctx.fill();
+  ctx.stroke();
+
+  // Shine
+  ctx.shadowBlur = 0;
+  const shine = ctx.createRadialGradient(-r*0.2, -r*0.35, 0, -r*0.1, -r*0.2, r*0.45);
+  shine.addColorStop(0, 'rgba(255,255,255,0.55)');
+  shine.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = shine;
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function lighten(hex, pct) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.min(255, (n >> 16) + pct);
+  const g = Math.min(255, ((n >> 8) & 0xff) + pct);
+  const b = Math.min(255, (n & 0xff) + pct);
+  return `rgb(${r},${g},${b})`;
+}
+
+function darken(hex, pct) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.max(0, (n >> 16) - pct);
+  const g = Math.max(0, ((n >> 8) & 0xff) - pct);
+  const b = Math.max(0, (n & 0xff) - pct);
+  return `rgb(${r},${g},${b})`;
+}
+
+let t = 0;
+function render() {
+  t += 0.016;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Background
+  ctx.fillStyle = '#080415';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(42,26,94,0.5)';
+  ctx.lineWidth = 0.5;
+  for (let r = 0; r <= ROWS; r++) {
+    ctx.beginPath(); ctx.moveTo(0, r*cellSize); ctx.lineTo(canvas.width, r*cellSize); ctx.stroke();
+  }
+  for (let c = 0; c <= COLS; c++) {
+    ctx.beginPath(); ctx.moveTo(c*cellSize, 0); ctx.lineTo(c*cellSize, canvas.height); ctx.stroke();
+  }
+
+  // Animate gem positions
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const g = gems[r][c];
+      if (!g) continue;
+      g.x += (g.targetX - g.x) * 0.25;
+      g.y += (g.targetY - g.y) * 0.25;
+    }
+  }
+
+  // Highlight for active powerup
+  if (activePowerup) {
+    ctx.fillStyle = 'rgba(255,204,0,0.06)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  // Draw gems
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (board[r][c] === null) continue;
+      const g = gems[r][c];
+      const isSel = selected && selected[0] === r && selected[1] === c;
+      const bobble = isSel ? Math.sin(t * 6) * 2 : 0;
+      drawGem(ctx, g.x, g.y + bobble, cellSize, board[r][c], 0, isSel);
+    }
+  }
+
+  // Particles
+  particles = particles.filter(p => p.alpha > 0);
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.15;
+    p.alpha -= p.decay;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, p.alpha);
+    ctx.fillStyle = p.color;
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+
+  requestAnimationFrame(render);
+}
+
+// ===================== GAME FLOW =====================
+function startGame() {
+  Object.values(sfx).forEach(s => { s.play().then(() => { s.pause(); s.currentTime = 0; }).catch(() => {}); });
+  score = 0;
+  moves = MOVES_PER_LEVEL;
+  level = 1;
+  comboCount = 0;
+  powerups = { bomb: 3, lightning: 3, rainbow: 2, shuffle: 2, freeze: 2 };
+  activePowerup = null;
+  particles = [];
+
+  document.getElementById('message').classList.add('hidden');
+
+  initBoard();
+  syncGemTargets();
+  updateUI();
+  updatePowerupUI();
+}
+
+function endGame() {
+  play(sfx.win);
+  // Save score
+  const entry = {
+    score,
+    level,
+    date: new Date().toLocaleDateString(),
+  };
+  scoreHistory.unshift(entry);
+  scoreHistory = scoreHistory.slice(0, 10);
+  if (score > bestScore) bestScore = score;
+  saveStorage();
+
+  // Show end screen
+  document.getElementById('msg-title').textContent = moves <= 0 ? 'GAME OVER' : 'LEVEL CLEAR!';
+  document.getElementById('msg-body').innerHTML =
+    `Score: <b style="color:var(--neon-gold)">${score.toLocaleString()}</b> · Level <b style="color:var(--neon-purple)">${level}</b>`;
+
+  renderScoreHistory();
+  document.getElementById('message').classList.remove('hidden');
+}
+
+function renderScoreHistory() {
+  const el = document.getElementById('score-history');
+  if (scoreHistory.length === 0) {
+    el.innerHTML = '<div style="color:var(--dim);font-size:0.8rem;padding:8px">No scores yet!</div>';
+    return;
+  }
+
+  el.innerHTML = scoreHistory.map((s, i) =>
+    `<div class="score-row">
+      <span>${i === 0 ? '🏆' : `#${i+1}`} ${s.date}</span>
+      <span>Lv${s.level} · ${s.score.toLocaleString()}</span>
+    </div>`
+  ).join('');
+}
+
+// ===================== UTILS =====================
+function delay(ms) {
+  return new Promise(res => setTimeout(res, ms));
+}
+
+// ===================== INIT =====================
+loadStorage();
+setupCanvas();
+renderScoreHistory();
+// Populate board so render has gems to show behind the start overlay
+initBoard();
+syncGemTargets();
+for (let r = 0; r < ROWS; r++)
+  for (let c = 0; c < COLS; c++) {
+    gems[r][c].x = gems[r][c].targetX;
+    gems[r][c].y = gems[r][c].targetY;
+  }
+render();
+</script>
+</body>
+</html>
