@@ -435,6 +435,9 @@
 
 // Function to play without overlapping issues
 function play(sound) {
+  const click = sound.cloneNode();
+  click.volume = 0.6;
+  click.play().catch(() => {
   sound.currentTime = 0; 
   sound.play().catch(() => {}); 
 }
