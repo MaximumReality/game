@@ -375,6 +375,8 @@
 </div>
 
 <div id="app">
+  <button id="mute-btn" onclick="toggleMute()" style="position:absolute; top:15px; right:15px; background:none; border:none; color:var(--neon-blue); font-size:1.5rem; cursor:pointer; z-index:1000; text-shadow: 0 0 10px var(--neon-blue); -webkit-tap-highlight-color:transparent;">🔊</button>
+
   <header>
     <h1>JEWEL BLAST</h1>
   </header>
@@ -438,24 +440,37 @@
 </div>
 
 <script>
- const sfx = {
+ let isMuted = false;
+const sfx = {
   pop: new Audio('https://maximumreality.github.io/game/audio/pop.mp3'),
   swap: new Audio('https://maximumreality.github.io/game/audio/swap.mp3'),
   win: new Audio('https://maximumreality.github.io/game/audio/won.mp3'),
-  powerup: new Audio('https://maximumreality.github.io/game/audio/powerup.mp3')
+  powerup: new Audio('https://maximumreality.github.io/game/audio/powerup.mp3'),
+  bgm: new Audio('https://maximumreality.github.io/game/audio/ambient.mp3') 
 };
 
-// Function to play without overlapping issues
+// Music setup
+sfx.bgm.loop = true;
+sfx.bgm.volume = 0.4;
+
 function play(sound) {
+  if (isMuted) return;
   const click = sound.cloneNode();
   click.volume = 0.6;
-  click.play().catch(() => {
-    // Fallback if clone fails
-    sound.currentTime = 0; 
-    sound.play().catch(() => {}); 
-  }); 
-} 
+  click.play().catch(() => {});
+}
 
+function toggleMute() {
+  isMuted = !isMuted;
+  const btn = document.getElementById('mute-btn');
+  btn.textContent = isMuted ? '🔇' : '🔊';
+  
+  if (isMuted) {
+    sfx.bgm.pause();
+  } else {
+    sfx.bgm.play().catch(() => {});
+  }
+}
  
 // ===================== CONSTANTS =====================
 const COLS = 8, ROWS = 8;
@@ -1119,7 +1134,20 @@ function render() {
 
 // ===================== GAME FLOW =====================
 function startGame() {
-  Object.values(sfx).forEach(s => { s.play().then(() => { s.pause(); s.currentTime = 0; }).catch(() => {}); });
+  // 1. Play the music ONLY if the player hasn't muted it
+  if (!isMuted) {
+    sfx.bgm.play().catch(() => { console.log("Music waiting for interaction"); });
+  }
+
+  // 2. The browser needs a "warm up" for the other sounds on mobile
+  // We play them silently for a split second so they are ready to 'pop' later
+  Object.values(sfx).forEach(s => { 
+    if (s !== sfx.bgm) {
+      s.play().then(() => { s.pause(); s.currentTime = 0; }).catch(() => {}); 
+    }
+  });
+
+  // 3. Reset the game state
   score = 0;
   moves = MOVES_PER_LEVEL;
   level = 1;
@@ -1135,6 +1163,7 @@ function startGame() {
   updateUI();
   updatePowerupUI();
 }
+
 
 function endGame() {
   play(sfx.win);
