@@ -2,31 +2,64 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+<!-- PRIMARY -->
+<title>Maximum Reality Pinball – Glitch Neon Arcade Game</title>
+<meta name="description" content="Play Maximum Reality Pinball: a fast-paced neon glitch arcade game with physics chaos, combo scoring, and surreal visuals. Free in your browser.">
+<meta name="keywords" content="pinball game, browser game, arcade game, neon pinball, glitch game, HTML5 game, mobile game">
+<meta name="author" content="Maximum Reality">
+<link rel="canonical" href="https://maximumreality.github.io/game/pinball.html">
+<meta name="robots" content="index, follow">
+
+<!-- MOBILE / PWA -->
+<meta name="theme-color" content="#050508">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MAXIMUM REALITY PINBALL</title>
-  <!-- FAVICON (tiny icon) -->
-<link rel="icon" href="https://maximumreality.github.io/game/mr-pb-favicon.jpeg?v=1">
-<link rel="shortcut icon" href="https://maximumreality.github.io/game/mr-pb-favicon.jpeg?v=1">
+<meta name="apple-mobile-web-app-title" content="MR Pinball">
+<meta name="application-name" content="MR Pinball">
 
-<!-- iPHONE / ADD TO HOME SCREEN -->
-<link rel="apple-touch-icon" href="https://maximumreality.github.io/game/share-app.jpeg">
+<!-- ICONS -->
+<link rel="icon" type="image/png" sizes="32x32" href="https://maximumreality.github.io/game/mr-pb-favicon.jpeg">
+<link rel="shortcut icon" href="https://maximumreality.github.io/game/mr-pb-favicon.jpeg">
+<link rel="apple-touch-icon" sizes="180x180" href="https://maximumreality.github.io/game/share-app.jpeg">
 
-
-<!-- SOCIAL SHARE -->
-<meta property="og:title" content="Maximum Reality Pinball">
-<meta property="og:description" content="Glitchy neon chaos pinball. Enter Maximum Reality.">
-<meta property="og:image" content="https://maximumreality.github.io/game/social-share-app.jpeg">
-<meta property="og:url" content="https://maximumreality.github.io/game/pinball.html">
+<!-- OPEN GRAPH -->
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://maximumreality.github.io/game/pinball.html">
+<meta property="og:title" content="Maximum Reality Pinball">
+<meta property="og:description" content="Neon chaos pinball. Combo chains. Surreal glitch physics. Enter Maximum Reality.">
+<meta property="og:image" content="https://maximumreality.github.io/game/social-share-app.jpeg">
+<meta property="og:site_name" content="Maximum Reality">
 
+<!-- TWITTER -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Maximum Reality Pinball">
-<meta name="twitter:description" content="Glitchy neon pinball chaos. Can you survive?">
+<meta name="twitter:description" content="Fast, glitchy neon pinball with combo scoring and chaos physics.">
 <meta name="twitter:image" content="https://maximumreality.github.io/game/social-share-app.jpeg">
+
+<!-- STRUCTURED DATA -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "Maximum Reality Pinball",
+  "url": "https://maximumreality.github.io/game/pinball.html",
+  "image": "https://maximumreality.github.io/game/social-share-app.jpeg",
+  "description": "A glitchy neon browser-based pinball game with combo scoring and surreal physics.",
+  "genre": ["Arcade", "Pinball"],
+  "playMode": "SinglePlayer",
+  "applicationCategory": "Game",
+  "operatingSystem": "Web Browser",
+  "author": {
+    "@type": "Organization",
+    "name": "Maximum Reality"
+  }
+}
+</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
-<style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;}
 html,body{background:#000;overflow:hidden;height:100%;width:100%;touch-action:manipulation;}
 body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;height:100dvh;font-family:'Courier New',monospace;}
