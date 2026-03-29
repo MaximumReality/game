@@ -247,6 +247,47 @@
 
   @media(max-width:420px) { :root{--ts:58px} #title-line{font-size:1.5rem} }
   @media(max-width:360px) { :root{--ts:50px} }
+  #nav-footer {
+  width:100%;
+  max-width:520px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin:18px auto 30px;
+  padding:0 12px;
+}
+
+.nav-btn {
+  flex:1;
+  text-align:center;
+  font-family:'Orbitron', monospace;
+  font-size:.8rem;
+  letter-spacing:.15em;
+  text-decoration:none;
+  color:var(--cyan);
+  border:1px solid rgba(0,245,255,.4);
+  padding:10px 0;
+  background:rgba(0,245,255,.05);
+  box-shadow:0 0 10px rgba(0,245,255,.15);
+  transition:all .15s ease;
+}
+
+.nav-btn:hover {
+  background:rgba(0,245,255,.15);
+  box-shadow:0 0 18px rgba(0,245,255,.35);
+}
+
+.nav-btn.home {
+  color:var(--red);
+  border-color:rgba(255,26,75,.5);
+  background:rgba(255,26,75,.06);
+  box-shadow:0 0 10px rgba(255,26,75,.2);
+}
+
+.nav-btn.home:hover {
+  background:rgba(255,26,75,.15);
+  box-shadow:0 0 18px rgba(255,26,75,.4);
+}
 </style>
 </head>
 <body>
@@ -707,5 +748,7 @@ function playWin(){
 // ── BOOT ───────────────────────────────────────────
 document.getElementById('overlay-btn').onclick=()=>startLevel();
 </script>
+  <a href="https://maximumreality.github.io/game/" class="nav-btn">◀ RETURN TO GRID</a>
+<a href="https://maximumreality.xyz" class="nav-btn home">⌂ EXIT SYSTEM</a>
 </body>
 </html>
