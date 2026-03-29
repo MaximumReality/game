@@ -128,6 +128,35 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:flex-
 #tilt-indicator{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:9px;color:#0ff4;letter-spacing:2px;pointer-events:none;z-index:20;white-space:nowrap;opacity:0;transition:opacity 1s;}
 #music-btn{position:absolute;top:4px;right:4px;background:none;border:1px solid #0ff4;color:#0ff8;font-size:10px;letter-spacing:1px;padding:2px 6px;cursor:pointer;z-index:30;font-family:'Courier New',monospace;border-radius:4px;touch-action:manipulation;}
 #music-btn:hover{border-color:#0ff;color:#0ff;}
+#back-btn {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: none;
+  border: 1px solid #0ff4;
+  color: #0ff8;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 2px 6px;
+  cursor: pointer;
+  z-index: 30;
+  border-radius: 4px;
+  text-shadow: 0 0 6px #0ff;
+  transition: all 0.08s;
+  outline: none;
+}
+
+#back-btn:hover {
+  border-color: #0ff;
+  text-shadow: 0 0 10px #0ff;
+}
+
+#back-btn:active {
+  background: linear-gradient(135deg,#0ff5,#f0f4);
+  box-shadow: 0 0 12px #0ff8, inset 0 0 8px #0ff4;
+  border-color: #0ff;
+}
 #game-over-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.92);z-index:100;flex-direction:column;justify-content:center;align-items:center;color:#0ff;font-family:'Courier New',monospace;text-align:center;}
 #game-over-overlay h1{font-size:38px;text-shadow:0 0 20px #0ff;margin-bottom:16px;letter-spacing:4px;}
 #final-stats{font-size:16px;line-height:1.8;margin-bottom:24px;}
@@ -168,6 +197,8 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:flex-
   <div id="mode-overlay"></div>
   <div id="tilt-indicator">↔ TILT ACTIVE</div>
   <button id="music-btn">♪ OFF</button>
+  <button id="back-btn" onclick="window.location.href='https://maximumreality.github.io/game'">🔙</button>
+
   <div id="game-over-overlay">
     <h1>GAME OVER</h1>
     <div id="final-stats">
