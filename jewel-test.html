@@ -3,19 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>JEWEL BLAST</title>
-  <link rel="icon" type="image/jpeg" href="https://maximumreality.github.io/game/jewel-icon.jpeg">
+<title>JEWEL BLAST</title> <link rel="icon" type="image/jpeg" href="https://maximumreality.github.io/game/jewel-icon.jpeg">
 <link rel="apple-touch-icon" href="https://maximumreality.github.io/game/jewel-icon.jpeg">
-
 <meta name="theme-color" content="#05030f">
 <meta name="msapplication-TileColor" content="#05030f">
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="JEWEL BLAST">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -455,10 +448,11 @@ sfx.bgm.volume = 0.4;
 
 function play(sound) {
   if (isMuted) return;
-  const click = sound.cloneNode();
+  const click = new Audio(sound.src);
   click.volume = 0.6;
   click.play().catch(() => {});
 }
+
 
 function toggleMute() {
   isMuted = !isMuted;
@@ -684,10 +678,14 @@ function clearMatches(matches) {
   comboCount++;
 
   // Particles
+  const colorSnapshot = {};
   matches.forEach(([r,c]) => {
+    colorSnapshot[`${r},${c}`] = board[r][c];
     spawnParticles(c * cellSize + cellSize/2, r * cellSize + cellSize/2, board[r][c]);
     board[r][c] = null;
   });
+  clearMatches._lastColors = colorSnapshot;
+
 
   // Bonus gems
   if (matches.length >= 5) {
@@ -860,8 +858,10 @@ function shuffleBoard() {
     for (let c = 0; c < COLS; c++)
       board[r][c] = flat[k++];
 
+    syncGemTargets();
   showFloatingText('SHUFFLED!', canvas.width/2, canvas.height/2, '#cc00ff');
 }
+
 
 // ===================== LEVEL =====================
 function checkLevelUp() {
@@ -881,7 +881,9 @@ function updateUI() {
   document.getElementById('moves-val').textContent = moves;
   document.getElementById('level-val').textContent = level;
 
-  const progress = Math.min((score / (level * levelTarget)) * 100, 100);
+    const prevThreshold = (level - 1) * levelTarget;
+  const progress = Math.min(((score - prevThreshold) / levelTarget) * 100, 100);
+
   document.getElementById('level-bar').style.width = progress + '%';
 
   if (score > bestScore) {
@@ -919,8 +921,10 @@ function showScorePop(pts, matches) {
   const rect = canvas.getBoundingClientRect();
   const x = rect.left + c * cellSize + cellSize/2;
   const y = rect.top + r * cellSize;
-  showFloatingText(`+${pts}`, x, y, GEM_COLORS[board[r]?.[c] ?? 0]?.glow || '#ffcc00');
+  const colorIdx = clearMatches._lastColors?.[`${r},${c}`] ?? 0;
+  showFloatingText(`+${pts}`, x, y, GEM_COLORS[colorIdx]?.glow || '#ffcc00');
 }
+
 
 function showFloatingText(text, x, y, color) {
   const el = document.createElement('div');
