@@ -12,21 +12,16 @@
     --panel: #080e14;
     --cyan: #00f5ff;
     --cyan-dim: #00a8b0;
-    --cyan-glow: rgba(0,245,255,0.18);
-    --cyan-faint: rgba(0,245,255,0.06);
     --red: #ff1a4b;
     --red-glow: rgba(255,26,75,0.4);
     --green: #00ff88;
-    --yellow: #ffe600;
     --locked: #ff6b00;
     --text: #c8f0f4;
     --dim: #3a6068;
     --grid-line: rgba(0,245,255,0.08);
-    --tile-size: 72px;
+    --ts: 68px;
   }
-
   * { margin:0; padding:0; box-sizing:border-box; }
-
   body {
     background: var(--deep);
     color: var(--text);
@@ -36,352 +31,160 @@
     flex-direction: column;
     align-items: center;
     overflow-x: hidden;
-    overflow-y: auto;
-    position: relative;
   }
-
-  /* Scanlines */
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.25) 2px,
-      rgba(0,0,0,0.25) 4px
-    );
-    pointer-events: none;
-    z-index: 1000;
+    content:'';
+    position:fixed;inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.22) 2px,rgba(0,0,0,0.22) 4px);
+    pointer-events:none;z-index:1000;
   }
-
-  /* CRT vignette */
   body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.7) 100%);
-    pointer-events: none;
-    z-index: 999;
+    content:'';
+    position:fixed;inset:0;
+    background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,0.65) 100%);
+    pointer-events:none;z-index:999;
   }
 
-  /* ─── HEADER ─── */
-  #header {
-    width: 100%;
-    max-width: 520px;
-    padding: 18px 16px 6px;
-    text-align: center;
-    position: relative;
-  }
-
+  #header { width:100%;max-width:520px;padding:18px 16px 6px;text-align:center; }
   #title-line {
-    font-family: 'Orbitron', monospace;
-    font-weight: 900;
-    font-size: 2rem;
-    color: var(--cyan);
-    letter-spacing: 0.12em;
-    text-shadow: 0 0 12px var(--cyan), 0 0 30px rgba(0,245,255,0.4);
-    line-height: 1;
+    font-family:'Orbitron',monospace;font-weight:900;font-size:2rem;
+    color:var(--cyan);letter-spacing:.12em;
+    text-shadow:0 0 12px var(--cyan),0 0 30px rgba(0,245,255,.4);
   }
+  #subtitle { font-size:.95rem;color:var(--cyan-dim);letter-spacing:.25em;margin-top:2px;opacity:.7; }
 
-  #subtitle {
-    font-size: 1rem;
-    color: var(--cyan-dim);
-    letter-spacing: 0.25em;
-    margin-top: 2px;
-    opacity: 0.75;
-  }
-
-  /* ─── STATUS BAR ─── */
   #statusbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 520px;
-    padding: 8px 16px;
-    margin-top: 6px;
-    border-top: 1px solid var(--grid-line);
-    border-bottom: 1px solid var(--grid-line);
-    font-size: 1.1rem;
-    letter-spacing: 0.08em;
-    background: var(--panel);
+    display:flex;justify-content:space-between;align-items:center;
+    width:100%;max-width:520px;padding:8px 16px;margin-top:6px;
+    border-top:1px solid var(--grid-line);border-bottom:1px solid var(--grid-line);
+    background:var(--panel);
   }
+  .stat-label { color:var(--dim);font-size:.8rem; }
+  .stat-val   { color:var(--cyan);font-size:1.3rem;text-shadow:0 0 8px var(--cyan); }
+  .stat-val.danger { color:var(--red);text-shadow:0 0 8px var(--red-glow);animation:blink .5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:.4} }
 
-  .stat-label { color: var(--dim); font-size: 0.85rem; }
-  .stat-val { color: var(--cyan); font-size: 1.3rem; text-shadow: 0 0 8px var(--cyan); }
-  .stat-val.danger { color: var(--red); text-shadow: 0 0 8px var(--red-glow); animation: blink 0.5s infinite; }
+  #spike-bar-wrap { width:80px;height:4px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:3px;overflow:hidden; }
+  #spike-bar { height:100%;background:var(--red);box-shadow:0 0 6px var(--red-glow);width:100%;transition:width .25s linear; }
 
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  #game-area { width:100%;max-width:520px;padding:12px 8px;display:flex;flex-direction:column;align-items:center; }
 
-  #timer-wrap { position: relative; display: flex; flex-direction: column; align-items: center; }
-  #spike-bar-wrap {
-    width: 90px;
-    height: 4px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 2px;
-    margin-top: 3px;
-    overflow: hidden;
-  }
-  #spike-bar {
-    height: 100%;
-    background: var(--red);
-    box-shadow: 0 0 6px var(--red-glow);
-    width: 100%;
-    transform-origin: left;
-    transition: width 0.1s linear;
-  }
-
-  /* ─── GAME AREA ─── */
-  #game-area {
-    width: 100%;
-    max-width: 520px;
-    padding: 12px 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* ─── GRID ─── */
-  #grid-wrap {
-    position: relative;
-    display: inline-block;
-  }
-
+  #grid-wrap { position:relative;display:inline-block; }
   #grid {
-    display: grid;
-    gap: 3px;
-    background: var(--black);
-    border: 2px solid rgba(0,245,255,0.2);
-    box-shadow: 0 0 20px rgba(0,245,255,0.08), inset 0 0 20px rgba(0,0,0,0.5);
-    padding: 3px;
+    display:grid;gap:3px;
+    background:var(--black);
+    border:2px solid rgba(0,245,255,.2);
+    box-shadow:0 0 20px rgba(0,245,255,.08);
+    padding:3px;
   }
 
   .tile {
-    width: var(--tile-size);
-    height: var(--tile-size);
-    background: var(--panel);
-    position: relative;
-    cursor: pointer;
-    transition: background 0.12s;
-    border: 1px solid var(--grid-line);
-    overflow: visible;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    width:var(--ts);height:var(--ts);
+    background:var(--panel);
+    position:relative;
+    border:1px solid var(--grid-line);
+    overflow:hidden;
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;
+    cursor:pointer;
+    transition:background .1s;
   }
-
-  .tile:hover { background: #0d1820; }
-  .tile:active { transform: scale(0.93); }
-
-  .tile.source { border-color: rgba(0,255,136,0.5); background: rgba(0,255,136,0.04); }
-  .tile.core   { border-color: rgba(0,245,255,0.6); background: rgba(0,245,255,0.05); }
-  .tile.locked { cursor: not-allowed; border-color: rgba(255,107,0,0.5); background: rgba(255,107,0,0.05); }
-  .tile.spiked { animation: spike-flash 0.35s ease-out; }
-
+  .tile:active { background:#0d1820; }
+  .tile.source { border-color:rgba(0,255,136,.5);background:rgba(0,255,136,.04); }
+  .tile.core   { border-color:rgba(0,245,255,.6);background:rgba(0,245,255,.05); }
+  .tile.locked { cursor:not-allowed;border-color:rgba(255,107,0,.5);background:rgba(255,107,0,.04); }
+  .tile.spiked { animation:spike-flash .4s ease-out; }
   @keyframes spike-flash {
-    0%  { background: rgba(255,26,75,0.35); border-color: var(--red); box-shadow: 0 0 16px var(--red-glow); }
-    100%{ background: var(--panel); }
+    0%  { background:rgba(255,26,75,.4);box-shadow:inset 0 0 14px var(--red); }
+    100%{ background:var(--panel); }
   }
+  .tile.pop { animation:pop .13s ease-out; }
+  @keyframes pop { 0%{transform:scale(.86)}100%{transform:scale(1)} }
 
-  /* Pipe SVG inside tile */
-  .tile svg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-  }
+  .tile svg { position:absolute;inset:0;width:100%;height:100%;display:block; }
+  .pipe-seg { stroke:var(--dim);stroke-width:9;stroke-linecap:round;transition:stroke .15s; }
+  .pipe-seg.lit { stroke:var(--cyan);filter:drop-shadow(0 0 4px var(--cyan)) drop-shadow(0 0 9px rgba(0,245,255,.5)); }
+  .pipe-dot { fill:var(--dim);transition:fill .15s; }
+  .pipe-dot.lit { fill:var(--cyan);filter:drop-shadow(0 0 4px var(--cyan)); }
 
-  /* Pipe segments: drawn as thick lines connecting center to edge midpoints */
-  .pipe-seg {
-    stroke: var(--dim);
-    stroke-width: 10;
-    stroke-linecap: round;
-    transition: stroke 0.2s;
-  }
-  .pipe-seg.lit {
-    stroke: var(--cyan);
-    filter: drop-shadow(0 0 5px var(--cyan)) drop-shadow(0 0 10px rgba(0,245,255,0.5));
-  }
-  .pipe-seg.source-lit {
-    stroke: var(--green);
-    filter: drop-shadow(0 0 6px var(--green));
-  }
-
-  /* Corner dot at center */
-  .pipe-dot {
-    fill: var(--dim);
-    transition: fill 0.2s;
-  }
-  .pipe-dot.lit { fill: var(--cyan); filter: drop-shadow(0 0 4px var(--cyan)); }
-  .pipe-dot.source-lit { fill: var(--green); filter: drop-shadow(0 0 4px var(--green)); }
-
-  /* Source / Core labels */
   .tile-label {
-    position: absolute;
-    bottom: 3px;
-    left: 0; right: 0;
-    text-align: center;
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-    pointer-events: none;
-    z-index: 2;
+    position:absolute;bottom:2px;left:0;right:0;
+    text-align:center;font-size:.6rem;letter-spacing:.1em;
+    pointer-events:none;z-index:2;
   }
-  .tile-label.src  { color: var(--green); text-shadow: 0 0 6px var(--green); }
-  .tile-label.core { color: var(--cyan);  text-shadow: 0 0 6px var(--cyan); }
-  .tile-label.lock { color: var(--locked);font-size:0.9rem; }
+  .tile-label.src  { color:var(--green);text-shadow:0 0 6px var(--green); }
+  .tile-label.core { color:var(--cyan);text-shadow:0 0 6px var(--cyan); }
+  .tile-label.lock { color:var(--locked);font-size:.85rem; }
 
-  /* Core pulse ring */
   .core-ring {
-    position: absolute;
-    inset: 8px;
-    border-radius: 50%;
-    border: 2px solid var(--cyan);
-    opacity: 0.4;
-    animation: pulse-ring 1.4s ease-out infinite;
-    pointer-events: none;
+    position:absolute;inset:10px;border-radius:50%;
+    border:2px solid var(--cyan);opacity:.4;
+    animation:pulse-ring 1.5s ease-out infinite;
+    pointer-events:none;
   }
-  @keyframes pulse-ring {
-    0%   { transform: scale(0.6); opacity: 0.6; }
-    100% { transform: scale(1.3); opacity: 0; }
-  }
+  @keyframes pulse-ring { 0%{transform:scale(.6);opacity:.6}100%{transform:scale(1.4);opacity:0} }
 
-  /* ─── SIGNAL PULSE ─── */
   #signal-pulse {
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--cyan);
-    box-shadow: 0 0 8px var(--cyan), 0 0 18px var(--cyan);
-    pointer-events: none;
-    z-index: 10;
-    transform: translate(-50%, -50%);
-    transition: left 0.12s linear, top 0.12s linear;
-    display: none;
+    position:absolute;width:13px;height:13px;border-radius:50%;
+    background:var(--cyan);box-shadow:0 0 8px var(--cyan),0 0 18px var(--cyan);
+    pointer-events:none;z-index:10;
+    transform:translate(-50%,-50%);
+    display:none;
   }
 
-  /* ─── MESSAGE OVERLAY ─── */
   #overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.88);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 500;
-    gap: 16px;
+    position:fixed;inset:0;background:rgba(0,0,0,.9);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:500;gap:16px;
   }
-  #overlay.hidden { display: none; }
-
+  #overlay.hidden { display:none; }
   #overlay-title {
-    font-family: 'Orbitron', monospace;
-    font-size: 2.2rem;
-    font-weight: 900;
-    text-align: center;
-    line-height: 1.1;
+    font-family:'Orbitron',monospace;font-size:2.1rem;font-weight:900;
+    text-align:center;white-space:pre-line;
   }
-  #overlay-title.win  { color: var(--cyan); text-shadow: 0 0 20px var(--cyan); }
-  #overlay-title.lose { color: var(--red);  text-shadow: 0 0 20px var(--red); }
-
-  #overlay-sub {
-    font-size: 1.4rem;
-    color: var(--text);
-    text-align: center;
-    letter-spacing: 0.1em;
-    max-width: 320px;
-    line-height: 1.3;
-  }
-
+  #overlay-title.win  { color:var(--cyan);text-shadow:0 0 20px var(--cyan); }
+  #overlay-title.lose { color:var(--red);text-shadow:0 0 20px var(--red); }
+  #overlay-sub { font-size:1.3rem;color:var(--text);text-align:center;letter-spacing:.1em;max-width:320px;line-height:1.4; }
   #overlay-btn {
-    font-family: 'Orbitron', monospace;
-    font-size: 1rem;
-    font-weight: 700;
-    padding: 12px 36px;
-    background: transparent;
-    border: 2px solid var(--cyan);
-    color: var(--cyan);
-    cursor: pointer;
-    letter-spacing: 0.18em;
-    text-shadow: 0 0 8px var(--cyan);
-    box-shadow: 0 0 14px rgba(0,245,255,0.2);
-    transition: all 0.15s;
-    margin-top: 8px;
+    font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;
+    padding:12px 36px;background:transparent;
+    border:2px solid var(--cyan);color:var(--cyan);cursor:pointer;
+    letter-spacing:.18em;text-shadow:0 0 8px var(--cyan);
+    box-shadow:0 0 14px rgba(0,245,255,.2);transition:all .15s;margin-top:8px;
   }
-  #overlay-btn:hover {
-    background: rgba(0,245,255,0.1);
-    box-shadow: 0 0 22px rgba(0,245,255,0.4);
-  }
+  #overlay-btn:hover { background:rgba(0,245,255,.1);box-shadow:0 0 22px rgba(0,245,255,.4); }
 
-  /* ─── SPIKE ALERT ─── */
   #spike-alert {
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Orbitron', monospace;
-    font-size: 1.1rem;
-    color: var(--red);
-    text-shadow: 0 0 12px var(--red-glow);
-    letter-spacing: 0.18em;
-    pointer-events: none;
-    z-index: 600;
-    opacity: 0;
-    transition: opacity 0.1s;
-    white-space: nowrap;
+    position:fixed;top:18%;left:50%;transform:translateX(-50%);
+    font-family:'Orbitron',monospace;font-size:1rem;
+    color:var(--red);text-shadow:0 0 12px var(--red-glow);
+    letter-spacing:.18em;pointer-events:none;z-index:600;
+    opacity:0;white-space:nowrap;
   }
-  #spike-alert.show { opacity: 1; animation: spike-anim 1.2s forwards; }
+  #spike-alert.show { animation:spike-anim 1.3s forwards; }
   @keyframes spike-anim {
-    0%  { opacity:1; transform: translateX(-50%) translateY(0) scale(1); }
-    60% { opacity:1; transform: translateX(-50%) translateY(-10px) scale(1.08); }
-    100%{ opacity:0; transform: translateX(-50%) translateY(-18px) scale(0.95); }
+    0%  { opacity:1;transform:translateX(-50%) translateY(0) scale(1); }
+    60% { opacity:1;transform:translateX(-50%) translateY(-10px) scale(1.08); }
+    100%{ opacity:0;transform:translateX(-50%) translateY(-18px) scale(.95); }
   }
 
-  /* ─── LEVEL INDICATOR ─── */
-  #level-dots {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-  }
-  .ldot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--dim);
-    border: 1px solid var(--dim);
-  }
-  .ldot.done  { background: var(--green); border-color: var(--green); box-shadow: 0 0 6px var(--green); }
-  .ldot.curr  { background: var(--cyan);  border-color: var(--cyan);  box-shadow: 0 0 8px var(--cyan); }
+  #level-dots { display:flex;gap:8px;margin-top:10px; }
+  .ldot { width:8px;height:8px;border-radius:50%;background:var(--dim);border:1px solid var(--dim); }
+  .ldot.done { background:var(--green);border-color:var(--green);box-shadow:0 0 6px var(--green); }
+  .ldot.curr { background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 8px var(--cyan); }
 
-  /* ─── LEGEND ─── */
   #legend {
-    display: flex;
-    gap: 14px;
-    padding: 8px 16px;
-    font-size: 0.8rem;
-    color: var(--dim);
-    letter-spacing: 0.08em;
-    flex-wrap: wrap;
-    justify-content: center;
+    display:flex;gap:14px;padding:8px 16px;font-size:.8rem;
+    color:var(--dim);letter-spacing:.08em;flex-wrap:wrap;justify-content:center;
   }
-  .leg-item { display: flex; align-items: center; gap: 5px; }
-  .leg-swatch {
-    width: 12px; height: 12px; border-radius: 2px;
-    border: 1px solid;
-  }
-  .leg-swatch.s-src  { border-color: var(--green); background: rgba(0,255,136,0.15); }
-  .leg-swatch.s-core { border-color: var(--cyan);  background: rgba(0,245,255,0.15); }
-  .leg-swatch.s-lock { border-color: var(--locked);background: rgba(255,107,0,0.15); }
+  .leg-item { display:flex;align-items:center;gap:5px; }
+  .leg-sw { width:10px;height:10px;border-radius:2px;border:1px solid; }
+  .leg-sw.s { border-color:var(--green);background:rgba(0,255,136,.15); }
+  .leg-sw.c { border-color:var(--cyan);background:rgba(0,245,255,.15); }
+  .leg-sw.l { border-color:var(--locked);background:rgba(255,107,0,.15); }
 
-  /* Mobile adjustments */
-  @media (max-width: 420px) {
-    :root { --tile-size: 60px; }
-    #title-line { font-size: 1.5rem; }
-  }
-  @media (max-width: 360px) {
-    :root { --tile-size: 52px; }
-  }
+  @media(max-width:420px) { :root{--ts:58px} #title-line{font-size:1.5rem} }
+  @media(max-width:360px) { :root{--ts:50px} }
 </style>
 </head>
 <body>
@@ -396,10 +199,14 @@
     <div class="stat-label">LEVEL</div>
     <div class="stat-val" id="lvl-display">01</div>
   </div>
-  <div id="timer-wrap">
+  <div style="display:flex;flex-direction:column;align-items:center">
     <div class="stat-label">SPIKE IN</div>
-    <div class="stat-val" id="timer-display">10</div>
+    <div class="stat-val" id="spike-display">10</div>
     <div id="spike-bar-wrap"><div id="spike-bar"></div></div>
+  </div>
+  <div>
+    <div class="stat-label">TIME</div>
+    <div class="stat-val" id="timer-display">90</div>
   </div>
   <div>
     <div class="stat-label">SCORE</div>
@@ -414,725 +221,429 @@
   </div>
   <div id="level-dots"></div>
   <div id="legend">
-    <div class="leg-item"><div class="leg-swatch s-src"></div> SOURCE</div>
-    <div class="leg-item"><div class="leg-swatch s-core"></div> CORE</div>
-    <div class="leg-item"><div class="leg-swatch s-lock"></div> LOCKED</div>
-    <span style="color:var(--dim)">// TAP TILES TO ROTATE //</span>
+    <div class="leg-item"><div class="leg-sw s"></div>SOURCE</div>
+    <div class="leg-item"><div class="leg-sw c"></div>CORE</div>
+    <div class="leg-item"><div class="leg-sw l"></div>LOCKED</div>
+    <span>// TAP TILES TO ROTATE //</span>
   </div>
 </div>
 
 <div id="overlay">
-  <div id="overlay-title" class="win">MAXIMUM REALITY</div>
-  <div id="overlay-sub">PATCH AZUL'S SIGNAL THROUGH TO THE MAINFRAME</div>
-  <button id="overlay-btn" onclick="startLevel()">INITIALIZE ▶</button>
+  <div id="overlay-title" class="win">NODE BREAKER</div>
+  <div id="overlay-sub">PATCH AZUL'S SIGNAL TO THE MAINFRAME<br>TAP TILES TO ROTATE // BEWARE SYSTEM SPIKES</div>
+  <button id="overlay-btn">INITIALIZE ▶</button>
 </div>
-
 <div id="spike-alert">⚡ SYSTEM SPIKE ⚡</div>
 
 <script>
-// ══════════════════════════════════════════════════
-// TILE TYPE DEFINITIONS
-// Each tile: { opens: [top, right, bottom, left] }
-// 1 = open, 0 = closed
-// ══════════════════════════════════════════════════
+// ── TILE TYPES [top,right,bottom,left] ─────────────
+const TILE_TYPES = [
+  [0,1,0,1],[1,0,1,0],  // straights
+  [1,1,0,0],[0,1,1,0],[0,0,1,1],[1,0,0,1], // elbows
+  [1,1,1,0],[0,1,1,1],[1,0,1,1],[1,1,0,1], // T shapes
+];
+const DIR_OFF = [{dr:-1,dc:0},{dr:0,dc:1},{dr:1,dc:0},{dr:0,dc:-1}];
+const OPP = [2,3,0,1];
+const EDGE = [[34,0],[68,34],[34,68],[0,34]]; // edge midpoints in 68x68 tile
 
-const TILE_TYPES = {
-  STRAIGHT_H: { opens: [0,1,0,1] },
-  STRAIGHT_V: { opens: [1,0,1,0] },
-  ELBOW_TR:   { opens: [1,1,0,0] },
-  ELBOW_RB:   { opens: [0,1,1,0] },
-  ELBOW_BL:   { opens: [0,0,1,1] },
-  ELBOW_TL:   { opens: [1,0,0,1] },
-  T_TRB:      { opens: [1,1,1,0] },
-  T_RBL:      { opens: [0,1,1,1] },
-  T_TBL:      { opens: [1,0,1,1] },
-  T_TRL:      { opens: [1,1,0,1] },
-  CROSS:      { opens: [1,1,1,1] },
-};
+function rot(o){ return [o[3],o[0],o[1],o[2]]; }
 
-const TYPE_KEYS = Object.keys(TILE_TYPES);
-
-function rotateTile(opens) {
-  // [top, right, bottom, left] -> rotate 90° CW
-  return [opens[3], opens[0], opens[1], opens[2]];
-}
-
-function rotatesToMatch(opens, target) {
-  let cur = [...opens];
-  for (let r = 0; r < 4; r++) {
-    if (cur.every((v,i) => v === target[i])) return r;
-    cur = rotateTile(cur);
-  }
-  return -1;
-}
-
-// ══════════════════════════════════════════════════
-// LEVEL CONFIGS
-// ══════════════════════════════════════════════════
-
+// ── LEVELS ─────────────────────────────────────────
 const LEVELS = [
-  { size: 4, spikeInterval: 12, spikeTiles: 2, locked: 0, timeLimit: 90 },
-  { size: 4, spikeInterval: 10, spikeTiles: 2, locked: 1, timeLimit: 80 },
-  { size: 5, spikeInterval: 10, spikeTiles: 2, locked: 1, timeLimit: 100 },
-  { size: 5, spikeInterval:  8, spikeTiles: 3, locked: 2, timeLimit: 90 },
-  { size: 6, spikeInterval:  8, spikeTiles: 3, locked: 2, timeLimit: 120 },
-  { size: 6, spikeInterval:  7, spikeTiles: 3, locked: 3, timeLimit: 110 },
+  {size:4,spikeInterval:12,spikeTiles:2,locked:0,timeLimit:90},
+  {size:4,spikeInterval:10,spikeTiles:2,locked:1,timeLimit:80},
+  {size:5,spikeInterval:10,spikeTiles:2,locked:1,timeLimit:100},
+  {size:5,spikeInterval:8, spikeTiles:3,locked:2,timeLimit:90},
+  {size:6,spikeInterval:8, spikeTiles:3,locked:2,timeLimit:120},
+  {size:6,spikeInterval:7, spikeTiles:3,locked:3,timeLimit:110},
 ];
 
-// ══════════════════════════════════════════════════
-// GAME STATE
-// ══════════════════════════════════════════════════
-
-let state = {
-  level: 0,
-  score: 0,
-  grid: [],
-  size: 4,
-  sourceIdx: 0,
-  coreIdx: 0,
-  solved: false,
-  gameOver: false,
-  timeLeft: 90,
-  spikeTimer: 10,
-  spikeInterval: 10,
-  spikeCount: 2,
-  lockedTiles: [],
-  timerHandle: null,
-  spikeHandle: null,
-  signalPath: [],
-  animatingSignal: false,
+// ── GAME STATE ─────────────────────────────────────
+const G = {
+  level:0,score:0,
+  grid:[],size:4,srcIdx:0,coreIdx:0,
+  solved:false,dead:false,
+  timeLeft:90,spikeLeft:12,spikeInterval:12,spikeTiles:2,
+  timerH:null,spikeH:null,litPath:[],
 };
 
-// ══════════════════════════════════════════════════
-// PATH FINDING
-// ══════════════════════════════════════════════════
-
-// dir: 0=top, 1=right, 2=bottom, 3=left
-const DIR_OFFSETS = [
-  { dr: -1, dc: 0 },
-  { dr:  0, dc: 1 },
-  { dr:  1, dc: 0 },
-  { dr:  0, dc: -1 },
-];
-const OPPOSITE = [2, 3, 0, 1];
-
-function findPath() {
-  const { grid, size, sourceIdx, coreIdx } = state;
-  const srcR = Math.floor(sourceIdx / size);
-  const srcC = sourceIdx % size;
-
-  // BFS
-  const visited = new Set();
-  const queue = [{ r: srcR, c: srcC, path: [sourceIdx], fromDir: null }];
-  visited.add(sourceIdx);
-
-  while (queue.length) {
-    const { r, c, path, fromDir } = queue.shift();
-    const idx = r * size + c;
-    const tile = grid[idx];
-
-    for (let d = 0; d < 4; d++) {
-      if (!tile.opens[d]) continue;
-      if (fromDir !== null && d === OPPOSITE[fromDir]) continue; // don't go back (already visited)
-
-      const { dr, dc } = DIR_OFFSETS[d];
-      const nr = r + dr, nc = c + dc;
-      if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
-
-      const nidx = nr * size + nc;
-      if (visited.has(nidx)) continue;
-
-      const neighbor = grid[nidx];
-      // Neighbor must be open on the opposite side
-      if (!neighbor.opens[OPPOSITE[d]]) continue;
-
-      const newPath = [...path, nidx];
-      if (nidx === coreIdx) return newPath;
-
-      visited.add(nidx);
-      queue.push({ r: nr, c: nc, path: newPath, fromDir: d });
+// ── PATH FIND (BFS) ────────────────────────────────
+function findPath(){
+  const {grid,size,srcIdx,coreIdx}=G;
+  const vis=new Set([srcIdx]);
+  const q=[{idx:srcIdx,path:[srcIdx]}];
+  while(q.length){
+    const {idx,path}=q.shift();
+    const r=Math.floor(idx/size),c=idx%size;
+    for(let d=0;d<4;d++){
+      if(!grid[idx].opens[d]) continue;
+      const nr=r+DIR_OFF[d].dr,nc=c+DIR_OFF[d].dc;
+      if(nr<0||nr>=size||nc<0||nc>=size) continue;
+      const ni=nr*size+nc;
+      if(vis.has(ni)) continue;
+      if(!grid[ni].opens[OPP[d]]) continue;
+      const np=[...path,ni];
+      if(ni===coreIdx) return np;
+      vis.add(ni);
+      q.push({idx:ni,path:np});
     }
   }
   return null;
 }
 
-// ══════════════════════════════════════════════════
-// PROCEDURAL LEVEL GENERATION
-// ══════════════════════════════════════════════════
+// ── LEVEL GEN ──────────────────────────────────────
+function genLevel(cfg){
+  const {size,locked}=cfg;
+  const total=size*size;
+  const edges=[];
+  for(let i=0;i<size;i++){edges.push(i);edges.push((size-1)*size+i);}
+  for(let i=1;i<size-1;i++){edges.push(i*size);edges.push(i*size+size-1);}
 
-function generateLevel(levelCfg) {
-  const { size, locked } = levelCfg;
-
-  // Pick source and core on opposite edges
-  const edges = [];
-  for (let i = 0; i < size; i++) edges.push({ r: 0, c: i }); // top
-  for (let i = 0; i < size; i++) edges.push({ r: size-1, c: i }); // bottom
-  for (let i = 1; i < size-1; i++) edges.push({ r: i, c: 0 }); // left
-  for (let i = 1; i < size-1; i++) edges.push({ r: i, c: size-1 }); // right
-
-  const srcEdge = edges[Math.floor(Math.random() * edges.length)];
-  // Core must be far enough away
-  let coreEdge;
+  const srcIdx=edges[Math.floor(Math.random()*edges.length)];
+  let coreIdx;
+  let attempts=0;
   do {
-    coreEdge = edges[Math.floor(Math.random() * edges.length)];
-  } while (Math.abs(srcEdge.r - coreEdge.r) + Math.abs(srcEdge.c - coreEdge.c) < size);
+    coreIdx=edges[Math.floor(Math.random()*edges.length)];
+    attempts++;
+  } while(attempts<100&&(coreIdx===srcIdx||
+    Math.abs(Math.floor(srcIdx/size)-Math.floor(coreIdx/size))+
+    Math.abs(srcIdx%size-coreIdx%size)<size));
 
-  const srcIdx = srcEdge.r * size + srcEdge.c;
-  const coreIdx = coreEdge.r * size + coreEdge.c;
-
-  // Generate a random solved path using DFS
-  const totalTiles = size * size;
-  function dfs(r, c, visited, path) {
-    if (r === coreEdge.r && c === coreEdge.c) return path;
-    const dirs = [0,1,2,3].sort(() => Math.random() - 0.5);
-    for (const d of dirs) {
-      const { dr, dc } = DIR_OFFSETS[d];
-      const nr = r + dr, nc = c + dc;
-      if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
-      const nidx = nr * size + nc;
-      if (visited.has(nidx)) continue;
-      visited.add(nidx);
-      const result = dfs(nr, nc, visited, [...path, nidx]);
-      if (result) return result;
+  // DFS to carve path
+  function dfs(r,c,vis,path){
+    if(r*size+c===coreIdx) return path;
+    const dirs=[0,1,2,3].sort(()=>Math.random()-.5);
+    for(const d of dirs){
+      const nr=r+DIR_OFF[d].dr,nc=c+DIR_OFF[d].dc;
+      if(nr<0||nr>=size||nc<0||nc>=size) continue;
+      const ni=nr*size+nc;
+      if(vis.has(ni)) continue;
+      vis.add(ni);
+      const res=dfs(nr,nc,vis,[...path,ni]);
+      if(res) return res;
     }
     return null;
   }
-  const visited = new Set([srcIdx]);
-  const solutionPath = dfs(srcEdge.r, srcEdge.c, visited, [srcIdx]);
+  const vis=new Set([srcIdx]);
+  const sol=dfs(Math.floor(srcIdx/size),srcIdx%size,vis,[srcIdx]);
 
-  // Build opens arrays for path tiles
-  const solvedOpens = new Array(totalTiles).fill(null).map(() => [0,0,0,0]);
-
-  for (let pi = 0; pi < solutionPath.length - 1; pi++) {
-    const a = solutionPath[pi], b = solutionPath[pi + 1];
-    const ar = Math.floor(a / size), ac = a % size;
-    const br = Math.floor(b / size), bc = b % size;
-    const dr = br - ar, dc = bc - ac;
-    let dirAtoB = dr === -1 ? 0 : dr === 1 ? 2 : dc === 1 ? 1 : 3;
-    solvedOpens[a][dirAtoB] = 1;
-    solvedOpens[b][OPPOSITE[dirAtoB]] = 1;
+  // Build opens from solution path
+  const so=Array.from({length:total},()=>[0,0,0,0]);
+  for(let pi=0;pi<sol.length-1;pi++){
+    const a=sol[pi],b=sol[pi+1];
+    const dr=Math.floor(b/size)-Math.floor(a/size);
+    const dc=(b%size)-(a%size);
+    const d=dr===-1?0:dr===1?2:dc===1?1:3;
+    so[a][d]=1; so[b][OPP[d]]=1;
   }
 
-  // Non-path tiles: assign random tile type
-  const grid = [];
-  for (let i = 0; i < totalTiles; i++) {
+  const grid=[];
+  for(let i=0;i<total;i++){
     let opens;
-    if (solutionPath.includes(i)) {
-      opens = [...solvedOpens[i]];
+    if(sol.includes(i)){
+      opens=[...so[i]];
     } else {
-      // Random tile
-      const tk = TYPE_KEYS[Math.floor(Math.random() * TYPE_KEYS.length)];
-      opens = [...TILE_TYPES[tk].opens];
-      // Random rotation
-      let rots = Math.floor(Math.random() * 4);
-      for (let r = 0; r < rots; r++) opens = rotateTile(opens);
+      opens=[...TILE_TYPES[Math.floor(Math.random()*TILE_TYPES.length)]];
+      let rn=Math.floor(Math.random()*4);
+      while(rn-->0) opens=rot(opens);
     }
-
-    grid.push({
-      opens,
-      solvedOpens: solvedOpens[i] ? [...solvedOpens[i]] : null,
-      isSource: i === srcIdx,
-      isCore: i === coreIdx,
-      isLocked: false,
-      rotations: 0,
-    });
+    grid.push({opens,isSource:i===srcIdx,isCore:i===coreIdx,isLocked:false});
   }
 
-  // Scramble path tiles (not source/core)
-  const pathMids = solutionPath.slice(1, -1);
-  for (const idx of pathMids) {
-    const rots = Math.floor(Math.random() * 4);
-    for (let r = 0; r < rots; r++) grid[idx].opens = rotateTile(grid[idx].opens);
+  // Scramble path middle tiles
+  const mid=sol.slice(1,-1);
+  for(const idx of mid){
+    let rn=Math.floor(Math.random()*4);
+    while(rn-->0) grid[idx].opens=rot(grid[idx].opens);
   }
 
-  // Assign locked tiles (non-source, non-core, non-path for fairness)
-  const candidates = [];
-  for (let i = 0; i < totalTiles; i++) {
-    if (!grid[i].isSource && !grid[i].isCore && !pathMids.includes(i)) candidates.push(i);
+  // Locked tiles (off-path only)
+  const cands=[];
+  for(let i=0;i<total;i++){
+    if(!grid[i].isSource&&!grid[i].isCore&&!mid.includes(i)) cands.push(i);
   }
-  const shuffled = candidates.sort(() => Math.random() - 0.5);
-  for (let li = 0; li < Math.min(locked, shuffled.length); li++) {
-    grid[shuffled[li]].isLocked = true;
-  }
+  cands.sort(()=>Math.random()-.5);
+  for(let li=0;li<Math.min(locked,cands.length);li++) grid[cands[li]].isLocked=true;
 
-  return { grid, srcIdx, coreIdx, solutionPath };
+  return {grid,srcIdx,coreIdx};
 }
 
-// ══════════════════════════════════════════════════
-// RENDERING
-// ══════════════════════════════════════════════════
-
-// Center = 36,36 in a 72x72 tile. Half = 36.
-// Edge midpoints: top=(36,0), right=(72,36), bottom=(36,72), left=(0,36)
-const EDGE_POINTS = [
-  [36, 0],   // top
-  [72, 36],  // right
-  [36, 72],  // bottom
-  [0, 36],   // left
-];
-const CENTER = [36, 36];
-
-function buildTileSVG(tile, litDirs, isSourceLit) {
-  const cls = isSourceLit ? 'source-lit' : 'lit';
-  let paths = '';
-
-  // Draw segments from center to each open direction
-  const openDirs = tile.opens.map((o,i) => o ? i : -1).filter(i => i >= 0);
-
-  for (const d of openDirs) {
-    const [ex, ey] = EDGE_POINTS[d];
-    const segClass = litDirs.includes(d) ? cls : '';
-    paths += `<line class="pipe-seg ${segClass}" x1="36" y1="36" x2="${ex}" y2="${ey}"/>`;
+// ── SVG BUILDER ────────────────────────────────────
+function makeSVG(tile,lit){
+  const ns='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox','0 0 68 68');
+  for(let d=0;d<4;d++){
+    if(!tile.opens[d]) continue;
+    const l=document.createElementNS(ns,'line');
+    l.setAttribute('class','pipe-seg'+(lit?' lit':''));
+    l.setAttribute('x1','34');l.setAttribute('y1','34');
+    l.setAttribute('x2',EDGE[d][0]);l.setAttribute('y2',EDGE[d][1]);
+    svg.appendChild(l);
   }
-
-  // Center dot
-  const dotClass = litDirs.length > 0 ? cls : '';
-  paths += `<circle class="pipe-dot ${dotClass}" cx="36" cy="36" r="5"/>`;
-
-  return `<svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">${paths}</svg>`;
+  const c=document.createElementNS(ns,'circle');
+  c.setAttribute('class','pipe-dot'+(lit?' lit':''));
+  c.setAttribute('cx','34');c.setAttribute('cy','34');c.setAttribute('r','4.5');
+  svg.appendChild(c);
+  return svg;
 }
 
-function getSignalPath() {
-  return findPath();
+// ── RENDER FULL GRID ───────────────────────────────
+function renderGrid(){
+  const {grid,size,litPath}=G;
+  const litSet=new Set(litPath);
+  const el=document.getElementById('grid');
+  el.style.gridTemplateColumns=`repeat(${size},var(--ts))`;
+  el.innerHTML='';
+
+  for(let i=0;i<grid.length;i++){
+    const t=grid[i];
+    const d=document.createElement('div');
+    d.className='tile';
+    d.dataset.i=String(i);
+    if(t.isSource) d.classList.add('source');
+    if(t.isCore)   d.classList.add('core');
+    if(t.isLocked) d.classList.add('locked');
+    d.appendChild(makeSVG(t,litSet.has(i)));
+    if(t.isSource) { const lb=document.createElement('div');lb.className='tile-label src';lb.textContent='SRC';d.appendChild(lb); }
+    if(t.isCore)   { const lb=document.createElement('div');lb.className='tile-label core';lb.textContent='CORE';d.appendChild(lb);
+                     const rng=document.createElement('div');rng.className='core-ring';d.appendChild(rng); }
+    if(t.isLocked) { const lb=document.createElement('div');lb.className='tile-label lock';lb.textContent='🔒';d.appendChild(lb); }
+    el.appendChild(d);
+  }
+  placePulse();
 }
 
-function renderGrid() {
-  const { grid, size, signalPath } = state;
-  const gridEl = document.getElementById('grid');
-  gridEl.style.gridTemplateColumns = `repeat(${size}, var(--tile-size))`;
-
-  // Figure out lit tiles and directions
-  const litMap = {}; // idx -> [dirs]
-  if (signalPath) {
-    for (let pi = 0; pi < signalPath.length; pi++) {
-      const idx = signalPath[pi];
-      const litDirs = [];
-      if (pi > 0) {
-        // direction toward previous tile
-        const prev = signalPath[pi-1];
-        const pr = Math.floor(prev/size), pc = prev%size;
-        const cr = Math.floor(idx/size), cc = idx%size;
-        const dr = pr-cr, dc = pc-cc;
-        litDirs.push(dr===-1?2:dr===1?0:dc===1?3:1);
-      }
-      if (pi < signalPath.length-1) {
-        const next = signalPath[pi+1];
-        const nr = Math.floor(next/size), nc = next%size;
-        const cr = Math.floor(idx/size), cc = idx%size;
-        const dr = nr-cr, dc = nc-cc;
-        litDirs.push(dr===-1?2:dr===1?0:dc===1?3:1);
-      }
-      litMap[idx] = litDirs;
-    }
-  }
-
-  gridEl.innerHTML = '';
-  for (let i = 0; i < grid.length; i++) {
-    const tile = grid[i];
-    const tileEl = document.createElement('div');
-    tileEl.className = 'tile';
-    tileEl.dataset.idx = i;
-    if (tile.isSource) tileEl.classList.add('source');
-    if (tile.isCore)   tileEl.classList.add('core');
-    if (tile.isLocked) tileEl.classList.add('locked');
-
-    const litDirs = litMap[i] || [];
-    const isSourceLit = signalPath ? signalPath.includes(i) && signalPath[0] === state.sourceIdx : false;
-    tileEl.innerHTML = buildTileSVG(tile, litDirs, false);
-
-    if (tile.isSource) tileEl.innerHTML += `<div class="tile-label src">SRC</div>`;
-    if (tile.isCore)   {
-      tileEl.innerHTML += `<div class="tile-label core">CORE</div>`;
-      tileEl.innerHTML += `<div class="core-ring"></div>`;
-    }
-    if (tile.isLocked) tileEl.innerHTML += `<div class="tile-label lock">🔒</div>`;
-
-    if (!tile.isLocked && !state.solved && !state.gameOver) {
-      tileEl.addEventListener('click', () => handleTileClick(i));
-    }
-
-    gridEl.appendChild(tileEl);
-  }
-
-  updateSignalPulse();
-}
-
-function updateLitState() {
-  const { grid, size, signalPath } = state;
-  if (!signalPath) return;
-
-  const litSet = new Set(signalPath);
-  const litMap = {};
-  for (let pi = 0; pi < signalPath.length; pi++) {
-    const idx = signalPath[pi];
-    const litDirs = [];
-    if (pi > 0) {
-      const prev = signalPath[pi-1];
-      const pr = Math.floor(prev/size), pc = prev%size;
-      const cr = Math.floor(idx/size), cc = idx%size;
-      const dr = pr-cr, dc = pc-cc;
-      litDirs.push(dr===-1?2:dr===1?0:dc===1?3:1);
-    }
-    if (pi < signalPath.length-1) {
-      const next = signalPath[pi+1];
-      const nr = Math.floor(next/size), nc = next%size;
-      const cr = Math.floor(idx/size), cc = idx%size;
-      const dr = nr-cr, dc = nc-cc;
-      litDirs.push(dr===-1?2:dr===1?0:dc===1?3:1);
-    }
-    litMap[idx] = litDirs;
-  }
-
-  const tiles = document.querySelectorAll('.tile');
-  tiles.forEach((tileEl, i) => {
-    const tile = grid[i];
-    const litDirs = litMap[i] || [];
-    const svgEl = tileEl.querySelector('svg');
-    if (svgEl) {
-      tileEl.innerHTML = buildTileSVG(tile, litDirs, false);
-      if (tile.isSource) tileEl.innerHTML += `<div class="tile-label src">SRC</div>`;
-      if (tile.isCore)   tileEl.innerHTML += `<div class="tile-label core">CORE</div><div class="core-ring"></div>`;
-      if (tile.isLocked) tileEl.innerHTML += `<div class="tile-label lock">🔒</div>`;
-      if (!tile.isLocked && !state.solved && !state.gameOver) {
-        tileEl.addEventListener('click', () => handleTileClick(i));
-      }
-    }
+// ── UPDATE LIT STATE (no full re-render) ───────────
+function updateLit(){
+  const {grid,litPath}=G;
+  const litSet=new Set(litPath);
+  const tiles=document.querySelectorAll('.tile');
+  tiles.forEach((d,i)=>{
+    const t=grid[i];
+    const lit=litSet.has(i);
+    const oldSVG=d.querySelector('svg');
+    const newSVG=makeSVG(t,lit);
+    if(oldSVG) d.replaceChild(newSVG,oldSVG);
+    else d.insertBefore(newSVG,d.firstChild);
   });
+  placePulse();
 }
 
-// ══════════════════════════════════════════════════
-// SIGNAL PULSE ANIMATION
-// ══════════════════════════════════════════════════
-
-function updateSignalPulse() {
-  const pulse = document.getElementById('signal-pulse');
-  const { signalPath, size } = state;
-  if (!signalPath || signalPath.length === 0) {
-    pulse.style.display = 'none';
-    return;
-  }
-  // Place pulse at the end of the path
-  const endIdx = signalPath[signalPath.length - 1];
-  const gridEl = document.getElementById('grid');
-  const gridRect = gridEl.getBoundingClientRect();
-  const gridWrap = document.getElementById('grid-wrap');
-  const wrapRect = gridWrap.getBoundingClientRect();
-
-  const tileSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tile-size')) || 72;
-  const gap = 3;
-  const pad = 3 + 2; // padding + border
-  const r = Math.floor(endIdx / size);
-  const c = endIdx % size;
-
-  const x = pad + c * (tileSize + gap) + tileSize / 2;
-  const y = pad + r * (tileSize + gap) + tileSize / 2;
-
-  pulse.style.display = 'block';
-  pulse.style.left = x + 'px';
-  pulse.style.top = y + 'px';
-
-  // Color: cyan normally, green if at source, white if at core
-  if (endIdx === state.coreIdx) {
-    pulse.style.background = '#fff';
-    pulse.style.boxShadow = '0 0 10px #fff, 0 0 22px #fff';
+// ── SIGNAL PULSE POSITION ─────────────────────────
+function placePulse(){
+  const pulse=document.getElementById('signal-pulse');
+  const path=G.litPath;
+  if(!path||!path.length){pulse.style.display='none';return;}
+  const endIdx=path[path.length-1];
+  const {size}=G;
+  const ts=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ts'))||68;
+  const gap=3,pad=5;
+  const r=Math.floor(endIdx/size),c=endIdx%size;
+  pulse.style.left=(pad+c*(ts+gap)+ts/2)+'px';
+  pulse.style.top= (pad+r*(ts+gap)+ts/2)+'px';
+  pulse.style.display='block';
+  if(endIdx===G.coreIdx){
+    pulse.style.background='#fff';
+    pulse.style.boxShadow='0 0 10px #fff,0 0 24px #fff';
   } else {
-    pulse.style.background = 'var(--cyan)';
-    pulse.style.boxShadow = '0 0 8px var(--cyan), 0 0 18px var(--cyan)';
+    pulse.style.background='var(--cyan)';
+    pulse.style.boxShadow='0 0 8px var(--cyan),0 0 18px var(--cyan)';
   }
 }
 
-// ══════════════════════════════════════════════════
-// GAME LOGIC
-// ══════════════════════════════════════════════════
-
-function handleTileClick(idx) {
-  if (state.solved || state.gameOver) return;
-  const tile = state.grid[idx];
-  if (tile.isLocked) return;
+// ── EVENT DELEGATION (single listener on grid) ────
+document.getElementById('grid').addEventListener('click',function(e){
+  if(G.solved||G.dead) return;
+  const tileEl=e.target.closest('[data-i]');
+  if(!tileEl) return;
+  const idx=parseInt(tileEl.dataset.i,10);
+  if(isNaN(idx)) return;
+  const tile=G.grid[idx];
+  if(!tile||tile.isLocked) return;
 
   // Rotate
-  tile.opens = rotateTile(tile.opens);
-  tile.rotations = (tile.rotations || 0) + 1;
+  tile.opens=rot(tile.opens);
 
-  // Click animation
-  const tileEl = document.querySelector(`[data-idx="${idx}"]`);
-  if (tileEl) {
-    tileEl.style.transition = 'transform 0.1s';
-    tileEl.style.transform = 'scale(0.9)';
-    setTimeout(() => { tileEl.style.transform = ''; }, 100);
-  }
+  // Pop animation
+  tileEl.classList.remove('pop');
+  void tileEl.offsetWidth;
+  tileEl.classList.add('pop');
 
-  playClickSound();
-  checkSolution();
+  // Redraw just this tile's SVG immediately for instant feedback
+  const litSet=new Set(G.litPath);
+  const oldSVG=tileEl.querySelector('svg');
+  const newSVG=makeSVG(tile,litSet.has(idx));
+  if(oldSVG) tileEl.replaceChild(newSVG,oldSVG);
+
+  playClick();
+  checkSol();
+});
+
+// ── SOLUTION CHECK ─────────────────────────────────
+function checkSol(){
+  const path=findPath();
+  G.litPath=path||[];
+  updateLit();
+  if(path&&path[path.length-1]===G.coreIdx) setTimeout(onWin,250);
 }
 
-function checkSolution() {
-  state.signalPath = findPath();
-  updateLitState();
-  updateSignalPulse();
-
-  if (state.signalPath && state.signalPath[state.signalPath.length - 1] === state.coreIdx) {
-    onLevelSolved();
-  }
-}
-
-function onLevelSolved() {
-  state.solved = true;
-  clearInterval(state.timerHandle);
-  clearInterval(state.spikeHandle);
-
-  const bonus = Math.floor(state.timeLeft * 10);
-  state.score += 1000 + bonus;
-  updateScoreDisplay();
-
-  playWinSound();
-
-  setTimeout(() => {
-    const isLast = state.level >= LEVELS.length - 1;
-    const overlayTitle = document.getElementById('overlay-title');
-    const overlaySub = document.getElementById('overlay-sub');
-    const overlayBtn = document.getElementById('overlay-btn');
-
-    if (isLast) {
-      overlayTitle.className = 'win';
-      overlayTitle.textContent = 'MAINFRAME ONLINE';
-      overlaySub.innerHTML = `SIGNAL PATCHED // AZUL CONNECTED<br>SCORE: ${state.score.toString().padStart(6,'0')}`;
-      overlayBtn.textContent = 'RESTART ▶';
-      overlayBtn.onclick = () => { state.level = 0; state.score = 0; startLevel(); };
+// ── WIN ────────────────────────────────────────────
+function onWin(){
+  if(G.solved) return;
+  G.solved=true;
+  clearInterval(G.timerH);clearInterval(G.spikeH);
+  const bonus=Math.floor(G.timeLeft*10);
+  G.score+=1000+bonus;
+  updateHUD();
+  playWin();
+  const isLast=G.level>=LEVELS.length-1;
+  setTimeout(()=>{
+    const t=document.getElementById('overlay-title');
+    const s=document.getElementById('overlay-sub');
+    const b=document.getElementById('overlay-btn');
+    if(isLast){
+      t.className='win';t.textContent='MAINFRAME\nONLINE';
+      s.innerHTML=`ALL NODES PATCHED // AZUL CONNECTED<br>FINAL SCORE: ${String(G.score).padStart(6,'0')}`;
+      b.textContent='PLAY AGAIN ▶';
+      b.onclick=()=>{G.level=0;G.score=0;startLevel();};
     } else {
-      overlayTitle.className = 'win';
-      overlayTitle.textContent = 'CONNECTION\nESTABLISHED';
-      overlaySub.innerHTML = `LEVEL ${state.level + 1} CLEARED<br>+${1000+Math.floor(state.timeLeft*10)} PTS`;
-      overlayBtn.textContent = 'NEXT NODE ▶';
-      overlayBtn.onclick = () => { state.level++; startLevel(); };
+      t.className='win';t.textContent='CONNECTION\nESTABLISHED';
+      s.innerHTML=`LEVEL ${G.level+1} CLEARED<br>+${1000+bonus} PTS`;
+      b.textContent='NEXT NODE ▶';
+      b.onclick=()=>{G.level++;startLevel();};
     }
-
     document.getElementById('overlay').classList.remove('hidden');
-  }, 800);
+  },600);
 }
 
-function onGameOver() {
-  state.gameOver = true;
-  clearInterval(state.timerHandle);
-  clearInterval(state.spikeHandle);
-
-  const overlayTitle = document.getElementById('overlay-title');
-  const overlaySub = document.getElementById('overlay-sub');
-  const overlayBtn = document.getElementById('overlay-btn');
-
-  overlayTitle.className = 'lose';
-  overlayTitle.textContent = 'SIGNAL LOST';
-  overlaySub.innerHTML = `CORE OFFLINE // CONNECTION FAILED<br>SCORE: ${state.score.toString().padStart(6,'0')}`;
-  overlayBtn.textContent = 'RETRY ▶';
-  overlayBtn.onclick = () => startLevel();
-
+// ── DEAD ───────────────────────────────────────────
+function onDead(){
+  if(G.dead) return;
+  G.dead=true;
+  clearInterval(G.timerH);clearInterval(G.spikeH);
+  const t=document.getElementById('overlay-title');
+  const s=document.getElementById('overlay-sub');
+  const b=document.getElementById('overlay-btn');
+  t.className='lose';t.textContent='SIGNAL LOST';
+  s.innerHTML=`CORE OFFLINE // CONNECTION FAILED<br>SCORE: ${String(G.score).padStart(6,'0')}`;
+  b.textContent='RETRY ▶';
+  b.onclick=()=>startLevel();
   document.getElementById('overlay').classList.remove('hidden');
 }
 
-// ══════════════════════════════════════════════════
-// SPIKE SYSTEM
-// ══════════════════════════════════════════════════
-
-function triggerSpike() {
-  if (state.solved || state.gameOver) return;
-  const { grid, size, spikeCount, signalPath } = state;
-
-  // Bias toward tiles near the signal end
-  const totalTiles = size * size;
-  const rotatableTiles = [];
-  for (let i = 0; i < totalTiles; i++) {
-    if (!grid[i].isLocked && !grid[i].isSource && !grid[i].isCore) {
-      rotatableTiles.push(i);
-    }
+// ── SPIKE ──────────────────────────────────────────
+function triggerSpike(){
+  if(G.solved||G.dead) return;
+  const {grid,size,spikeTiles,litPath}=G;
+  const total=size*size;
+  const pathSet=new Set(litPath||[]);
+  const rotatable=[];
+  for(let i=0;i<total;i++){
+    if(!grid[i].isLocked&&!grid[i].isSource&&!grid[i].isCore) rotatable.push(i);
   }
-  if (rotatableTiles.length === 0) return;
-
-  // Bias toward signal path tiles
-  const pathSet = new Set(signalPath || []);
-  const near = rotatableTiles.filter(i => pathSet.has(i));
-  const far  = rotatableTiles.filter(i => !pathSet.has(i));
-  const biased = [...near, ...near, ...far].sort(() => Math.random() - 0.5);
-
-  const chosen = biased.slice(0, spikeCount);
-  for (const idx of chosen) {
-    const rots = (Math.floor(Math.random() * 3) + 1); // 1-3 rotations
-    for (let r = 0; r < rots; r++) grid[idx].opens = rotateTile(grid[idx].opens);
-
-    const tileEl = document.querySelector(`[data-idx="${idx}"]`);
-    if (tileEl) {
-      tileEl.classList.add('spiked');
-      setTimeout(() => tileEl.classList.remove('spiked'), 400);
-    }
+  const near=rotatable.filter(i=>pathSet.has(i));
+  const far=rotatable.filter(i=>!pathSet.has(i));
+  const pool=[...near,...near,...far].sort(()=>Math.random()-.5);
+  const chosen=pool.slice(0,spikeTiles);
+  for(const idx of chosen){
+    let rn=Math.floor(Math.random()*3)+1;
+    while(rn-->0) grid[idx].opens=rot(grid[idx].opens);
+    const el=document.querySelector(`[data-i="${idx}"]`);
+    if(el){el.classList.remove('spiked');void el.offsetWidth;el.classList.add('spiked');}
   }
-
-  // Show spike alert
-  const alertEl = document.getElementById('spike-alert');
-  alertEl.classList.remove('show');
-  void alertEl.offsetWidth;
-  alertEl.classList.add('show');
-
-  playSpikeSound();
-  checkSolution();
-  resetSpikeTimer();
+  const al=document.getElementById('spike-alert');
+  al.classList.remove('show');void al.offsetWidth;al.classList.add('show');
+  playSpike();
+  checkSol();
+  G.spikeLeft=G.spikeInterval;
 }
 
-// ══════════════════════════════════════════════════
-// TIMERS
-// ══════════════════════════════════════════════════
-
-function resetSpikeTimer() {
-  state.spikeTimer = state.spikeInterval;
-  updateSpikeBar();
+// ── TIMERS ─────────────────────────────────────────
+function startTimers(){
+  clearInterval(G.timerH);clearInterval(G.spikeH);
+  G.timerH=setInterval(()=>{
+    if(G.solved||G.dead) return;
+    G.timeLeft--;
+    const d=document.getElementById('timer-display');
+    d.textContent=G.timeLeft;
+    d.className='stat-val'+(G.timeLeft<=10?' danger':'');
+    if(G.timeLeft<=0) onDead();
+  },1000);
+  G.spikeH=setInterval(()=>{
+    if(G.solved||G.dead) return;
+    G.spikeLeft--;
+    document.getElementById('spike-display').textContent=G.spikeLeft;
+    document.getElementById('spike-bar').style.width=(G.spikeLeft/G.spikeInterval*100)+'%';
+    if(G.spikeLeft<=0) triggerSpike();
+  },1000);
 }
 
-function updateSpikeBar() {
-  const bar = document.getElementById('spike-bar');
-  const pct = (state.spikeTimer / state.spikeInterval) * 100;
-  bar.style.width = pct + '%';
+// ── HUD ────────────────────────────────────────────
+function updateHUD(){
+  document.getElementById('lvl-display').textContent=String(G.level+1).padStart(2,'0');
+  document.getElementById('score-display').textContent=String(G.score).padStart(3,'0');
+  document.getElementById('timer-display').textContent=G.timeLeft;
+  document.getElementById('spike-display').textContent=G.spikeLeft;
+  document.getElementById('spike-bar').style.width='100%';
+  const dots=document.getElementById('level-dots');
+  dots.innerHTML='';
+  for(let i=0;i<LEVELS.length;i++){
+    const d=document.createElement('div');
+    d.className='ldot'+(i<G.level?' done':i===G.level?' curr':'');
+    dots.appendChild(d);
+  }
 }
 
-function startTimers() {
-  clearInterval(state.timerHandle);
-  clearInterval(state.spikeHandle);
-
-  // Main countdown
-  state.timerHandle = setInterval(() => {
-    state.timeLeft--;
-    const disp = document.getElementById('timer-display');
-    disp.textContent = state.timeLeft;
-    if (state.timeLeft <= 10) disp.classList.add('danger');
-    else disp.classList.remove('danger');
-    if (state.timeLeft <= 0) onGameOver();
-  }, 1000);
-
-  // Spike countdown
-  state.spikeHandle = setInterval(() => {
-    state.spikeTimer--;
-    updateSpikeBar();
-    const disp = document.getElementById('timer-display');
-    // use timer display to also show spike approach? no, keep separate
-    if (state.spikeTimer <= 0) triggerSpike();
-  }, 1000);
-}
-
-// ══════════════════════════════════════════════════
-// LEVEL INIT
-// ══════════════════════════════════════════════════
-
-function startLevel() {
+// ── START LEVEL ────────────────────────────────────
+function startLevel(){
   document.getElementById('overlay').classList.add('hidden');
-
-  const cfg = LEVELS[state.level];
-  const { grid, srcIdx, coreIdx } = generateLevel(cfg);
-
-  state.grid = grid;
-  state.size = cfg.size;
-  state.sourceIdx = srcIdx;
-  state.coreIdx = coreIdx;
-  state.solved = false;
-  state.gameOver = false;
-  state.timeLeft = cfg.timeLimit;
-  state.spikeInterval = cfg.spikeInterval;
-  state.spikeTimer = cfg.spikeInterval;
-  state.spikeCount = cfg.spikeTiles;
-  state.signalPath = null;
-
-  document.getElementById('lvl-display').textContent = String(state.level + 1).padStart(2, '0');
-  document.getElementById('timer-display').textContent = state.timeLeft;
-  document.getElementById('timer-display').classList.remove('danger');
-  updateScoreDisplay();
-  renderLevelDots();
+  const cfg=LEVELS[G.level];
+  const {grid,srcIdx,coreIdx}=genLevel(cfg);
+  G.grid=grid;G.size=cfg.size;
+  G.srcIdx=srcIdx;G.coreIdx=coreIdx;
+  G.solved=false;G.dead=false;
+  G.timeLeft=cfg.timeLimit;
+  G.spikeInterval=cfg.spikeInterval;
+  G.spikeLeft=cfg.spikeInterval;
+  G.spikeTiles=cfg.spikeTiles;
+  G.litPath=[];
+  updateHUD();
   renderGrid();
-  checkSolution();
+  checkSol();
   startTimers();
 }
 
-function updateScoreDisplay() {
-  document.getElementById('score-display').textContent = state.score.toString().padStart(3,'0');
+// ── AUDIO ──────────────────────────────────────────
+let actx=null;
+function ac(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();return actx;}
+function playClick(){
+  try{const c=ac(),o=c.createOscillator(),g=c.createGain();
+  o.connect(g);g.connect(c.destination);o.type='square';
+  o.frequency.setValueAtTime(380,c.currentTime);
+  o.frequency.exponentialRampToValueAtTime(180,c.currentTime+.07);
+  g.gain.setValueAtTime(.07,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.08);
+  o.start();o.stop(c.currentTime+.09);}catch(e){}
+}
+function playSpike(){
+  try{const c=ac();[80,120,60].forEach((f,i)=>{
+    const o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);o.type='sawtooth';o.frequency.value=f;
+    const t=c.currentTime+i*.09;
+    g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.15);
+    o.start(t);o.stop(t+.16);});}catch(e){}
+}
+function playWin(){
+  try{const c=ac();[523,659,784,1047].forEach((f,i)=>{
+    const o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.value=f;
+    const t=c.currentTime+i*.1;
+    g.gain.setValueAtTime(.14,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);
+    o.start(t);o.stop(t+.32);});}catch(e){}
 }
 
-function renderLevelDots() {
-  const dotsEl = document.getElementById('level-dots');
-  dotsEl.innerHTML = '';
-  for (let i = 0; i < LEVELS.length; i++) {
-    const d = document.createElement('div');
-    d.className = 'ldot' + (i < state.level ? ' done' : i === state.level ? ' curr' : '');
-    dotsEl.appendChild(d);
-  }
-}
-
-// ══════════════════════════════════════════════════
-// AUDIO (Web Audio API)
-// ══════════════════════════════════════════════════
-
-let audioCtx = null;
-function getAudio() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function playClickSound() {
-  try {
-    const ctx = getAudio();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = 'square';
-    o.frequency.setValueAtTime(440, ctx.currentTime);
-    o.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.07);
-    g.gain.setValueAtTime(0.08, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-    o.start(); o.stop(ctx.currentTime + 0.09);
-  } catch(e) {}
-}
-
-function playSpikeSound() {
-  try {
-    const ctx = getAudio();
-    for (let i = 0; i < 3; i++) {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.type = 'sawtooth';
-      o.frequency.setValueAtTime(80 + i * 40, ctx.currentTime + i * 0.08);
-      g.gain.setValueAtTime(0.12, ctx.currentTime + i * 0.08);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.15);
-      o.start(ctx.currentTime + i * 0.08);
-      o.stop(ctx.currentTime + i * 0.08 + 0.16);
-    }
-  } catch(e) {}
-}
-
-function playWinSound() {
-  try {
-    const ctx = getAudio();
-    const notes = [523, 659, 784, 1047];
-    notes.forEach((freq, i) => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.type = 'sine';
-      o.frequency.value = freq;
-      g.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.1);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.3);
-      o.start(ctx.currentTime + i * 0.1);
-      o.stop(ctx.currentTime + i * 0.1 + 0.35);
-    });
-  } catch(e) {}
-}
-
-// ══════════════════════════════════════════════════
-// BOOT
-// ══════════════════════════════════════════════════
-
-// Show intro overlay
-document.getElementById('overlay-title').textContent = 'NODE BREAKER';
-document.getElementById('overlay-title').className = 'win';
-document.getElementById('overlay-sub').innerHTML =
-  'PATCH AZUL\'S SIGNAL THROUGH TO THE MAINFRAME<br>TAP TILES TO ROTATE // WATCH FOR SYSTEM SPIKES';
-document.getElementById('overlay-btn').textContent = 'INITIALIZE ▶';
-document.getElementById('overlay-btn').onclick = () => startLevel();
-document.getElementById('overlay').classList.remove('hidden');
+// ── BOOT ───────────────────────────────────────────
+document.getElementById('overlay-btn').onclick=()=>startLevel();
 </script>
 </body>
 </html>
