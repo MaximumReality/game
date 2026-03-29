@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>JEWEL BLAST</title>
+  <link rel="icon" type="image/png" href="https://maximumreality.github.io/game/jewel-favicon.png">
+
+<link rel="apple-touch-icon" href="https://maximumreality.github.io/game/jewel-favicon.png">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JEWEL BLAST">
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -426,6 +434,22 @@
 </div>
 
 <script>
+ const sfx = {
+  pop: new Audio('https://maximumreality.github.io/game/audio/pop.mp3'),
+  swap: new Audio('https://maximumreality.github.io/game/audio/swap.mp3'),
+  win: new Audio('https://maximumreality.github.io/game/audio/won.mp3'),
+  powerup: new Audio('https://maximumreality.github.io/game/audio/powerup.mp3')
+};
+
+// Function to play without overlapping issues
+function play(sound) {
+  const click = sound.cloneNode();
+  click.volume = 0.6;
+  click.play().catch(() => {
+  sound.currentTime = 0; 
+  sound.play().catch(() => {}); 
+}
+ 
 // ===================== CONSTANTS =====================
 const COLS = 8, ROWS = 8;
 const GEM_TYPES = 6;
@@ -693,6 +717,7 @@ async function processBoard() {
     if (matches.length > 0) {
       chain = true;
       clearMatches(matches);
+      play(sfx.pop);
       await delay(300);
       dropGems();
       await delay(400);
@@ -708,6 +733,7 @@ async function processBoard() {
 
 // ===================== SWAP =====================
 async function trySwap(r1, c1, r2, c2) {
+  play(sfx.swap);
   // swap
   [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
   [gems[r1][c1], gems[r2][c2]] = [gems[r2][c2], gems[r1][c1]];
@@ -748,6 +774,7 @@ function activatePowerup(type) {
 }
 
 function applyPowerupAt(r, c) {
+  play(sfx.powerup);
   const type = activePowerup;
   activePowerup = null;
   powerups[type]--;
@@ -1085,6 +1112,7 @@ function render() {
 
 // ===================== GAME FLOW =====================
 function startGame() {
+  Object.values(sfx).forEach(s => { s.play().then(() => { s.pause(); s.currentTime = 0; }).catch(() => {}); });
   score = 0;
   moves = MOVES_PER_LEVEL;
   level = 1;
@@ -1102,6 +1130,7 @@ function startGame() {
 }
 
 function endGame() {
+  play(sfx.win);
   // Save score
   const entry = {
     score,
