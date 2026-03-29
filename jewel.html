@@ -446,6 +446,7 @@
 };
 
 // Function to play without overlapping issues
+// Function to play without overlapping issues
 function play(sound) {
   const click = sound.cloneNode();
   click.volume = 0.6;
@@ -453,8 +454,9 @@ function play(sound) {
     // Fallback if clone fails
     sound.currentTime = 0; 
     sound.play().catch(() => {}); 
-  });
- 
+  }); // Added missing closing parenthesis
+} // Added missing closing brace
+
 // ===================== CONSTANTS =====================
 const COLS = 8, ROWS = 8;
 const GEM_TYPES = 6;
