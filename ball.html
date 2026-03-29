@@ -437,6 +437,7 @@
   <canvas id="game-canvas"></canvas>
 
   <div class="footer">SLIDE TO SWAP · MATCH 3+ TO BLAST · CHAIN COMBOS</div>
+    <a href="jewel.html" style="color:var(--neon-blue); text-decoration:none;">→ SWITCH TO JEWEL BLAST</a>
 </div>
 
 <script>
@@ -512,7 +513,7 @@ let gems = [];
 // ===================== STORAGE =====================
 function loadStorage() {
   try {
-    const saved = localStorage.getItem('jewelblast_v1');
+    const saved = localStorage.getItem('ballblast_v1');
     if (saved) {
       const d = JSON.parse(saved);
       bestScore = d.best || 0;
@@ -523,7 +524,7 @@ function loadStorage() {
 
 function saveStorage() {
   try {
-    localStorage.setItem('jewelblast_v1', JSON.stringify({
+    localStorage.setItem('ballblast_v1', JSON.stringify({
       best: bestScore,
       history: scoreHistory.slice(0, 10)
     }));
