@@ -104,14 +104,26 @@
     padding:12px;
     margin-bottom:12px;
     transition:0.15s;
+    position:relative;
+    overflow:hidden;
   }
+  .card::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg, transparent, #00ffff22, transparent);
+  opacity:0;
+  transition:0.25s;
+}
 
   .card:hover {
     border-color:var(--neon);
     box-shadow:0 0 10px #00ffff30;
     transform:translateY(-2px);
   }
-
+.card:hover::after {
+  opacity:1;
+}
   .card-top {
     display:flex;
     align-items:center;
@@ -166,6 +178,32 @@
   }
 
 </style>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Maximum Reality Games",
+  "url": "https://maximumreality.github.io/game/",
+  "description": "Experimental browser-based games by Maximum Reality. Cyberpunk, puzzle, arcade, and simulation experiences.",
+  "hasPart": [
+    {
+      "@type": "VideoGame",
+      "name": "Node Breaker",
+      "url": "https://maximumreality.github.io/game/node.html"
+    },
+    {
+      "@type": "VideoGame",
+      "name": "Neural Signal",
+      "url": "https://maximumreality.github.io/game/neural-signal.html"
+    },
+    {
+      "@type": "VideoGame",
+      "name": "Jewel Blast",
+      "url": "https://maximumreality.github.io/game/jewel.html"
+    }
+  ]
+}
+</script>
 </head>
 
 <body>
@@ -177,6 +215,11 @@
     Experimental browser games. AI systems. Glitch worlds.  
     Signals recovered from the edge of the network.
   </div>
+  <div class="subtitle" style="border-top:1px solid #ffffff10;padding-top:10px;">
+  STATUS: <span style="color:#00ffff;">ONLINE</span> // 
+  NODES: 9 ACTIVE // 
+  SIGNAL: STABLE
+</div>
 
   <!-- 🎬 TEASER -->
   <div class="video-wrap">
@@ -190,16 +233,19 @@
   </div>
 
   <!-- GAME CARD -->
+
+  <div class="video-title">🧩 Available Nodes</div>
+  
+ 
   <a href="cipher.html" class="card">
     <div class="card-top">
-      <img src="cipher-favicon.jpeg" class="icon" alt="Cipher Wasteland Game">
-      
+      <img src="cipher-favicon.jpeg" class="icon" alt="Cipher Wasteland Game"> 
       <div class="info">
         <div class="title">CIPHER</div>
         <div class="desc">Crack ciphers. Survive the wasteland.</div>
       </div>
 
-      <div class="play">PLAY</div>
+      <div class="play">DECRYPT ▶</div>
     </div>
   </a>
 
@@ -223,7 +269,7 @@
         <div class="title">JEWEL BLAST</div>
         <div class="desc">Match the gems. Break the cycle.</div>
       </div>
-      <div class="play">PLAY</div>
+      <div class="play">MATCH ▶</div>
     </div>
 </a>
 
@@ -235,7 +281,7 @@
       <div class="title">Boho Life Decor</div>
       <div class="desc">Design your own cozy boho space with furniture, rugs, plants, and wall art.</div>
     </div>
-    <div class="play">DECORATE</div>
+    <div class="play">DESIGN ▶</div>
   </div>
 </a>
 
@@ -257,7 +303,7 @@
         <div class="title">BALL BLAST</div>
         <div class="desc">High-velocity kinetic demolition.</div>
       </div>
-      <div class="play">PLAY</div>
+      <div class="play">FIRE ▶</div>
     </div>
 </a>
 
@@ -268,13 +314,13 @@
       <div class="title">Boho Life (Sim)</div>
       <div class="desc">A relaxing life sim where your character and cats wander your cozy, decorated space.</div>
     </div>
-    <div class="play">VIBE</div>
+    <div class="play">ENTER ▶</div>
   </div>
 </a>
   
 <a href="node.html" class="card">
   <div class="card-top">
-    <img src="node-favicon.jpeg" class="icon">
+    <img src="node-favicon.jpeg" class="icon" alt="Node Breaker Cyberpunk Puzzle Game">
     <div class="info">
       <div class="title">NODE BREAKER</div>
       <div class="desc">Route the signal. Beat the spikes. Connect the core before time runs out.</div>
@@ -290,7 +336,7 @@
       <div class="title">NCLEX Arcade</div>
       <div class="desc">Study for your RN exam with a fast-paced arcade-style flashcard game.</div>
     </div>
-    <div class="play">STUDY</div>
+    <div class="play">TRAIN ▶</div>
   </div>
 </a>
   <!-- FUTURE GAME TEMPLATE -->
