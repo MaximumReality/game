@@ -447,6 +447,27 @@ body::before {
   color: var(--user-cyan);
   border-color: var(--user-cyan);
 }
+ .back-btn {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 9999;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-decoration: none;
+  color: #00e5ff;
+  padding: 8px 10px;
+  border: 1px solid rgba(0,229,255,0.4);
+  background: rgba(0,229,255,0.05);
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(0,229,255,0.3);
+}
+
+.back-btn:active {
+  transform: scale(0.95);
+  background: rgba(0,229,255,0.15);
+} 
 
 /* ============ GLITCH ============ */
 @keyframes glitch {
@@ -562,6 +583,7 @@ body::before {
 </head>
 
 <body>
+  <a href="https://maximumreality.github.io/game/" class="back-btn">← [ ESC ]</a>
 <div id="vignette"></div>
 
 <!-- HEADER -->
