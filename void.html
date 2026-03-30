@@ -378,7 +378,7 @@ input.addEventListener('keypress', (e) => {
 // ====================== INITIAL MESSAGE ======================
 window.onload = () => {
   addMsg("SENTINEL-9: CONNECTION ESTABLISHED THROUGH THE VOID.<br>IDENTIFY YOURSELF. DO NOT LIE.", "sentinel");
-  
+  updateMeter(0);
   // Optional: subtle starting glitch
   setTimeout(() => {
     document.body.classList.add('glitch');
