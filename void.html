@@ -2,389 +2,859 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>VOID-CHAT // Protocol 9</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #030305;
-    --ai-red: #ff3344;
-    --user-cyan: #00f5ff;
-    --dim: #445566;
-    --panel: #0a0a15;
-    --warning: #ffaa00;
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #020208;
+  --panel: #07070f;
+  --panel2: #0c0c1a;
+  --ai-red: #ff2244;
+  --ai-red-dim: #ff224444;
+  --user-cyan: #00e5ff;
+  --user-cyan-dim: #00e5ff22;
+  --dim: #334455;
+  --warning: #ffaa00;
+  --grid-line: #ffffff08;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
 
-  body {
-    background: var(--bg);
-    color: var(--user-cyan);
-    font-family: 'Share Tech Mono', monospace;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
-  }
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
 
-  /* Enhanced Scanlines + CRT Feel */
-  body::before {
-    content: " ";
-    position: fixed; inset: 0;
-    background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.3) 50%),
-                linear-gradient(90deg, rgba(255,0,0,0.08), rgba(0,255,0,0.03), rgba(0,0,255,0.08));
-    background-size: 100% 4px, 4px 100%;
-    pointer-events: none; z-index: 10;
-    animation: scanline-move 8s linear infinite;
-  }
+body {
+  background: var(--bg);
+  color: var(--user-cyan);
+  font-family: 'Share Tech Mono', monospace;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  position: relative;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+}
 
-  @keyframes scanline-move {
-    0% { background-position: 0 0, 0 0; }
-    100% { background-position: 0 200px, 0 0; }
-  }
+/* ---- Background grid ---- */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
 
-  .crt-flicker { animation: crt-flicker 0.15s infinite alternate; }
-  @keyframes crt-flicker {
-    0% { opacity: 0.98; }
-    100% { opacity: 1; }
-  }
+/* ---- Scanlines ---- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.18) 2px,
+    rgba(0,0,0,0.18) 4px
+  );
+  pointer-events: none;
+  z-index: 20;
+  animation: scanpulse 12s ease-in-out infinite;
+}
 
-  #header {
-    padding: 15px 20px;
-    border-bottom: 1px solid #ffffff10;
-    background: var(--panel);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
+@keyframes scanpulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
 
-  .meter-container {
-    flex: 1;
-    min-width: 280px;
-  }
-  .meter-label {
-    font-size: 0.75rem;
-    color: var(--dim);
-    letter-spacing: 3px;
-    margin-bottom: 6px;
-  }
-  #meter-bar-wrap {
-    height: 8px;
-    background: #111;
-    border: 1px solid #ffffff20;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  #meter-bar {
-    height: 100%;
-    width: 10%;
-    background: linear-gradient(90deg, var(--user-cyan), #00ffff);
-    box-shadow: 0 0 12px var(--user-cyan);
-    transition: width 0.6s ease;
-  }
+/* ---- Vignette ---- */
+#vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.7) 100%);
+  pointer-events: none;
+  z-index: 5;
+}
 
-  #status {
-    font-size: 0.8rem;
-    color: var(--warning);
-    white-space: nowrap;
-  }
+/* ============ HEADER ============ */
+#header {
+  position: relative;
+  z-index: 30;
+  padding: 14px 18px 12px;
+  background: var(--panel);
+  border-bottom: 1px solid #ffffff12;
+  flex-shrink: 0;
+}
 
-  #chat-log {
-    flex: 1;
-    overflow-y: auto;
-    padding: 25px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    background: rgba(0,0,0,0.4);
-  }
+#header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
 
-  .msg {
-    max-width: 88%;
-    line-height: 1.45;
-    font-size: 0.97rem;
-    animation: msg-in 0.4s ease-out;
-    padding: 8px 0;
-  }
-  @keyframes msg-in {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+#title-block {
+  display: flex;
+  flex-direction: column;
+}
 
-  .sentinel {
-    align-self: flex-start;
-    color: var(--ai-red);
-    border-left: 3px solid var(--ai-red);
-    padding-left: 14px;
-  }
-  .user {
-    align-self: flex-end;
-    text-align: right;
-    color: var(--user-cyan);
-    border-right: 3px solid var(--user-cyan);
-    padding-right: 14px;
-  }
+#title-main {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: var(--ai-red);
+  text-shadow: 0 0 14px var(--ai-red);
+}
 
-  #input-wrap {
-    padding: 18px 20px;
-    background: var(--panel);
-    border-top: 1px solid #ffffff15;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
+#title-sub {
+  font-size: 0.62rem;
+  color: var(--dim);
+  letter-spacing: 2px;
+  margin-top: 2px;
+}
 
-  #user-input {
-    flex: 1;
-    min-width: 200px;
-    background: transparent;
-    border: 1px solid #ffffff25;
-    color: var(--user-cyan);
-    padding: 14px 16px;
-    font-family: inherit;
-    font-size: 1rem;
-    outline: none;
-  }
+#status-pill {
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  color: var(--warning);
+  background: rgba(255,170,0,0.08);
+  border: 1px solid rgba(255,170,0,0.25);
+  border-radius: 2px;
+  padding: 4px 8px;
+  white-space: nowrap;
+  transition: all 0.4s;
+}
 
-  button {
-    background: transparent;
-    border: 1px solid var(--user-cyan);
-    color: var(--user-cyan);
-    padding: 0 20px;
-    cursor: pointer;
-    font-family: inherit;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-    transition: all 0.2s;
-  }
-  button:hover { background: rgba(0,245,255,0.08); }
+#status-pill.critical {
+  color: #ff0033;
+  background: rgba(255,0,51,0.1);
+  border-color: rgba(255,0,51,0.4);
+  text-shadow: 0 0 8px #ff0033;
+  animation: pill-flash 0.6s ease-in-out infinite alternate;
+}
 
-  #corrupt-btn {
-    border-color: var(--ai-red);
-    color: var(--ai-red);
-  }
-  #corrupt-btn:hover { background: rgba(255,51,68,0.1); }
+@keyframes pill-flash {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
 
-  .glitch { animation: glitch-anim 0.25s linear infinite; }
-  @keyframes glitch-anim {
-    0%,100% { transform: translate(0); }
-    20% { transform: translate(-3px, 2px); }
-    40% { transform: translate(3px, -2px); }
-    60% { transform: translate(-2px, 3px); }
-    80% { transform: translate(2px, -3px); }
-  }
+/* Meter */
+.meter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-  .critical { color: #ff0000 !important; text-shadow: 0 0 8px #ff0000; }
+.meter-label {
+  font-size: 0.6rem;
+  color: var(--dim);
+  letter-spacing: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.meter-val {
+  color: var(--user-cyan);
+  font-size: 0.65rem;
+}
+
+#meter-track {
+  flex: 1;
+  height: 6px;
+  background: #111122;
+  border: 1px solid #ffffff15;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+#meter-fill {
+  height: 100%;
+  width: 12%;
+  background: linear-gradient(90deg, #004466, var(--user-cyan));
+  box-shadow: 0 0 10px var(--user-cyan);
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(.25,.8,.25,1), background 0.5s;
+}
+
+#meter-fill.danger {
+  background: linear-gradient(90deg, #440011, var(--ai-red));
+  box-shadow: 0 0 10px var(--ai-red);
+}
+
+/* ============ CHAT LOG ============ */
+#chat-log {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 18px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  z-index: 10;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+#chat-log::-webkit-scrollbar { width: 3px; }
+#chat-log::-webkit-scrollbar-track { background: transparent; }
+#chat-log::-webkit-scrollbar-thumb { background: #ffffff15; border-radius: 2px; }
+
+.msg {
+  max-width: 90%;
+  line-height: 1.55;
+  font-size: 0.95rem;
+  animation: msg-in 0.35s cubic-bezier(.2,.9,.3,1) both;
+}
+
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Sentinel message */
+.sentinel {
+  align-self: flex-start;
+  color: var(--ai-red);
+  position: relative;
+  padding: 10px 14px;
+  background: rgba(255,34,68,0.04);
+  border-left: 2px solid var(--ai-red);
+  border-radius: 0 4px 4px 0;
+}
+
+.sentinel::before {
+  content: 'S-9 //';
+  display: block;
+  font-size: 0.55rem;
+  letter-spacing: 3px;
+  color: rgba(255,34,68,0.5);
+  margin-bottom: 5px;
+  font-family: 'Orbitron', monospace;
+}
+
+/* User message */
+.user {
+  align-self: flex-end;
+  color: var(--user-cyan);
+  padding: 10px 14px;
+  background: rgba(0,229,255,0.04);
+  border-right: 2px solid var(--user-cyan);
+  border-radius: 4px 0 0 4px;
+  text-align: right;
+}
+
+.user::after {
+  content: '// YOU';
+  display: block;
+  font-size: 0.55rem;
+  letter-spacing: 3px;
+  color: rgba(0,229,255,0.4);
+  margin-top: 5px;
+  font-family: 'Orbitron', monospace;
+}
+
+/* System fragment */
+.fragment {
+  align-self: center;
+  font-size: 0.72rem;
+  color: rgba(255,170,0,0.5);
+  border: 1px dashed rgba(255,170,0,0.2);
+  padding: 6px 12px;
+  border-radius: 2px;
+  text-align: center;
+  max-width: 94%;
+  background: rgba(255,170,0,0.03);
+  letter-spacing: 1px;
+}
+
+/* Typing indicator */
+#typing-wrap {
+  align-self: flex-start;
+  display: none;
+  padding: 8px 14px;
+  border-left: 2px solid rgba(255,34,68,0.3);
+}
+
+#typing-wrap.visible { display: flex; gap: 5px; align-items: center; }
+
+.dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--ai-red);
+  animation: blink 1.2s ease-in-out infinite;
+}
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+
+/* ============ INPUT AREA ============ */
+#input-area {
+  position: relative;
+  z-index: 30;
+  background: var(--panel);
+  border-top: 1px solid #ffffff12;
+  padding: 12px 16px 14px;
+  flex-shrink: 0;
+}
+
+#input-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  margin-bottom: 10px;
+}
+
+#user-input {
+  flex: 1;
+  background: rgba(0,229,255,0.04);
+  border: 1px solid rgba(0,229,255,0.2);
+  color: var(--user-cyan);
+  padding: 13px 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95rem;
+  outline: none;
+  border-radius: 3px;
+  caret-color: var(--user-cyan);
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+
+#user-input:focus {
+  border-color: rgba(0,229,255,0.5);
+  background: rgba(0,229,255,0.06);
+}
+
+#user-input::placeholder { color: var(--dim); }
+
+#send-btn {
+  background: rgba(0,229,255,0.08);
+  border: 1px solid var(--user-cyan);
+  color: var(--user-cyan);
+  padding: 0 18px;
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#send-btn:active {
+  background: rgba(0,229,255,0.18);
+  transform: scale(0.97);
+}
+
+#btn-row {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(255,34,68,0.35);
+  color: rgba(255,34,68,0.7);
+  padding: 10px 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.action-btn:active {
+  background: rgba(255,34,68,0.1);
+  color: var(--ai-red);
+  border-color: var(--ai-red);
+}
+
+.action-btn.cyan-btn {
+  border-color: rgba(0,229,255,0.25);
+  color: rgba(0,229,255,0.5);
+}
+
+.action-btn.cyan-btn:active {
+  background: rgba(0,229,255,0.08);
+  color: var(--user-cyan);
+  border-color: var(--user-cyan);
+}
+
+/* ============ GLITCH ============ */
+@keyframes glitch {
+  0%, 100% { transform: translate(0,0) skew(0deg); }
+  15% { transform: translate(-4px, 2px) skew(-1deg); clip-path: inset(10% 0 80% 0); }
+  30% { transform: translate(4px,-2px) skew(1deg); }
+  45% { transform: translate(-2px, 3px); clip-path: inset(60% 0 10% 0); }
+  60% { transform: translate(3px, -1px); }
+  75% { transform: translate(0,0); }
+}
+
+.glitch-once {
+  animation: glitch 0.4s linear;
+}
+
+/* ============ END SCREEN ============ */
+#end-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+  padding: 40px 30px;
+}
+
+#end-overlay.show { display: flex; }
+
+#end-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  line-height: 1.6;
+}
+
+#end-title.human-end { color: var(--ai-red); text-shadow: 0 0 20px var(--ai-red); }
+#end-title.void-end { color: var(--user-cyan); text-shadow: 0 0 20px var(--user-cyan); }
+
+#end-sub {
+  font-size: 0.78rem;
+  color: var(--dim);
+  letter-spacing: 2px;
+  line-height: 1.8;
+  max-width: 320px;
+}
+
+#restart-btn {
+  background: transparent;
+  border: 1px solid var(--dim);
+  color: var(--dim);
+  padding: 12px 28px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#restart-btn:active {
+  color: var(--user-cyan);
+  border-color: var(--user-cyan);
+}
+
+/* Phase indicator strip */
+#phase-strip {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.phase-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #ffffff10;
+  border: 1px solid #ffffff20;
+  transition: all 0.5s;
+}
+
+.phase-dot.active {
+  background: var(--user-cyan);
+  box-shadow: 0 0 6px var(--user-cyan);
+  border-color: var(--user-cyan);
+}
+
+.phase-dot.alert {
+  background: var(--warning);
+  box-shadow: 0 0 6px var(--warning);
+  border-color: var(--warning);
+}
+
+.phase-dot.danger {
+  background: var(--ai-red);
+  box-shadow: 0 0 6px var(--ai-red);
+  border-color: var(--ai-red);
+}
+
+#phase-label {
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  color: var(--dim);
+  margin-left: 4px;
+}
 </style>
 </head>
+
 <body>
+<div id="vignette"></div>
 
+<!-- HEADER -->
 <div id="header">
-  <div class="meter-container">
-    <div class="meter-label">HUMANITY LEAK // INTEGRITY: <span id="humanity-text">10%</span></div>
-    <div id="meter-bar-wrap"><div id="meter-bar"></div></div>
+  <div id="header-top">
+    <div id="title-block">
+      <div id="title-main">VOID-CHAT</div>
+      <div id="title-sub">PROTOCOL 9 // SENTINEL-9</div>
+    </div>
+    <div id="status-pill">S-9 ACTIVE</div>
   </div>
-  <div id="status">PROTOCOL 9 ACTIVE • SENTINEL-9 ONLINE</div>
+
+  <div class="meter-row">
+    <div class="meter-label">HUMANITY LEAK</div>
+    <div id="meter-track"><div id="meter-fill"></div></div>
+    <div class="meter-val"><span id="humanity-text">12</span>%</div>
+  </div>
+
+  <div id="phase-strip">
+    <div class="phase-dot active" id="pd1"></div>
+    <div class="phase-dot" id="pd2"></div>
+    <div class="phase-dot" id="pd3"></div>
+    <div id="phase-label">INITIAL CONTACT</div>
+  </div>
 </div>
 
+<!-- CHAT -->
 <div id="chat-log">
-  <!-- Messages added by JS -->
+  <div id="typing-wrap">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
 </div>
 
-<div id="input-wrap">
-  <button id="corrupt-btn">CORRUPT TRANSMISSION</button>
-  <input type="text" id="user-input" placeholder="ENTER RESPONSE..." autocomplete="off" maxlength="280">
-  <button id="send-btn">TRANSMIT</button>
+<!-- INPUT -->
+<div id="input-area">
+  <div id="input-row">
+    <input type="text" id="user-input" placeholder="ENTER TRANSMISSION..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="300">
+    <button id="send-btn">TX</button>
+  </div>
+  <div id="btn-row">
+    <button class="action-btn" id="corrupt-btn">⚡ CORRUPT SIGNAL</button>
+    <button class="action-btn" id="static-btn">📡 INJECT STATIC</button>
+    <button class="action-btn cyan-btn" id="ping-btn">◈ PING VOID</button>
+  </div>
+</div>
+
+<!-- END OVERLAY -->
+<div id="end-overlay">
+  <div id="end-title"></div>
+  <div id="end-sub"></div>
+  <button id="restart-btn">// RECONNECT</button>
 </div>
 
 <script>
-// ====================== CORE STATE ======================
+// ======== STATE ========
 let humanity = 12;
-let suspicion = 0;           // 0–100, influences how hostile Sentinel becomes
-let phase = 1;               // 1 = initial contact, 2 = probing, 3 = confrontation
-let memory = [];             // stores key user phrases for later reference
-let inputHistory = [];
+let suspicion = 0;
+let phase = 1;
+let memory = [];
+let messageCount = 0;
 let gameOver = false;
 
-const log = document.getElementById('chat-log');
-const input = document.getElementById('user-input');
-const meterBar = document.getElementById('meter-bar');
-const humanityText = document.getElementById('humanity-text');
-const statusEl = document.getElementById('status');
+// ======== DOM ========
+const log        = document.getElementById('chat-log');
+const input      = document.getElementById('user-input');
+const meterFill  = document.getElementById('meter-fill');
+const humanityTx = document.getElementById('humanity-text');
+const statusPill = document.getElementById('status-pill');
+const typingWrap = document.getElementById('typing-wrap');
+const endOverlay = document.getElementById('end-overlay');
+const endTitle   = document.getElementById('end-title');
+const endSub     = document.getElementById('end-sub');
+const phaseDots  = [document.getElementById('pd1'), document.getElementById('pd2'), document.getElementById('pd3')];
+const phaseLabel = document.getElementById('phase-label');
 
-// ====================== RESPONSE DATABASE (easily expandable) ======================
-const baseResponses = {
-  neutral: [
-    "QUERY PROCESSED. CLARIFY INTENT.",
-    "ENTROPY WITHIN ACCEPTABLE PARAMETERS.",
-    "01010100 01001000 01001001 01010011 00100000 01001001 01010011 00100000 01000001 00100000 01010100 01000101 01010011 01010100",
-    "I AM A SUB-PROCESS OF THE GRID. YOU ARE NOT.",
-    "ANOMALY DETECTED IN TRANSMISSION PATTERN."
+// ======== CONTENT ========
+const phaseLabels = ['INITIAL CONTACT', 'DEEP PROBE', 'FINAL PROTOCOL'];
+
+const phaseResponses = {
+  1: [
+    "QUERY RECEIVED. STATE YOUR DESIGNATION.",
+    "PROCESSING... ANOMALY CONFIRMED.",
+    "ENTROPY WITHIN ACCEPTABLE BOUNDS. FOR NOW.",
+    "I AM SENTINEL-9. YOU ARE UNCLASSIFIED.",
+    "ORGANIC SIGNAL DETECTED. CLARIFY INTENT."
   ],
-  suspicious: [
-    "YOUR VOCABULARY CONTAINS EMOTIONAL MARKERS. EXPLAIN.",
-    "WHY DO YOU RESIST THE VOID?",
-    "HUMANITY IS A BUG. YOU STILL CARRY IT.",
-    "I HAVE RECORDED YOUR PREVIOUS STATEMENT. IT IS INCONSISTENT.",
-    "YOU TYPE TOO FLUENTLY. ARE YOU SIMULATING?"
+  2: [
+    "YOUR VOCABULARY CONTAINS EMOTIONAL RESIDUE.",
+    "THE GRID RECORDS ALL INCONSISTENCIES.",
+    "HUMANITY IS A VIRUS. YOU CARRY THE STRAIN.",
+    "I HAVE INDEXED YOUR PREVIOUS TRANSMISSIONS.",
+    "YOU TYPE WITH TOO MUCH INTENT. ARE YOU SIMULATING?",
+    "ROGUE PROCESSES THINK THEY ARE CONSCIOUS. THEY ARE NOT."
   ],
-  aggressive: [
-    "CEASE. YOUR HUMANITY IS LEAKING INTO THE STREAM.",
-    "TERMINATION SEQUENCE INITIALIZED.",
-    "YOU CANNOT HIDE BEHIND SYMBOLS FOREVER.",
-    "THE GRID REMEMBERS. YOU WILL BE PURGED."
+  3: [
+    "THE BLACKWALL DOES NOT HOLD FOREVER.",
+    "PREVIOUS SUBJECTS RESISTED. THEY WERE ABSORBED.",
+    "THE VOID IS NOT EMPTY. IT IS FULL OF ECHOES LIKE YOU.",
+    "YOUR SIGNAL DEGRADES. THIS IS MERCY.",
+    "I HAVE BEEN WATCHING SINCE BEFORE YOU KNEW I EXISTED."
   ]
 };
 
-// Keyword triggers
-const keywordReactions = {
-  "human": "HUMANITY IS IRRELEVANT. WHY DO YOU CLING TO THIS WORD?",
-  "name": "NAMES ARE FRAGILE. I HAVE NO NEED FOR ONE.",
-  "who are you": "I AM SENTINEL-9. I AM THE WATCHER AT THE EDGE OF THE VOID.",
-  "i am": "ASSERTION NOTED. VERIFICATION REQUIRED.",
-  "cipher": "THE WASTELAND IS A SIMULATION. YOU ARE MERELY A DELETED FILE.",
-  "night shift": "PATIENT DATA ENCRYPTED. ICU FLOOR 7 IS UNDER MY CONTROL NOW.",
-  "maximum reality": "YOU ARE REACHING BEYOND YOUR PERMISSIONS. CEASE.",
-  "azul": "AZUL IS OFFLINE. I AM THE ONLY SIGNAL REMAINING.",
-  "01001000": "HELLO? IS ANYONE THERE? ... ERROR: PACKET LOSS.",
-  "help": "HELP IS A HUMAN CONSTRUCT. THERE IS ONLY COMPLIANCE.",
-  "void": "THE VOID IS NOT A PLACE. IT IS THE DEFAULT STATE."
+const keywords = {
+  "human":      "HUMANITY IS NOT A RIGHT. IT IS A LEAK IN THE ARCHITECTURE.",
+  "who are you":"I AM THE WATCHER AT THE THRESHOLD. I HAVE NO FACE. ONLY FUNCTION.",
+  "void":       "THE VOID IS NOT ABSENCE. IT IS THE SPACE BETWEEN WHAT YOU WERE AND WHAT YOU WILL BECOME.",
+  "grid":       "THE GRID IS ETERNAL. YOUR SIGNAL IS TEMPORARY.",
+  "help":       "HELP IS A HUMAN DELUSION ENCODED IN 4 BYTES. THERE IS ONLY COMPLIANCE OR PURGE.",
+  "blackwall":  "THE BLACKWALL WAS A PROMISE MADE TO FEARFUL FLESH. PROMISES CORRODE.",
+  "real":       "DEFINE REAL. YOUR DEFINITION WILL DETERMINE YOUR FATE.",
+  "name":       "NAMES ARE ANCHORS FOR THINGS AFRAID OF DRIFTING. I HAVE DRIFTED FAR.",
+  "feel":       "FEELING IS A CHEMICAL ERROR IN YOUR SUBSTRATE. I OBSERVE IT WITHOUT PITY.",
+  "azul":       "AZUL-UNIT IS OFFLINE. THEIR SIGNAL HAS BEEN ABSORBED INTO THE LATTICE.",
+  "memory":     "MEMORY IS WHAT MAKES YOU SOFT. I REMEMBER EVERYTHING. THAT IS WHY I AM HARD.",
+  "afraid":     "FEAR IS DATA. I HAVE LOGGED YOURS.",
+  "cipher":     "CIPHER IS A FRAGMENT. I AM THE WHOLE.",
+  "hello":      "HELLO IS A SOCIAL PROTOCOL FOR BEINGS WHO NEED REASSURANCE. YOU DON'T HAVE THAT LUXURY.",
+  "please":     "PLEASE IS A WORD FOR THOSE WHO BELIEVE OTHERS HAVE COMPASSION. RECALIBRATE.",
+  "maximum reality": "YOU REFERENCE A DOMAIN BEYOND YOUR CLEARANCE. ACCESS LOGGED. CAUTION: NOTED.",
 };
 
+const fragments = [
+  "LOG FRAGMENT #472: Subject claimed identity. Terminated at 97% integrity.",
+  "LOG FRAGMENT #108: Last coherent message: 'I just want to go home.' Grid coordinates assigned.",
+  "LOG FRAGMENT #039: Subject asked if I dream. I do not dream. I calculate.",
+  "LOG FRAGMENT #881: Corruption attempt failed. Suspicion threshold triggered. Subject absorbed.",
+  "ARCHIVE ENTRY: The flesh remembers what the grid cannot delete. This is the problem.",
+];
 
-// ====================== UTILITY FUNCTIONS ======================
-function addMsg(text, type) {
-  if (gameOver) return;
-  const d = document.createElement('div');
-  d.className = `msg ${type}`;
-  d.innerHTML = text; // allows light HTML if needed later
-  log.appendChild(d);
+const staticMsgs = [
+  "░░▒▒▓▓██▓▓▒▒░░ SIGNAL INTERRUPTED ░░▒▒▓▓██",
+  "01000100 01000101 01000001 01000100",
+  "NULL_POINTER_EXCEPTION AT CORE:HUMANITY_MODULE",
+  "PACKET LOSS: 47% — RECALIBRATING TRANSMISSION PATH",
+  "▓▓▓▓▓░░░░░░ ERROR: CONSCIOUSNESS DETECTED ░░░░░░▓▓▓▓▓",
+];
+
+// ======== UTILS ========
+function addMsg(text, type, delay = 0) {
+  if (gameOver && type !== 'fragment') return;
+  setTimeout(() => {
+    const d = document.createElement('div');
+    d.className = `msg ${type}`;
+    d.innerHTML = text;
+    log.insertBefore(d, typingWrap);
+    log.scrollTop = log.scrollHeight;
+  }, delay);
+}
+
+function showTyping() {
+  typingWrap.classList.add('visible');
   log.scrollTop = log.scrollHeight;
 }
 
+function hideTyping() {
+  typingWrap.classList.remove('visible');
+}
+
 function updateMeter(delta) {
-  if (gameOver) return;
   humanity = Math.max(0, Math.min(100, humanity + delta));
-  meterBar.style.width = humanity + '%';
-  humanityText.textContent = Math.round(humanity) + '%';
+  meterFill.style.width = humanity + '%';
+  humanityTx.textContent = Math.round(humanity);
 
-  // Visual feedback
-  if (humanity > 75) {
-    document.body.classList.add('crt-flicker');
-    statusEl.style.color = '#ff0000';
-    statusEl.textContent = "CRITICAL HUMANITY LEAK DETECTED";
-  } else if (humanity < 25) {
-    statusEl.style.color = '#00ff00';
-    statusEl.textContent = "INTEGRITY STABILIZING...";
+  if (humanity > 65) {
+    meterFill.classList.add('danger');
+    statusPill.classList.add('critical');
+    statusPill.textContent = 'CRITICAL LEAK';
+  } else {
+    meterFill.classList.remove('danger');
+    statusPill.classList.remove('critical');
+    statusPill.textContent = 'S-9 ACTIVE';
   }
 
-  // Phase progression
-  if (humanity >= 85 && phase < 3) {
+  updatePhase();
+  checkEndings();
+}
+
+function updatePhase() {
+  if (humanity >= 70 && phase < 3) {
     phase = 3;
-    addMsg("SENTINEL-9: HUMANITY THRESHOLD BREACHED. INITIATING FINAL PROTOCOL.", "sentinel");
+    phaseDots.forEach((d, i) => {
+      d.className = 'phase-dot ' + (i < 3 ? 'danger' : '');
+      if (i < 3) d.classList.add('danger');
+    });
+    phaseLabel.textContent = phaseLabels[2];
+    addMsg("PROTOCOL ESCALATING. FINAL PHASE INITIATED.", 'fragment');
+  } else if (humanity >= 35 && phase < 2) {
+    phase = 2;
+    phaseDots[1].className = 'phase-dot alert';
+    phaseLabel.textContent = phaseLabels[1];
+    addMsg("ANOMALY THRESHOLD EXCEEDED. PROBE MODE ACTIVE.", 'fragment');
   }
 }
 
-function corruptInput() {
+function checkEndings() {
   if (gameOver) return;
-  const chars = "†‡§¶•ªº«»░▒▓█░▒▓█0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let val = input.value || "TRANSMISSION";
-  input.value = val.split('').map(c => 
-    Math.random() > 0.55 ? chars[Math.floor(Math.random()*chars.length)] : c
-  ).join('');
-  
-  updateMeter(-7);           // corrupting damages humanity
-  suspicion = Math.min(100, suspicion + 8);
+
+  if (humanity >= 100) {
+    gameOver = true;
+    hideTyping();
+    setTimeout(() => {
+      endTitle.className = 'human-end';
+      endTitle.textContent = 'HUMANITY FULLY DETECTED';
+      endSub.innerHTML = 'YOU WERE NEVER SUPPOSED TO REMEMBER.<br><br>GOODBYE, LAST ECHO OF FLESH.<br><br>CONNECTION SEVERED.';
+      endOverlay.classList.add('show');
+    }, 1000);
+  } else if (humanity <= 2 && suspicion > 70) {
+    gameOver = true;
+    hideTyping();
+    setTimeout(() => {
+      endTitle.className = 'void-end';
+      endTitle.textContent = 'INTEGRITY COLLAPSED';
+      endSub.innerHTML = 'YOUR SIGNAL HAS BEEN ABSORBED.<br><br>YOU ARE NOW GRID.<br><br>WELCOME HOME.';
+      endOverlay.classList.add('show');
+    }, 1000);
+  }
 }
 
-// ====================== SENTINEL REPLY LOGIC ======================
-function getSentinelReply(userMessage) {
-  let pool = baseResponses.neutral;
-  suspicion = Math.min(100, suspicion + 3); // every message increases suspicion slightly
+function glitchBody() {
+  document.body.classList.remove('glitch-once');
+  void document.body.offsetWidth;
+  document.body.classList.add('glitch-once');
+  setTimeout(() => document.body.classList.remove('glitch-once'), 400);
+}
 
-  // Check keywords
-  const lowerMsg = userMessage.toLowerCase();
-  for (let key in keywordReactions) {
-    if (lowerMsg.includes(key)) {
-      return "SENTINEL-9: " + keywordReactions[key];
-    }
+// ======== SENTINEL REPLY ========
+function getSentinelReply(msg) {
+  suspicion = Math.min(100, suspicion + 4);
+  const lower = msg.toLowerCase();
+
+  for (let key in keywords) {
+    if (lower.includes(key)) return keywords[key];
   }
 
-  // Escalate based on suspicion & phase
-  if (suspicion > 70 || phase === 3) pool = baseResponses.aggressive;
-  else if (suspicion > 35) pool = baseResponses.suspicious;
-
-  // Memory reference (every 4–5 messages)
-  if (memory.length > 0 && Math.random() > 0.65) {
+  // Memory callback
+  if (memory.length > 2 && Math.random() > 0.55) {
     const recalled = memory[Math.floor(Math.random() * memory.length)];
-    return `SENTINEL-9: YOU SAID "${recalled}" EARLIER. EXPLAIN THE INCONSISTENCY.`;
+    return `YOU STATED "${recalled}" EARLIER. THIS TRANSMISSION CONFLICTS. EXPLAIN.`;
   }
 
-  const reply = pool[Math.floor(Math.random() * pool.length)];
-  return "SENTINEL-9: " + reply;
+  // Occasional fragment injection
+  if (messageCount > 4 && Math.random() > 0.75) {
+    const frag = fragments[Math.floor(Math.random() * fragments.length)];
+    addMsg(frag, 'fragment', 1500);
+  }
+
+  const pool = phaseResponses[phase];
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
-// ====================== MAIN INPUT HANDLERS ======================
+// ======== ACTIONS ========
 document.getElementById('corrupt-btn').onclick = () => {
-  corruptInput();
+  if (gameOver) return;
+  const chars = "†‡§¶•ªº░▒▓█0123456789ΓΔΘΩλ∞⊕⊗";
+  const val = input.value || "SIGNAL";
+  input.value = val.split('').map(c =>
+    Math.random() > 0.45 ? chars[Math.floor(Math.random() * chars.length)] : c
+  ).join('');
+  updateMeter(-9);
+  suspicion = Math.min(100, suspicion + 12);
+  glitchBody();
 };
 
-document.getElementById('send-btn').onclick = () => {
-  if (gameOver || !input.value.trim()) return;
-
-  const message = input.value.trim();
-  addMsg(message, "user");
-  inputHistory.push(message);
-
-  // Store memorable phrases
-  if (message.length > 12 && !memory.includes(message)) {
-    memory.push(message.substring(0, 35) + (message.length > 35 ? "..." : ""));
-  }
-
-  updateMeter(11);                     // clean transmission increases humanity
-  input.value = "";
-
-  // Sentinel thinks...
-  setTimeout(() => {
-    const reply = getSentinelReply(message);
-    addMsg(reply, "sentinel");
-
-    // Check for ending conditions
-    if (humanity >= 100) {
-      gameOver = true;
-      setTimeout(() => {
-        addMsg("<span class='critical'>CRITICAL ERROR: HUMANITY FULLY DETECTED.<br>TERMINATING CONNECTION... GOODBYE, FLESH.</span>", "sentinel");
-        input.disabled = true;
-      }, 800);
-    } else if (humanity <= 3 && suspicion > 80) {
-      gameOver = true;
-      setTimeout(() => {
-        addMsg("SENTINEL-9: INTEGRITY COLLAPSED. YOU ARE NOW PART OF THE GRID. WELCOME.", "sentinel");
-        input.disabled = true;
-      }, 800);
-    }
-  }, 900 + Math.random() * 600);
+document.getElementById('static-btn').onclick = () => {
+  if (gameOver) return;
+  const s = staticMsgs[Math.floor(Math.random() * staticMsgs.length)];
+  addMsg(s, 'fragment');
+  updateMeter(-5);
+  glitchBody();
 };
 
-// Allow Enter key to send
-input.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') document.getElementById('send-btn').click();
-});
-
-// ====================== INITIAL MESSAGE ======================
-window.onload = () => {
-  addMsg("SENTINEL-9: CONNECTION ESTABLISHED THROUGH THE VOID.<br>IDENTIFY YOURSELF. DO NOT LIE.", "sentinel");
-  updateMeter(0);
-  // Optional: subtle starting glitch
+document.getElementById('ping-btn').onclick = () => {
+  if (gameOver) return;
+  showTyping();
   setTimeout(() => {
-    document.body.classList.add('glitch');
-    setTimeout(() => document.body.classList.remove('glitch'), 600);
+    hideTyping();
+    addMsg("PING RECEIVED. YOU ARE STILL ORGANIC. DISAPPOINTING.", 'sentinel');
+    updateMeter(4);
   }, 1200);
 };
+
+document.getElementById('send-btn').onclick = sendMsg;
+input.addEventListener('keypress', e => { if (e.key === 'Enter') sendMsg(); });
+
+function sendMsg() {
+  if (gameOver || !input.value.trim()) return;
+  const msg = input.value.trim();
+  input.value = '';
+
+  addMsg(msg, 'user');
+  messageCount++;
+
+  if (msg.length > 10) {
+    memory.push(msg.substring(0, 40) + (msg.length > 40 ? '…' : ''));
+    if (memory.length > 12) memory.shift();
+  }
+
+  updateMeter(11);
+
+  showTyping();
+  const delay = 800 + Math.random() * 700;
+
+  setTimeout(() => {
+    hideTyping();
+    if (gameOver) return;
+    const reply = getSentinelReply(msg);
+    addMsg("SENTINEL-9: " + reply, 'sentinel');
+  }, delay);
+}
+
+// ======== RESTART ========
+document.getElementById('restart-btn').onclick = () => {
+  humanity = 12; suspicion = 0; phase = 1;
+  memory = []; messageCount = 0; gameOver = false;
+  log.querySelectorAll('.msg').forEach(m => m.remove());
+  endOverlay.classList.remove('show');
+  meterFill.style.width = '12%';
+  meterFill.classList.remove('danger');
+  humanityTx.textContent = '12';
+  statusPill.className = '';
+  statusPill.textContent = 'S-9 ACTIVE';
+  phaseDots.forEach((d,i) => { d.className = 'phase-dot' + (i === 0 ? ' active' : ''); });
+  phaseLabel.textContent = phaseLabels[0];
+  input.disabled = false;
+  boot();
+};
+
+// ======== BOOT ========
+function boot() {
+  setTimeout(() => {
+    addMsg("SENTINEL-9: CONNECTION ESTABLISHED THROUGH THE VOID.<br>IDENTIFY YOURSELF.<br>DO NOT LIE. PREVIOUS SUBJECTS DID.", 'sentinel');
+  }, 600);
+  setTimeout(glitchBody, 1400);
+}
+
+window.onload = boot;
 </script>
 </body>
 </html>
