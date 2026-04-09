@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <!-- Mobile optimization -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Title -->
+  <title>MAXIMUM REALITY // THE SKY IS PEELING</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <!-- Style -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #020008;
+      overflow: hidden;
+      touch-action: none;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      font-family: "Courier New", monospace;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(100vw, calc(100vh * 4 / 3));
+      height: min(100vh, calc(100vw * 3 / 4));
+      image-rendering: pixelated;
+      border: 1px solid #3d0066;
+      box-shadow: 0 0 40px #8b00ff44, 0 0 80px #8b00ff22;
+    }
+
+    #overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    #overlayBox {
+      text-align: center;
+      padding: 32px 24px;
+      border: 1px solid #ff0040;
+      box-shadow: 0 0 60px #ff004033, inset 0 0 40px #ff004011;
+      background: rgba(10,0,20,0.95);
+    }
+
+    .title {
+      color: #ff0040;
+      font-size: clamp(28px, 8vw, 42px);
+      font-weight: bold;
+      letter-spacing: 6px;
+      text-shadow: 0 0 20px #ff0040;
+      margin: 0;
+    }
+
+    .sub {
+      color: #8b00ff;
+      font-size: 14px;
+      margin-top: 8px;
+      letter-spacing: 3px;
+    }
+  </style>
+</head>
+
+<body>
+
+<canvas id="game" width="800" height="600"></canvas>
+
+<div id="overlay">
+  <div id="overlayBox">
+    <p class="title">SYNC FAILED</p>
+    <p class="sub">TAP TO MANIFEST</p>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('game')
+  const ctx = canvas.getContext('2d')
+
+  let lastTime = 0
+
+  const player = {
+    x: 400,
+    y: 300,
+    vx: 0,
+    vy: 0
+  }
+
+  const keys = new Set()
+
+  window.addEventListener('keydown', e => keys.add(e.key))
+  window.addEventListener('keyup', e => keys.delete(e.key))
+
+  function update(dt) {
+    let vx = 0
+    let vy = 0
+
+    if (keys.has('ArrowRight') || keys.has('d')) vx += 1
+    if (keys.has('ArrowLeft') || keys.has('a')) vx -= 1
+    if (keys.has('ArrowUp') || keys.has('w')) vy -= 1
+    if (keys.has('ArrowDown') || keys.has('s')) vy += 1
+
+    if (vx !== 0 || vy !== 0) {
+      const mag = Math.hypot(vx, vy)
+      vx /= mag
+      vy /= mag
+    }
+
+    player.vx = vx * 200
+    player.vy = vy * 200
+
+    player.x += player.vx * dt
+    player.y += player.vy * dt
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    // player
+    ctx.fillStyle = '#8b00ff'
+    ctx.beginPath()
+    ctx.arc(player.x, player.y, 10, 0, Math.PI * 2)
+    ctx.fill()
+
+    // glow pulse text
+    ctx.fillStyle = `rgba(191,0,255,${0.6 + Math.sin(t * 0.003) * 0.4})`
+    ctx.font = '14px Courier New'
+    const text = '[ TAP TO MANIFEST ]'
+    ctx.fillText(text, 400 - ctx.measureText(text).width / 2, 350)
+  }
+
+  function loop(time) {
+    const dt = (time - lastTime) / 1000
+    lastTime = time
+
+    update(dt)
+    draw(time)
+
+    requestAnimationFrame(loop)
+  }
+
+  requestAnimationFrame(loop)
+
+  // click to start
+  canvas.addEventListener('click', () => {
+    document.getElementById('overlay').style.display = 'none'
+  })
+
+</script>
+
+</body>
+</html>
